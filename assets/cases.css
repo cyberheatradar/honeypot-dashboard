@@ -1,0 +1,16 @@
+
+.case-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+gap:16px;margin-top:20px}
+.case{background:#141f31;border:1px solid #293449;
+border-radius:16px;padding:20px;min-width:0}
+.case-top{display:flex;flex-wrap:wrap;gap:10px;
+align-items:center;color:#70dec1;font-size:.78rem}
+.case h2{font-size:1.15rem;margin:14px 0}
+.case dl{display:grid;grid-template-columns:1fr 1fr;
+gap:9px;margin:0}
+.case dt{color:#a9b8ce}
+.case dd{margin:0;text-align:right;overflow-wrap:anywhere}
+.case-note{color:#a9b8ce;font-size:.82rem;margin-bottom:0}
+@media(max-width:760px){
+.case-grid{grid-template-columns:1fr}
+}

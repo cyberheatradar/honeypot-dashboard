@@ -1,0 +1,18 @@
+
+.filters{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.filters label{display:flex;flex-direction:column;gap:5px;
+font-size:.83rem;color:#b5c1d3}
+.filters select{background:#101b2c;color:#eff7ff;
+border:1px solid #42506a;border-radius:8px;padding:9px;
+width:100%;min-width:0}
+.map-panel{margin:16px 0}
+.worldmap{display:block;width:100%;height:auto}
+.country{fill:#25364a;stroke:#53647a;stroke-width:.42;
+cursor:pointer;fill-rule:evenodd;transition:fill .15s}
+.country:hover,.country:focus{stroke:#ffffff;stroke-width:1.4;
+outline:none}
+.country.selected{stroke:#fff;stroke-width:1.5}
+#summary{font-weight:600;color:#74dfc1}
+@media(max-width:760px){
+.filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
