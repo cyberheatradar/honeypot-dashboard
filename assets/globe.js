@@ -290,13 +290,56 @@ async function initialize(){
   const canvas=globe.renderer().domElement;
   if(!canvas) throw Error("GLOBE_CANVAS_MISSING");
 
+  // Normal drag rotates the globe.
+  // Ctrl + drag or Ctrl + wheel changes zoom.
+  // Normal wheel scrolling continues to scroll the page.
+
+  const setZoomAltitude=value=>{
+   if(!Number.isFinite(value)) return;
+
+   const view=globe.pointOfView();
+   const altitude=Math.max(0.25,Math.min(6,value));
+
+   globe.pointOfView({
+    lat:view.lat,
+    lng:view.lng,
+    altitude
+   },0);
+  };
+
+  stage.addEventListener("wheel",event=>{
+   // Do not pass wheel events to OrbitControls.
+   event.stopPropagation();
+
+   // Normal wheel: allow browser page scrolling.
+   if(!event.ctrlKey) return;
+
+   // Ctrl + wheel: zoom globe, not browser page.
+   event.preventDefault();
+
+   const unit=event.deltaMode===1 ? 16 :
+    (event.deltaMode===2 ? 400 : 1);
+
+   const delta=event.deltaY*unit;
+   const current=globe.pointOfView().altitude;
+
+   setZoomAltitude(
+    current*Math.exp(delta/650)
+   );
+  },{capture:true,passive:false});
+
   let zoomDrag=null;
 
-  canvas.addEventListener("pointerdown",event=>{
-   if(event.pointerType!=="mouse"||
-      event.button!==0||!event.ctrlKey||zoomDrag){
+  stage.addEventListener("pointerdown",event=>{
+   if(event.pointerType!=="mouse") return;
+
+   if(event.button!==0){
+    event.stopPropagation();
     return;
    }
+
+   // Without Ctrl, use normal rotation.
+   if(!event.ctrlKey || zoomDrag) return;
 
    zoomDrag={
     id:event.pointerId,
@@ -304,50 +347,46 @@ async function initialize(){
     altitude:globe.pointOfView().altitude
    };
 
-   canvas.setPointerCapture(event.pointerId);
+   stage.setPointerCapture(event.pointerId);
+
    event.preventDefault();
-   event.stopImmediatePropagation();
+   event.stopPropagation();
   },true);
 
-  canvas.addEventListener("pointermove",event=>{
-   if(!zoomDrag||event.pointerId!==zoomDrag.id){
-    return;
-   }
+  stage.addEventListener("pointermove",event=>{
+   if(!zoomDrag ||
+      event.pointerId!==zoomDrag.id) return;
 
    const deltaY=event.clientY-zoomDrag.startY;
-   const next=Math.max(
-    0.25,
-    Math.min(
-     6,
-     zoomDrag.altitude*Math.exp(deltaY/360)
-    )
+
+   setZoomAltitude(
+    zoomDrag.altitude*Math.exp(deltaY/300)
    );
 
-   globe.pointOfView({altitude:next},0);
    event.preventDefault();
-   event.stopImmediatePropagation();
+   event.stopPropagation();
   },true);
 
   const finishZoom=event=>{
-   if(!zoomDrag||event.pointerId!==zoomDrag.id){
-    return;
-   }
+   if(!zoomDrag ||
+      event.pointerId!==zoomDrag.id) return;
 
    zoomDrag=null;
 
-   if(canvas.hasPointerCapture(event.pointerId)){
-    canvas.releasePointerCapture(event.pointerId);
+   if(stage.hasPointerCapture(event.pointerId)){
+    stage.releasePointerCapture(event.pointerId);
    }
 
    event.preventDefault();
-   event.stopImmediatePropagation();
+   event.stopPropagation();
   };
 
-  canvas.addEventListener("pointerup",finishZoom,true);
-  canvas.addEventListener("pointercancel",finishZoom,true);
+  stage.addEventListener("pointerup",finishZoom,true);
+  stage.addEventListener("pointercancel",finishZoom,true);
 
-  canvas.addEventListener("lostpointercapture",event=>{
-   if(zoomDrag&&event.pointerId===zoomDrag.id){
+  stage.addEventListener("lostpointercapture",event=>{
+   if(zoomDrag &&
+      event.pointerId===zoomDrag.id){
     zoomDrag=null;
    }
   },true);
