@@ -343,14 +343,14 @@ async function initialize(){
    .arcEndLat(d=>d.endLat)
    .arcEndLng(d=>d.endLng)
    .arcColor(d=>[
-    `rgba(42,177,252,${0.4+0.5*d.strength})`,
-    `rgba(106,255,197,${0.7+0.3*d.strength})`
+    `rgba(54,220,233,${0.35+0.35*d.strength})`,
+    `rgba(119,244,228,${0.65+0.35*d.strength})`
    ])
-   .arcStroke(d=>0.25+1.5*d.strength)
+   .arcStroke(d=>0.22+0.70*d.strength)
    .arcAltitudeAutoScale(0.42)
-   .arcDashLength(0.22)
-   .arcDashGap(0.78)
-   .arcDashAnimateTime(d=>3500-1200*d.strength)
+   .arcDashLength(0.07)
+   .arcDashGap(0.10)
+   .arcDashAnimateTime(2800)
    .arcLabel(d=>escapeHTML(d.name)+
     ": "+fmt(d.count)+" requests")
    .pointsData([])
