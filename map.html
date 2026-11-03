@@ -11,7 +11,7 @@
 <title>Honeypot Observatory | World Map</title>
 <link rel="stylesheet" href="assets/style.css">
 <link rel="stylesheet" href="assets/map.css?v=20261103-beam1">
-<script src="assets/map.js?v=20261104-anchor1" defer></script>
+<script src="assets/map.js?v=20261104-zoom1" defer></script>
 </head>
 <body>
 <main class="container">
@@ -41,6 +41,18 @@ geolocation. No individual IP addresses are published.</p>
 Show traffic beams</label>
 <span id="map-beam-status" role="status">
 Loading beams...</span>
+<button type="button" id="map-zoom-reset"
+ style="padding:5px 10px;background:#172a40;
+ color:#dceef9;border:1px solid #4a6078;
+ border-radius:8px;cursor:pointer">
+ Reset Zoom
+</button>
+<span id="map-zoom-level"
+ role="status" aria-live="polite">1.0×</span>
+<span class="muted">
+ Ctrl + drag ↑↓ / Ctrl + wheel to zoom
+</span>
+
 </div>
 <p class="muted">
 Select a country on the map or use the filters.

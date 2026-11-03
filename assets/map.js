@@ -440,3 +440,214 @@ render();
 
  redraw();
 })();
+;(() => {
+  "use strict";
+
+  const svg = document.getElementById("world");
+  const reset = document.getElementById("map-zoom-reset");
+  const output = document.getElementById("map-zoom-level");
+
+  if (!svg || !reset || !output) {
+    throw Error("MAP_ZOOM_ELEMENT_MISSING");
+  }
+
+  const full = {x:0,y:0,width:960,height:480};
+  const limit = (v,lo,hi) => Math.max(lo,Math.min(hi,v));
+
+  let scale = 1;
+  let gesture = null;
+  let ignoreClick = false;
+
+  function view() {
+    const v = svg.viewBox.baseVal;
+    return {
+      x:v.x,y:v.y,
+      width:v.width,height:v.height
+    };
+  }
+
+  function mapPoint(clientX,clientY) {
+    const matrix = svg.getScreenCTM();
+    if (!matrix) return null;
+
+    const point = svg.createSVGPoint();
+    point.x = clientX;
+    point.y = clientY;
+
+    return point.matrixTransform(matrix.inverse());
+  }
+
+  function apply(next,anchor,rx,ry) {
+    next = limit(next,1,8);
+
+    const w = full.width / next;
+    const h = full.height / next;
+
+    const x = limit(
+      anchor.x-rx*w,
+      full.x,
+      full.x+full.width-w
+    );
+
+    const y = limit(
+      anchor.y-ry*h,
+      full.y,
+      full.y+full.height-h
+    );
+
+    svg.setAttribute(
+      "viewBox",
+      `${x} ${y} ${w} ${h}`
+    );
+
+    scale = next;
+    output.textContent = `${scale.toFixed(1)}×`;
+    reset.disabled = scale <= 1.001;
+  }
+
+  function focus(clientX,clientY) {
+    const p = mapPoint(clientX,clientY);
+    if (!p) return null;
+
+    const v = view();
+
+    return {
+      p,
+      rx:(p.x-v.x)/v.width,
+      ry:(p.y-v.y)/v.height
+    };
+  }
+
+  // Ctrl + wheel: zoom around the mouse pointer.
+  // Ordinary wheel scrolling is not intercepted.
+  svg.addEventListener("wheel",event => {
+    if (!event.ctrlKey) return;
+
+    event.preventDefault();
+
+    const f = focus(event.clientX,event.clientY);
+    if (!f) return;
+
+    const unit =
+      event.deltaMode===1 ? 16 :
+      event.deltaMode===2 ? 480 : 1;
+
+    const delta = limit(
+      event.deltaY*unit,-240,240
+    );
+
+    apply(
+      scale*Math.exp(-delta*0.004),
+      f.p,f.rx,f.ry
+    );
+  },{passive:false});
+
+  // Ctrl + left drag vertically.
+  svg.addEventListener("pointerdown",event => {
+    if (
+      !event.ctrlKey ||
+      event.button!==0 ||
+      !event.isPrimary
+    ) return;
+
+    const f = focus(event.clientX,event.clientY);
+    if (!f) return;
+
+    event.preventDefault();
+
+    gesture = {
+      id:event.pointerId,
+      y:event.clientY,
+      start:scale,
+      p:f.p,
+      rx:f.rx,
+      ry:f.ry,
+      moved:false
+    };
+
+    svg.setPointerCapture(event.pointerId);
+  },true);
+
+  svg.addEventListener("pointermove",event => {
+    if (
+      !gesture ||
+      event.pointerId!==gesture.id
+    ) return;
+
+    event.preventDefault();
+
+    const dy = event.clientY-gesture.y;
+
+    if (
+      Math.abs(dy)<3 &&
+      !gesture.moved
+    ) return;
+
+    gesture.moved = true;
+
+    apply(
+      gesture.start*Math.exp(-dy*0.012),
+      gesture.p,
+      gesture.rx,
+      gesture.ry
+    );
+  },true);
+
+  function finish(event) {
+    if (
+      !gesture ||
+      (event && event.pointerId!==gesture.id)
+    ) return;
+
+    if (gesture.moved) {
+      ignoreClick = true;
+
+      setTimeout(() => {
+        ignoreClick = false;
+      },180);
+    }
+
+    const id = gesture.id;
+    gesture = null;
+
+    if (svg.hasPointerCapture(id)) {
+      svg.releasePointerCapture(id);
+    }
+  }
+
+  svg.addEventListener("pointerup",finish,true);
+  svg.addEventListener("pointercancel",finish,true);
+
+  svg.addEventListener(
+    "lostpointercapture",
+    () => {gesture=null;}
+  );
+
+  window.addEventListener(
+    "blur",
+    () => {gesture=null;}
+  );
+
+  // Do not select a country after a Ctrl-drag.
+  svg.addEventListener("click",event => {
+    if (!event.ctrlKey && !ignoreClick) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    ignoreClick = false;
+  },true);
+
+  reset.addEventListener("click",() => {
+    apply(
+      1,
+      {x:full.width/2,y:full.height/2},
+      0.5,0.5
+    );
+  });
+
+  apply(
+    1,
+    {x:full.width/2,y:full.height/2},
+    0.5,0.5
+  );
+})();
