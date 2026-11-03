@@ -1,0 +1,20 @@
+
+.globe-filters{display:grid;
+grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.globe-filters label{display:flex;flex-direction:column;gap:6px;
+font-size:.85rem;color:#b5c1d3}
+.globe-filters select{width:100%;min-width:0;background:#101b2c;
+color:#f4fbff;border:1px solid #445570;border-radius:8px;padding:10px}
+.globe-panel{margin:16px 0}
+#globe-stage{width:100%;min-height:420px;overflow:hidden;
+background:#081321;border-radius:12px;touch-action:none}
+#globe-status,#summary{color:#76e4c2;font-weight:600}
+#country-rows button{border:0;background:none;color:#8ddaf6;
+padding:4px 0;cursor:pointer;font:inherit;text-align:left}
+#country-rows button:hover{text-decoration:underline}
+#country-rows td:last-child{text-align:right;
+font-variant-numeric:tabular-nums}
+@media(max-width:760px){
+.globe-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+#globe-stage{min-height:360px}
+}
