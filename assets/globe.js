@@ -88,14 +88,22 @@ function aggregate(){
 function render(){
  const {counts,total}=aggregate();
 
- summary.textContent=
-  `${fmt(total)} matching HTTP requests · `+
-  `${counts.size} source-country categories`;
-
  const sorted=[...counts.entries()].sort(
   (a,b)=>b[1]-a[1]||
    countryName(a[0]).localeCompare(countryName(b[0]))
  );
+
+ const port=selects.port.value;
+ const leader=sorted.length ? sorted[0] : null;
+ const portLeader=port && leader && total>0 ?
+  ` · Top source for port ${port}: `+
+  `${countryName(leader[0])} ${fmt(leader[1])} `+
+  `(${(100*leader[1]/total).toFixed(1)}%)` : "";
+
+ summary.textContent=
+  `${fmt(total)} matching HTTP requests · `+
+  `${counts.size} source-country categories`+
+  portLeader;
 
  table.replaceChildren();
 
@@ -274,6 +282,75 @@ async function initialize(){
   const controls=globe.controls();
   controls.enableDamping=true;
   controls.autoRotate=false;
+  controls.enableZoom=false;
+  controls.enablePan=false;
+
+  // Ordinary drag rotates. Ctrl + left drag changes zoom.
+  // Wheel and middle-button zoom are disabled.
+  const canvas=globe.renderer().domElement;
+  if(!canvas) throw Error("GLOBE_CANVAS_MISSING");
+
+  let zoomDrag=null;
+
+  canvas.addEventListener("pointerdown",event=>{
+   if(event.pointerType!=="mouse"||
+      event.button!==0||!event.ctrlKey||zoomDrag){
+    return;
+   }
+
+   zoomDrag={
+    id:event.pointerId,
+    startY:event.clientY,
+    altitude:globe.pointOfView().altitude
+   };
+
+   canvas.setPointerCapture(event.pointerId);
+   event.preventDefault();
+   event.stopImmediatePropagation();
+  },true);
+
+  canvas.addEventListener("pointermove",event=>{
+   if(!zoomDrag||event.pointerId!==zoomDrag.id){
+    return;
+   }
+
+   const deltaY=event.clientY-zoomDrag.startY;
+   const next=Math.max(
+    0.25,
+    Math.min(
+     6,
+     zoomDrag.altitude*Math.exp(deltaY/360)
+    )
+   );
+
+   globe.pointOfView({altitude:next},0);
+   event.preventDefault();
+   event.stopImmediatePropagation();
+  },true);
+
+  const finishZoom=event=>{
+   if(!zoomDrag||event.pointerId!==zoomDrag.id){
+    return;
+   }
+
+   zoomDrag=null;
+
+   if(canvas.hasPointerCapture(event.pointerId)){
+    canvas.releasePointerCapture(event.pointerId);
+   }
+
+   event.preventDefault();
+   event.stopImmediatePropagation();
+  };
+
+  canvas.addEventListener("pointerup",finishZoom,true);
+  canvas.addEventListener("pointercancel",finishZoom,true);
+
+  canvas.addEventListener("lostpointercapture",event=>{
+   if(zoomDrag&&event.pointerId===zoomDrag.id){
+    zoomDrag=null;
+   }
+  },true);
 
   if("ResizeObserver" in window){
    const observer=new ResizeObserver(()=>{
