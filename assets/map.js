@@ -78,3 +78,174 @@ for(const node of paths){
  });
 }
 render();
+
+;(() => {
+ "use strict";
+
+ const svg=document.getElementById("world");
+ const data=JSON.parse(
+  document.getElementById("map-data").textContent
+ );
+ const toggle=document.getElementById("map-beam-toggle");
+ const status=document.getElementById("map-beam-status");
+
+ const keys=[
+  "day","country","port","transport","method","signal"
+ ];
+
+ const selectors=Object.fromEntries(
+  keys.map(k=>[k,document.getElementById("f-"+k)])
+ );
+
+ const countryPaths=[
+  ...svg.querySelectorAll(".country")
+ ];
+
+ const jp=countryPaths.find(
+  p=>p.dataset.code==="JP"
+ );
+
+ if(!jp) throw Error("BEAM_JAPAN_NOT_FOUND");
+
+ const ns="http://www.w3.org/2000/svg";
+ const make=tag=>document.createElementNS(ns,tag);
+
+ function midpoint(path){
+  try{
+   const b=path.getBBox();
+   if(!Number.isFinite(b.x+b.y+b.width+b.height)){
+    return null;
+   }
+   return {
+    x:b.x+b.width/2,
+    y:b.y+b.height/2
+   };
+  }catch(_error){
+   return null;
+  }
+ }
+
+ const target=midpoint(jp);
+ if(!target) throw Error("BEAM_TARGET_INVALID");
+
+ const locations=new Map();
+
+ for(const path of countryPaths){
+  const code=path.dataset.code;
+  const point=midpoint(path);
+  if(code && point) locations.set(code,point);
+ }
+
+ const layer=make("g");
+ layer.setAttribute("id","country-beam-layer");
+ layer.setAttribute("pointer-events","none");
+ layer.setAttribute("aria-hidden","true");
+ svg.appendChild(layer);
+
+ function matches(row){
+  return keys.every(k=>
+   !selectors[k].value ||
+   String(row[k])===selectors[k].value
+  );
+ }
+
+ function redraw(){
+  const counts=new Map();
+
+  for(const row of data.rows){
+   if(!matches(row)) continue;
+
+   const code=String(row.country);
+   const n=Number(row.count);
+
+   counts.set(code,(counts.get(code)||0)+n);
+  }
+
+  layer.replaceChildren();
+
+  const peak=Math.max(1,...counts.values());
+  let drawn=0;
+  let unmapped=0;
+
+  for(const [code,count] of [...counts.entries()]
+    .sort((a,b)=>a[1]-b[1])){
+
+   if(code==="JP" || code==="UNKNOWN") continue;
+
+   const from=locations.get(code);
+
+   if(!from){
+    unmapped++;
+    continue;
+   }
+
+   const centerX=(from.x+target.x)/2;
+   const centerY=(from.y+target.y)/2;
+   const lift=Math.min(
+    95,Math.max(16,Math.abs(from.x-target.x)*0.2)
+   );
+
+   const controlY=Math.max(8,centerY-lift);
+
+   const d=
+    `M ${from.x.toFixed(2)} ${from.y.toFixed(2)} `+
+    `Q ${centerX.toFixed(2)} ${controlY.toFixed(2)} `+
+    `${target.x.toFixed(2)} ${target.y.toFixed(2)}`;
+
+   const strength=Math.log1p(count)/Math.log1p(peak);
+
+   const glow=make("path");
+   glow.setAttribute("d",d);
+   glow.setAttribute("class","beam-glow");
+   glow.style.strokeWidth=(3+4*strength).toFixed(2);
+   glow.style.opacity=(0.12+0.16*strength).toFixed(2);
+
+   const beam=make("path");
+   beam.setAttribute("d",d);
+   beam.setAttribute("class","beam-flow");
+   beam.style.strokeWidth=(0.7+2.1*strength).toFixed(2);
+   beam.style.opacity=(0.5+0.45*strength).toFixed(2);
+
+   layer.append(glow,beam);
+   drawn++;
+  }
+
+  const marker=make("circle");
+  marker.setAttribute("cx",target.x);
+  marker.setAttribute("cy",target.y);
+  marker.setAttribute("r","4");
+  marker.setAttribute("class","beam-japan-marker");
+  layer.appendChild(marker);
+
+  layer.style.display=toggle.checked?"":"none";
+
+  const jpCount=counts.get("JP")||0;
+
+  status.textContent=
+   `${drawn} source-country beams toward Japan`+
+   ` · ${jpCount.toLocaleString("en-US")} domestic requests`+
+   (unmapped?` · ${unmapped} unmapped countries`:"");
+ }
+
+ for(const select of Object.values(selectors)){
+  if(!select)throw Error("BEAM_FILTER_MISSING");
+  select.addEventListener("change",redraw);
+ }
+
+ // Existing map selection handlers run first.
+ svg.addEventListener("click",()=>{
+  queueMicrotask(redraw);
+ });
+
+ svg.addEventListener("keydown",event=>{
+  if(event.key==="Enter" || event.key===" "){
+   queueMicrotask(redraw);
+  }
+ });
+
+ toggle.addEventListener("change",()=>{
+  layer.style.display=toggle.checked?"":"none";
+ });
+
+ redraw();
+})();
