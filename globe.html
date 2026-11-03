@@ -10,12 +10,12 @@
  img-src 'self' data:; base-uri 'none'; form-action 'none'">
 <title>Honeypot Observatory | 3D Globe</title>
 <link rel="stylesheet" href="assets/style.css">
-<link rel="stylesheet" href="assets/globe.css">
+<link rel="stylesheet" href="assets/globe.css?v=20261103-step56g6">
 <script src="assets/vendor/globe.gl.min.js" defer></script>
 <script src="assets/globe.js?v=20261103-step56g5" defer></script>
 </head>
 <body>
-<main class="container">
+<main class="container globe-layout-page">
 <header>
 <p class="eyebrow">HONEYPOT OBSERVATORY</p>
 <p><a href="index.html">Overview</a> /
@@ -27,7 +27,8 @@ Animated arcs show aggregated observations by estimated
 source country, not actual packet routes.</p>
 </header>
 
-<section class="panel">
+<div class="globe-workspace">
+<section class="panel globe-filters-panel">
 <h2>Filter observations</h2>
 <div class="globe-filters">
 <label>Day (UTC)<select id="f-day"></select></label>
@@ -53,7 +54,8 @@ country reference point. Domestic traffic is included in
 the statistics but does not generate an international arc.</p>
 </section>
 
-<section class="panel">
+<div class="globe-rankings">
+<section class="panel globe-ports-panel">
 <h2>Destination port breakdown</h2>
 <p class="muted">HTTP requests matching all selected filters.
 Select a port to filter the globe and country ranking.</p>
@@ -63,13 +65,15 @@ Select a port to filter the globe and country ranking.</p>
 <tbody id="port-rows"></tbody>
 </table>
 </section>
-<section class="panel">
+<section class="panel globe-countries-panel">
 <h2>Source country ranking</h2>
 <table>
 <thead><tr><th>Source country</th><th>Requests</th></tr></thead>
 <tbody id="country-rows"></tbody>
 </table>
 </section>
+</div>
+</div>
 
 <footer>
 <p>Current scope: HTTP/HTTPS telemetry only.
