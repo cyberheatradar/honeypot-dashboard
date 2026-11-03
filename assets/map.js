@@ -125,6 +125,138 @@ render();
   }
  }
 
+
+ // Choose an interior point, not the bounding-box midpoint.
+ function interiorPoint(path){
+  try{
+   const b=path.getBBox();
+
+   if(
+    !Number.isFinite(b.x+b.y+b.width+b.height) ||
+    b.width<=0 || b.height<=0 ||
+    typeof path.isPointInFill!=="function"
+   )return null;
+
+   const probe=svg.createSVGPoint();
+
+   const inside=(x,y)=>{
+    probe.x=x;
+    probe.y=y;
+    return path.isPointInFill(probe);
+   };
+
+   const candidates=[];
+
+   const add=(x,y)=>{
+    if(
+     Number.isFinite(x) &&
+     Number.isFinite(y) &&
+     inside(x,y)
+    ){
+     candidates.push({x,y});
+    }
+   };
+
+   add(b.x+b.width/2,b.y+b.height/2);
+
+   // Interior grid. No assumed geographic projection.
+   for(let iy=1;iy<=15;iy++){
+    for(let ix=1;ix<=23;ix++){
+     add(
+      b.x+b.width*ix/24,
+      b.y+b.height*iy/16
+     );
+    }
+   }
+
+   // Border sampling also finds small or separated landmasses.
+   const length=path.getTotalLength();
+
+   if(Number.isFinite(length)&&length>0){
+    const samples=Math.min(
+     192,Math.max(64,Math.ceil(length/4))
+    );
+
+    for(let i=0;i<samples;i++){
+     const t=length*(i+0.5)/samples;
+
+     const p=path.getPointAtLength(t);
+     const p0=path.getPointAtLength(
+      Math.max(0,t-0.6)
+     );
+     const p1=path.getPointAtLength(
+      Math.min(length,t+0.6)
+     );
+
+     const dx=p1.x-p0.x;
+     const dy=p1.y-p0.y;
+     const norm=Math.hypot(dx,dy);
+
+     if(!norm)continue;
+
+     const nx=-dy/norm;
+     const ny=dx/norm;
+
+     for(const distance of [0.35,0.8,1.6,3.5,7]){
+      add(
+       p.x+nx*distance,
+       p.y+ny*distance
+      );
+      add(
+       p.x-nx*distance,
+       p.y-ny*distance
+      );
+     }
+    }
+   }
+
+   if(!candidates.length)return null;
+
+   // Prefer a point with more land around it.
+   const q=Math.SQRT1_2;
+
+   const directions=[
+    [1,0],[-1,0],[0,1],[0,-1],
+    [q,q],[q,-q],[-q,q],[-q,-q]
+   ];
+
+   const radii=[
+    0.35,0.75,1.5,2.5,4,
+    6,9,13,19,28,40
+   ];
+
+   let best=null;
+   let bestScore=-1;
+
+   for(const p of candidates){
+    let score=0;
+
+    for(const radius of radii){
+     const valid=directions.every(([dx,dy])=>
+      inside(
+       p.x+dx*radius,
+       p.y+dy*radius
+      )
+     );
+
+     if(!valid)break;
+     score=radius;
+    }
+
+    if(score>bestScore){
+     bestScore=score;
+     best=p;
+    }
+   }
+
+   // Every returned candidate passed the land-fill test.
+   return best&&inside(best.x,best.y)?best:null;
+
+  }catch(error){
+   return null;
+  }
+ }
+
  const target=midpoint(jp);
  if(!target) throw Error("BEAM_TARGET_INVALID");
 
@@ -183,11 +315,12 @@ render();
  );
  syncCopies();
 
+ const observedCountries=new Set(data.rows.map(row=>String(row.country)));
  const locations=new Map();
 
  for(const path of countryPaths){
   const code=path.dataset.code;
-  const point=midpoint(path);
+  const point=observedCountries.has(code)?interiorPoint(path):null;
   if(code && point){
    point.x=centeredX(point.x);
    locations.set(code,point);
