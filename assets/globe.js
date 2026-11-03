@@ -20,6 +20,8 @@ const selects=Object.fromEntries(dimensions.map(
 const summary=document.getElementById("summary");
 const status=document.getElementById("globe-status");
 const table=document.getElementById("country-rows");
+const portTable=document.getElementById("port-rows");
+const portSummary=document.getElementById("top-ports");
 const stage=document.getElementById("globe-stage");
 
 const fmt=n=>Number(n).toLocaleString("en-US");
@@ -34,35 +36,73 @@ const escapeHTML=value=>String(value).replace(
 let globe=null;
 
 for(const key of dimensions){
- const select=selects[key];
- const all=document.createElement("option");
+ selects[key].addEventListener("change",render);
+}
 
- all.value="";
- all.textContent="All";
- select.appendChild(all);
+document.getElementById("reset-globe-filters")
+ .addEventListener("click",()=>{
+  for(const key of dimensions){
+   selects[key].value="";
+  }
+  render();
+ });
 
- const values=[...new Set(rows.map(
-  row=>String(row[key])
- ))];
-
- values.sort((a,b)=>
-  key==="port" ? Number(a)-Number(b) :
-  key==="country" ?
-   countryName(a).localeCompare(countryName(b)) :
-   a.localeCompare(b)
+function matches(row,excluded=null){
+ return dimensions.every(key=>
+  key===excluded ||
+  !selects[key].value ||
+  String(row[key])===selects[key].value
  );
+}
 
- for(const value of values){
-  const option=document.createElement("option");
+function refreshChoices(){
+ for(const key of dimensions){
+  const select=selects[key];
+  const previous=select.value;
+  const counts=new Map();
 
-  option.value=value;
-  option.textContent=key==="country" ?
-   countryName(value) : value;
+  // Apply all other filters, excluding this facet itself.
+  for(const row of rows){
+   if(!matches(row,key)) continue;
 
-  select.appendChild(option);
+   const value=String(row[key]);
+   counts.set(
+    value,(counts.get(value)||0)+Number(row.count)
+   );
+  }
+
+  const values=[...counts.keys()];
+  values.sort((a,b)=>
+   key==="port" ? Number(a)-Number(b) :
+   key==="country" ?
+    countryName(a).localeCompare(countryName(b)) :
+    a.localeCompare(b)
+  );
+
+  const total=[...counts.values()]
+   .reduce((sum,count)=>sum+count,0);
+
+  select.replaceChildren();
+
+  const all=document.createElement("option");
+  all.value="";
+  all.textContent=`All (${fmt(total)} requests)`;
+  select.appendChild(all);
+
+  for(const value of values){
+   const option=document.createElement("option");
+   option.value=value;
+   const label=key==="country" ?
+    countryName(value) : value;
+   option.textContent=
+    `${label} (${fmt(counts.get(value))})`;
+   select.appendChild(option);
+  }
+
+  // Retain valid selections when other facets change.
+  select.value=previous && counts.has(previous) ?
+   previous : "";
  }
-
- select.addEventListener("change",render);
 }
 
 function aggregate(){
@@ -86,6 +126,7 @@ function aggregate(){
 }
 
 function render(){
+ refreshChoices();
  const {counts,total}=aggregate();
 
  const sorted=[...counts.entries()].sort(
@@ -104,6 +145,60 @@ function render(){
   `${fmt(total)} matching HTTP requests · `+
   `${counts.size} source-country categories`+
   portLeader;
+
+ const ports=new Map();
+ for(const row of rows){
+  if(!matches(row)) continue;
+  const port=String(row.port);
+  ports.set(port,(ports.get(port)||0)+row.count);
+ }
+
+ const rankedPorts=[...ports.entries()].sort(
+  (a,b)=>b[1]-a[1]||Number(a[0])-Number(b[0])
+ );
+
+ portSummary.textContent=rankedPorts.length ?
+  "Top destination ports: "+
+  rankedPorts.slice(0,3)
+   .map(([port,count])=>`${port} (${fmt(count)})`)
+   .join(" · ") :
+  "No matching destination ports";
+
+ portTable.replaceChildren();
+
+ for(const [port,count] of rankedPorts){
+  const tr=document.createElement("tr");
+  const nameCell=document.createElement("td");
+  const countCell=document.createElement("td");
+  const shareCell=document.createElement("td");
+  const button=document.createElement("button");
+
+  button.type="button";
+  button.textContent=port;
+  button.title="Filter destination port "+port;
+  button.addEventListener("click",()=>{
+   selects.port.value=
+    selects.port.value===port ? "" : port;
+   render();
+  });
+
+  nameCell.appendChild(button);
+  countCell.textContent=fmt(count);
+  shareCell.textContent=
+   (100*count/total).toFixed(1)+"%";
+
+  tr.append(nameCell,countCell,shareCell);
+  portTable.appendChild(tr);
+ }
+
+ if(!rankedPorts.length){
+  const tr=document.createElement("tr");
+  const td=document.createElement("td");
+  td.colSpan=3;
+  td.textContent="No matching requests";
+  tr.appendChild(td);
+  portTable.appendChild(tr);
+ }
 
  table.replaceChildren();
 

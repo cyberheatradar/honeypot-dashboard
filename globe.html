@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="assets/style.css">
 <link rel="stylesheet" href="assets/globe.css">
 <script src="assets/vendor/globe.gl.min.js" defer></script>
-<script src="assets/globe.js?v=20261103-step56g4" defer></script>
+<script src="assets/globe.js?v=20261103-step56g5" defer></script>
 </head>
 <body>
 <main class="container">
@@ -38,6 +38,9 @@ source country, not actual packet routes.</p>
 <label>Attack signal<select id="f-signal"></select></label>
 </div>
 <p id="summary" role="status">Initializing...</p>
+<p id="top-ports" aria-live="polite"></p>
+<button type="button" id="reset-globe-filters">
+Reset all filters</button>
 </section>
 
 <section class="panel globe-panel">
@@ -50,6 +53,16 @@ country reference point. Domestic traffic is included in
 the statistics but does not generate an international arc.</p>
 </section>
 
+<section class="panel">
+<h2>Destination port breakdown</h2>
+<p class="muted">HTTP requests matching all selected filters.
+Select a port to filter the globe and country ranking.</p>
+<table>
+<thead><tr><th>Port</th><th>Requests</th>
+<th>Share</th></tr></thead>
+<tbody id="port-rows"></tbody>
+</table>
+</section>
 <section class="panel">
 <h2>Source country ranking</h2>
 <table>
