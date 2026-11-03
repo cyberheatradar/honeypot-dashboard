@@ -128,12 +128,70 @@ render();
  const target=midpoint(jp);
  if(!target) throw Error("BEAM_TARGET_INVALID");
 
+ // Japan-centered wrap, with the seam opposite Japan.
+ const shift=target.x-480;
+ if(!Number.isFinite(shift)) throw Error("MAP_CENTER_INVALID");
+ const centeredX=x=>((x-shift)%960+960)%960;
+ const left=make("g"),right=make("g");
+ left.setAttribute("transform",`translate(${-shift} 0)`);
+ right.setAttribute("transform",`translate(${960-shift} 0)`);
+ right.setAttribute("data-wrapped-world","true");
+ const copies=countryPaths.map(source=>{
+  const clone=source.cloneNode(true);
+  clone.removeAttribute("id");
+  clone.removeAttribute("tabindex");
+  clone.setAttribute("aria-hidden","true");
+  return clone;
+ });
+ left.append(...countryPaths);
+ right.append(...copies);
+ svg.append(left,right);
+ target.x=480;
+
+ // Synchronize wrapped countries after the existing renderer.
+ function syncCopies(){
+  for(let i=0;i<countryPaths.length;i++){
+   const source=countryPaths[i],copy=copies[i];
+   copy.style.fill=source.style.fill;
+   copy.classList.toggle(
+    "selected",source.classList.contains("selected")
+   );
+   const from=source.querySelector("title");
+   const to=copy.querySelector("title");
+   if(from&&to)to.textContent=from.textContent;
+  }
+ }
+ for(let i=0;i<copies.length;i++){
+  copies[i].addEventListener("click",event=>{
+   event.stopPropagation();
+   countryPaths[i].dispatchEvent(
+    new MouseEvent("click",{bubbles:true})
+   );
+   syncCopies();
+  });
+ }
+ for(const select of Object.values(selectors)){
+  select.addEventListener(
+   "change",()=>queueMicrotask(syncCopies)
+  );
+ }
+ svg.addEventListener(
+  "click",()=>queueMicrotask(syncCopies)
+ );
+ svg.addEventListener(
+  "keydown",()=>queueMicrotask(syncCopies)
+ );
+ syncCopies();
+
  const locations=new Map();
 
  for(const path of countryPaths){
   const code=path.dataset.code;
   const point=midpoint(path);
-  if(code && point) locations.set(code,point);
+  if(code && point){
+   point.x=centeredX(point.x);
+   locations.set(code,point);
+  }
  }
 
  const layer=make("g");
