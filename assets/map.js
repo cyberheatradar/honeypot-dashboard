@@ -637,6 +637,104 @@ render();
     ignoreClick = false;
   },true);
 
+
+  // Normal left-drag pans the zoomed SVG.
+  // Ctrl + drag remains reserved for zoom.
+  let pan = null;
+  let suppressPanClick = false;
+  let suppressTicket = 0;
+
+  svg.addEventListener("pointerdown",event => {
+    if (
+      event.ctrlKey ||
+      event.button !== 0 ||
+      !event.isPrimary ||
+      event.pointerType === "touch" ||
+      scale <= 1.001
+    ) return;
+
+    const matrix = svg.getScreenCTM();
+    if (!matrix) return;
+
+    pan = {
+      id:event.pointerId,
+      x:event.clientX,
+      y:event.clientY,
+      initial:view(),
+      inverse:matrix.inverse(),
+      moved:false
+    };
+  },true);
+
+  window.addEventListener("pointermove",event => {
+    if (!pan || event.pointerId !== pan.id) return;
+    if (!(event.buttons & 1)) return;
+
+    const dx = event.clientX-pan.x;
+    const dy = event.clientY-pan.y;
+
+    if (!pan.moved && Math.hypot(dx,dy)<5) return;
+
+    pan.moved = true;
+    if (event.cancelable) event.preventDefault();
+
+    const m = pan.inverse;
+    const vx = m.a*dx+m.c*dy;
+    const vy = m.b*dx+m.d*dy;
+    const v = pan.initial;
+
+    const x = limit(
+      v.x-vx,
+      full.x,
+      full.x+full.width-v.width
+    );
+
+    const y = limit(
+      v.y-vy,
+      full.y,
+      full.y+full.height-v.height
+    );
+
+    svg.setAttribute(
+      "viewBox",
+      `${x} ${y} ${v.width} ${v.height}`
+    );
+  },{capture:true,passive:false});
+
+  function finishPan(event){
+    if (!pan || event.pointerId !== pan.id) return;
+
+    const moved = pan.moved;
+    pan = null;
+
+    if (moved){
+      suppressPanClick = true;
+      const ticket = ++suppressTicket;
+
+      setTimeout(() => {
+        if (ticket === suppressTicket){
+          suppressPanClick = false;
+        }
+      },300);
+    }
+  }
+
+  window.addEventListener("pointerup",finishPan,true);
+  window.addEventListener("pointercancel",finishPan,true);
+
+  window.addEventListener("blur",() => {
+    pan = null;
+    suppressPanClick = false;
+  });
+
+  svg.addEventListener("click",event => {
+    if (!suppressPanClick) return;
+
+    suppressPanClick = false;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  },true);
+
   reset.addEventListener("click",() => {
     apply(
       1,
