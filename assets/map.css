@@ -63,3 +63,125 @@ outline:none}
   stroke-dasharray:none;
  }
 }
+
+/* STEP56-M8: responsive 2D map workspace */
+.map-workspace {
+ display:grid;
+ grid-template-columns:minmax(0,1fr);
+ gap:12px;
+ align-items:start;
+}
+.map-layout-page .panel {min-width:0}
+.map-layout-page .map-panel {margin:0}
+.map-ranking-slot {min-width:0}
+.map-ranking-panel {margin:0}
+.map-ranking-panel th {
+ position:sticky;
+ top:0;
+ z-index:1;
+ background:#141f31;
+}
+.map-ranking-panel {
+ scrollbar-width:thin;
+ scrollbar-color:#466079 #141f31;
+}
+.map-ranking-panel td:last-child {
+ text-align:right;
+ font-variant-numeric:tabular-nums;
+}
+@media (min-width:1200px) {
+ .map-layout-page {
+  max-width:1680px;
+  padding:16px 22px;
+  margin:0 auto;
+ }
+ .map-layout-page header {
+  margin-bottom:12px;
+ }
+ .map-layout-page header h1 {
+  font-size:clamp(1.7rem,2.4vw,2.4rem);
+ }
+ .map-workspace {
+  grid-template-columns:
+   minmax(230px,.92fr)
+   minmax(420px,2fr)
+   minmax(260px,1.05fr);
+  align-items:stretch;
+  gap:12px;
+ }
+ .map-filters-panel,
+ .map-center-panel {
+  margin:0;
+  padding:14px;
+  min-width:0;
+ }
+ .map-layout-page .filters {
+  grid-template-columns:minmax(0,1fr);
+  gap:9px;
+ }
+ .map-layout-page .filters label {gap:3px}
+ .map-layout-page .filters select {
+  padding:8px;
+ }
+ .map-center-panel h2,
+ .map-filters-panel h2 {
+  margin-bottom:12px;
+ }
+ .map-ranking-slot {
+  position:relative;
+  min-height:0;
+ }
+ .map-ranking-panel {
+  position:absolute;
+  inset:0;
+  padding:14px;
+  box-sizing:border-box;
+  overflow-x:hidden;
+  overflow-y:auto;
+ }
+ .map-ranking-panel h2 {
+  margin-bottom:10px;
+ }
+ .map-ranking-panel td,
+ .map-ranking-panel th {
+  padding:7px 5px;
+ }
+ .map-center-panel .worldmap {
+  width:100%;
+  height:auto;
+ }
+ .map-center-panel .beam-controls {
+  gap:7px;
+  font-size:.75rem;
+ }
+ .map-center-panel .muted {
+  font-size:.78rem;
+ }
+}
+@media (min-width:740px) and (max-width:1199px) {
+ .map-workspace {
+  grid-template-columns:
+   minmax(0,1.7fr) minmax(250px,1fr);
+ }
+ .map-filters-panel {grid-column:1/-1}
+ .map-center-panel {grid-column:1}
+ .map-ranking-slot {grid-column:2}
+ .map-ranking-panel {
+  max-height:430px;
+  overflow-y:auto;
+ }
+}
+@media (max-width:739px) {
+ .map-layout-page .filters {
+  grid-template-columns:repeat(2,minmax(0,1fr));
+ }
+ .map-ranking-panel {
+  max-height:300px;
+  overflow-y:auto;
+ }
+}
+@media (max-width:480px) {
+ .map-layout-page .filters {
+  grid-template-columns:minmax(0,1fr);
+ }
+}
