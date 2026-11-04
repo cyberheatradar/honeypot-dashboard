@@ -164,5 +164,32 @@
   "keydown",afterMapCountry,true
  );
 
+ // STEP56-M10E: synchronize facets with 2D render().
+ const summary=document.getElementById("summary");
+
+ if(!summary || typeof MutationObserver!=="function"){
+  throw Error("UNIFIED_FACET_SYNC_UNAVAILABLE");
+ }
+
+ const summaryObserver=new MutationObserver(()=>{
+  // Runs after the existing 2D render, including
+  // country selection without a change event.
+  const reset=refreshChoices();
+
+  // If an incompatible selected option was cleared,
+  // notify the existing renderers exactly once.
+  if(reset){
+   selects.country.dispatchEvent(
+    new Event("change",{bubbles:true})
+   );
+  }
+ });
+
+ summaryObserver.observe(summary,{
+  childList:true,
+  characterData:true,
+  subtree:true
+ });
+
  refreshChoices();
 })();
