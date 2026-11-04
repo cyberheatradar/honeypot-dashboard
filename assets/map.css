@@ -185,3 +185,75 @@ outline:none}
   grid-template-columns:minmax(0,1fr);
  }
 }
+
+/* STEP56-M9: port and country ranking panels */
+.map-ranking-pair{
+ min-width:0;
+}
+.map-ports-panel,
+.map-countries-panel{
+ min-width:0;
+}
+.map-ports-panel table{
+ width:100%;
+}
+.map-ports-panel td:not(:first-child),
+.map-ports-panel th:not(:first-child){
+ text-align:right;
+ font-variant-numeric:tabular-nums;
+}
+.map-ports-panel button{
+ background:none;
+ border:0;
+ padding:3px 0;
+ color:#8ddaf6;
+ font:inherit;
+ cursor:pointer;
+}
+.map-ports-panel button:hover,
+.map-ports-panel button:focus-visible{
+ text-decoration:underline;
+}
+.map-ports-panel .muted{
+ font-size:.78rem;
+ line-height:1.4;
+}
+@media (min-width:1200px){
+ .map-ranking-pair{
+  position:relative;
+  min-height:0;
+  display:block;
+ }
+ .map-ranking-pair > .map-ranking-panel{
+  position:absolute;
+  inset:auto;
+  left:0;
+  right:0;
+  height:calc((100% - 12px)/2);
+  min-height:0;
+  max-height:none;
+  box-sizing:border-box;
+  overflow-x:hidden;
+  overflow-y:auto;
+ }
+ .map-ranking-pair > .map-ports-panel{
+  top:0;
+ }
+ .map-ranking-pair > .map-countries-panel{
+  bottom:0;
+ }
+}
+@media (max-width:1199px){
+ .map-ranking-pair{
+  display:grid;
+  gap:12px;
+ }
+ .map-ranking-pair > .map-ranking-panel{
+  position:static;
+  inset:auto;
+  height:auto;
+  max-height:340px;
+  overflow-x:hidden;
+  overflow-y:auto;
+ }
+}

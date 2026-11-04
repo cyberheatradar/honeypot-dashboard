@@ -19,6 +19,65 @@ const paths=[...document.querySelectorAll(".country")];
 const tbody=document.getElementById("countries");
 const summary=document.getElementById("summary");
 const format=n=>n.toLocaleString("en-US");
+const mapPortRows=document.getElementById("map-port-rows");
+
+function renderPortBreakdown(active,total){
+ if(!mapPortRows)throw Error("MAP_PORT_TABLE_MISSING");
+
+ const counts=new Map();
+
+ for(const row of active){
+  const port=String(row.port);
+  counts.set(
+   port,(counts.get(port)||0)+Number(row.count)
+  );
+ }
+
+ const sorted=[...counts].sort(
+  (a,b)=>b[1]-a[1]||Number(a[0])-Number(b[0])
+ );
+
+ mapPortRows.replaceChildren();
+
+ for(const [port,count] of sorted){
+  const tr=document.createElement("tr");
+  const tdPort=document.createElement("td");
+  const tdCount=document.createElement("td");
+  const tdShare=document.createElement("td");
+  const button=document.createElement("button");
+
+  button.type="button";
+  button.textContent=port;
+  button.title="Filter destination port "+port;
+
+  button.addEventListener("click",()=>{
+   selects.port.value=
+    selects.port.value===port?"":port;
+
+   selects.port.dispatchEvent(
+    new Event("change",{bubbles:true})
+   );
+  });
+
+  tdPort.append(button);
+  tdCount.textContent=format(count);
+  tdShare.textContent=total>0
+   ?(100*count/total).toFixed(1)+"%"
+   :"0%";
+
+  tr.append(tdPort,tdCount,tdShare);
+  mapPortRows.append(tr);
+ }
+
+ if(!sorted.length){
+  const tr=document.createElement("tr");
+  const td=document.createElement("td");
+  td.colSpan=3;
+  td.textContent="No matching requests";
+  tr.append(td);
+  mapPortRows.append(tr);
+ }
+}
 function render(){
  const active=rows.filter(r=>dims.every(k=>
   !selects[k].value || String(r[k])===selects[k].value));
@@ -44,6 +103,7 @@ function render(){
    title.textContent=`${name} — ${format(n)} requests`;
   }
  }
+ renderPortBreakdown(active,total);
  summary.textContent=`${format(total)} requests matching filters · `+
   `${countryCounts.size} source-country categories`;
  tbody.replaceChildren();

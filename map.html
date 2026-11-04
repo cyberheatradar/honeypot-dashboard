@@ -10,8 +10,8 @@
  form-action 'none'; connect-src 'none'">
 <title>Honeypot Observatory | World Map</title>
 <link rel="stylesheet" href="assets/style.css">
-<link rel="stylesheet" href="assets/map.css?v=20261104-3col1">
-<script src="assets/map.js?v=20261104-wrap1" defer></script>
+<link rel="stylesheet" href="assets/map.css?v=20261104-ports1">
+<script src="assets/map.js?v=20261104-ports1" defer></script>
 </head>
 <body>
 <main class="container map-layout-page">
@@ -61,8 +61,19 @@ Countries without observations appear in grey.
 Small territories may not be visible at this map resolution.
 </p>
 </section>
-<div class="map-ranking-slot">
-<section class="panel map-ranking-panel">
+<div class="map-ranking-slot map-ranking-pair">
+<section class="panel map-ranking-panel map-ports-panel">
+<h2>Destination port breakdown</h2>
+<p class="muted">HTTP requests matching all selected filters.
+Select a port to filter the map and country ranking.</p>
+<table>
+<thead>
+<tr><th>Port</th><th>Requests</th><th>Share</th></tr>
+</thead>
+<tbody id="map-port-rows"></tbody>
+</table>
+</section>
+<section class="panel map-ranking-panel map-countries-panel">
 <h2>Source country ranking</h2>
 <table>
 <thead><tr><th>Country</th><th>Requests</th></tr></thead>
