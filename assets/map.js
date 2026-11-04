@@ -453,6 +453,7 @@ render();
 
   const full = {x:0,y:0,width:960,height:480};
   const limit = (v,lo,hi) => Math.max(lo,Math.min(hi,v));
+  const wrapX=x=>((x%960)+960)%960;
 
   let scale = 1;
   let gesture = null;
@@ -483,11 +484,7 @@ render();
     const w = full.width / next;
     const h = full.height / next;
 
-    const x = limit(
-      anchor.x-rx*w,
-      full.x,
-      full.x+full.width-w
-    );
+    const x = wrapX(anchor.x-rx*w);
 
     const y = limit(
       anchor.y-ry*h,
@@ -502,7 +499,7 @@ render();
 
     scale = next;
     output.textContent = `${scale.toFixed(1)}×`;
-    reset.disabled = scale <= 1.001;
+    reset.disabled = scale <= 1.001 && x<0.001 && y<0.001;
   }
 
   function focus(clientX,clientY) {
@@ -649,8 +646,7 @@ render();
       event.ctrlKey ||
       event.button !== 0 ||
       !event.isPrimary ||
-      event.pointerType === "touch" ||
-      scale <= 1.001
+      event.pointerType === "touch"
     ) return;
 
     const matrix = svg.getScreenCTM();
@@ -683,11 +679,7 @@ render();
     const vy = m.b*dx+m.d*dy;
     const v = pan.initial;
 
-    const x = limit(
-      v.x-vx,
-      full.x,
-      full.x+full.width-v.width
-    );
+    const x = wrapX(v.x-vx);
 
     const y = limit(
       v.y-vy,
@@ -699,6 +691,7 @@ render();
       "viewBox",
       `${x} ${y} ${v.width} ${v.height}`
     );
+    reset.disabled = scale <= 1.001 && x<0.001 && y<0.001;
   },{capture:true,passive:false});
 
   function finishPan(event){
@@ -748,4 +741,106 @@ render();
     {x:full.width/2,y:full.height/2},
     0.5,0.5
   );
+})();
+;(() => {
+ "use strict";
+ const svg=document.getElementById("world");
+ const ns="http://www.w3.org/2000/svg";
+ const el=t=>document.createElementNS(ns,t);
+
+ if(!svg || svg.querySelector("#hp-world-master"))
+  throw Error("WORLD_WRAP_INITIALIZATION");
+
+ if(!svg.querySelector("#country-beam-layer"))
+  throw Error("WORLD_WRAP_BEAMS_MISSING");
+
+ // Keep one canonical world, with two adjacent copies.
+ const existing=[...svg.children];
+
+ if(existing.length<3 || !existing.some(
+  node=>node.tagName.toLowerCase()==="rect"
+ ))throw Error("WORLD_WRAP_SVG_STRUCTURE");
+
+ const defs=el("defs");
+ const clip=el("clipPath");
+ clip.id="hp-world-clip";
+ clip.setAttribute("clipPathUnits","userSpaceOnUse");
+
+ const rect=el("rect");
+ rect.setAttribute("x","0");
+ rect.setAttribute("y","0");
+ rect.setAttribute("width","960");
+ rect.setAttribute("height","480");
+
+ clip.appendChild(rect);
+ defs.appendChild(clip);
+ svg.prepend(defs);
+
+ const master=el("g");
+ master.id="hp-world-master";
+ master.setAttribute("clip-path","url(#hp-world-clip)");
+ master.append(...existing);
+
+ const countries=[...master.querySelectorAll("path.country")]
+  .filter(path=>!path.closest('[aria-hidden="true"]'));
+
+ if(countries.length<170)
+  throw Error("WORLD_WRAP_COUNTRIES_MISSING");
+
+ // SVG <use> shares the source world's visual updates.
+ const copies=[];
+
+ for(const offset of [-960,960]){
+  const use=el("use");
+  use.setAttribute("href","#hp-world-master");
+  use.setAttribute("transform",`translate(${offset} 0)`);
+  use.setAttribute("aria-hidden","true");
+  use.setAttribute("tabindex","-1");
+  use.setAttribute("data-world-offset",String(offset));
+  copies.push({use,offset});
+ }
+
+ svg.append(copies[0].use,master,copies[1].use);
+ svg.style.userSelect="none";
+
+ // Restore country selection when clicking a repeated world.
+ function selectOnCopy(event,offset){
+  if(event.defaultPrevented || event.ctrlKey)return;
+
+  const screenMatrix=svg.getScreenCTM();
+  if(!screenMatrix)return;
+
+  const screenPoint=svg.createSVGPoint();
+  screenPoint.x=event.clientX;
+  screenPoint.y=event.clientY;
+
+  const rootPoint=screenPoint.matrixTransform(
+   screenMatrix.inverse()
+  );
+
+  rootPoint.x-=offset;
+  const baseScreen=rootPoint.matrixTransform(screenMatrix);
+
+  for(const path of countries){
+   try{
+    const m=path.getScreenCTM();
+    if(!m)continue;
+
+    const local=baseScreen.matrixTransform(m.inverse());
+
+    if(path.isPointInFill(local)){
+     path.dispatchEvent(new MouseEvent("click",{
+      bubbles:true,cancelable:true
+     }));
+     return;
+    }
+   }catch(_error){}
+  }
+ }
+
+ for(const {use,offset} of copies){
+  use.addEventListener("click",event=>{
+   selectOnCopy(event,offset);
+  });
+ }
 })();
