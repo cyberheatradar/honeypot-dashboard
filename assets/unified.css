@@ -1,0 +1,52 @@
+/* STEP56-M10B: unified 2D/3D view */
+.map-view-head{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ flex-wrap:wrap;
+ margin-bottom:12px;
+}
+.map-view-head h2{margin:0}
+.map-view-switch{
+ display:inline-flex;
+ gap:4px;
+ border:1px solid #425570;
+ border-radius:9px;
+ padding:3px;
+ background:#101b2c;
+}
+.map-view-switch button{
+ border:0;
+ border-radius:7px;
+ background:transparent;
+ color:#b3c9dd;
+ cursor:pointer;
+ font:inherit;
+ font-size:.85rem;
+ padding:7px 13px;
+}
+.map-view-switch button[aria-pressed="true"]{
+ background:#24566a;
+ color:#fff;
+ font-weight:700;
+}
+#view-2d[hidden],#view-3d[hidden]{
+ display:none!important;
+}
+#unified-globe-stage{
+ width:100%;
+ min-height:420px;
+ overflow:hidden;
+ background:#081321;
+ border-radius:12px;
+ touch-action:none;
+}
+#unified-globe-status{
+ color:#76e4c2;
+ font-weight:600;
+ margin:12px 0;
+}
+@media(max-width:739px){
+ #unified-globe-stage{min-height:320px}
+}
