@@ -20,6 +20,52 @@ No source IPs, request bodies, or raw headers are published here.</p>
 <p class="muted">Generated 2026-11-03 00:37 UTC · Times shown in UTC</p>
 </header>
 <div class="metrics"><article class="metric"><span>HTTP requests</span><strong>5,112</strong></article><article class="metric"><span>Unique source IPs</span><strong>1,610</strong></article><article class="metric"><span>Destination ports</span><strong>42</strong></article><article class="metric"><span>HTTPS requests</span><strong>1,444</strong></article><article class="metric"><span>PCAP files indexed</span><strong>78</strong></article><article class="metric"><span>Abnormal HTTP log lines</span><strong>1,758</strong></article></div>
+<!-- port-counter-overview:start -->
+<section class="panel" id="port-counter-overview">
+<h2>All-port observations: TCP SYN / UDP</h2>
+<p class="muted">Retained nftables counters sampled 2026-11-05T00:39:20Z (UTC)</p>
+<div class="metrics">
+<article class="metric"><span>TCP SYN packets in retained counters</span><strong>87,183</strong></article>
+<article class="metric"><span>TCP SYN destination ports</span><strong>14,724</strong></article>
+<article class="metric"><span>UDP new packets in retained counters</span><strong>3,376</strong></article>
+<article class="metric"><span>UDP new destination ports</span><strong>310</strong></article>
+</div>
+<div class="columns">
+<section class="panel">
+<h2>TCP SYN: top destination ports</h2>
+<table><thead><tr><th>Port</th><th class="number">Packets</th><th class="number">Bytes</th></tr></thead><tbody>
+<tr><td>443</td><td class="number">3,652</td><td class="number">198,484</td></tr>
+<tr><td>23</td><td class="number">3,404</td><td class="number">173,494</td></tr>
+<tr><td>22</td><td class="number">2,958</td><td class="number">163,392</td></tr>
+<tr><td>8080</td><td class="number">2,207</td><td class="number">104,560</td></tr>
+<tr><td>80</td><td class="number">2,119</td><td class="number">110,141</td></tr>
+<tr><td>8443</td><td class="number">1,357</td><td class="number">71,514</td></tr>
+<tr><td>10443</td><td class="number">1,066</td><td class="number">60,124</td></tr>
+<tr><td>4443</td><td class="number">1,049</td><td class="number">58,912</td></tr>
+<tr><td>8000</td><td class="number">860</td><td class="number">43,736</td></tr>
+<tr><td>9000</td><td class="number">818</td><td class="number">39,360</td></tr>
+</tbody></table>
+</section>
+<section class="panel">
+<h2>UDP new: top destination ports</h2>
+<table><thead><tr><th>Port</th><th class="number">Packets</th><th class="number">Bytes</th></tr></thead><tbody>
+<tr><td>53</td><td class="number">669</td><td class="number">61,266</td></tr>
+<tr><td>5060</td><td class="number">244</td><td class="number">90,530</td></tr>
+<tr><td>123</td><td class="number">156</td><td class="number">11,648</td></tr>
+<tr><td>161</td><td class="number">133</td><td class="number">10,193</td></tr>
+<tr><td>500</td><td class="number">93</td><td class="number">26,102</td></tr>
+<tr><td>1900</td><td class="number">84</td><td class="number">9,866</td></tr>
+<tr><td>1194</td><td class="number">68</td><td class="number">2,885</td></tr>
+<tr><td>137</td><td class="number">61</td><td class="number">4,757</td></tr>
+<tr><td>5353</td><td class="number">53</td><td class="number">3,973</td></tr>
+<tr><td>1434</td><td class="number">49</td><td class="number">2,408</td></tr>
+</tbody></table>
+</section>
+</div>
+<p class="muted">These values are not daily packet totals or unique source counts. Inactive ports expire from the nftables sets; active ports can accumulate counts beyond 48 hours. Traffic bypassing the recording rules is not included.</p>
+</section>
+<!-- port-counter-overview:end -->
+
 <div class="columns"><section class="panel"><h2>Daily request volume</h2><table><thead><tr><th>Day (UTC)</th><th>Requests</th><th>Unique sources</th></tr></thead><tbody><tr><td>2026-10-30</td><td class="number">1,265</td><td class="number">386</td></tr><tr><td>2026-10-31</td><td class="number">1,313</td><td class="number">576</td></tr><tr><td>2026-11-01</td><td class="number">1,182</td><td class="number">595</td></tr><tr><td>2026-11-02</td><td class="number">1,352</td><td class="number">546</td></tr></tbody></table></section><section class="panel"><h2>Top destination ports</h2><ul class="bars"><li><div class="bar-label"><span>80</span><b>1,069</b></div><div class="track"><div class="fill" style="width:100.0%"></div></div></li><li><div class="bar-label"><span>443</span><b>737</b></div><div class="track"><div class="fill" style="width:68.9%"></div></div></li><li><div class="bar-label"><span>8080</span><b>290</b></div><div class="track"><div class="fill" style="width:27.1%"></div></div></li><li><div class="bar-label"><span>8000</span><b>161</b></div><div class="track"><div class="fill" style="width:15.1%"></div></div></li><li><div class="bar-label"><span>8443</span><b>150</b></div><div class="track"><div class="fill" style="width:14.0%"></div></div></li><li><div class="bar-label"><span>81</span><b>143</b></div><div class="track"><div class="fill" style="width:13.4%"></div></div></li><li><div class="bar-label"><span>3000</span><b>142</b></div><div class="track"><div class="fill" style="width:13.3%"></div></div></li><li><div class="bar-label"><span>8081</span><b>128</b></div><div class="track"><div class="fill" style="width:12.0%"></div></div></li><li><div class="bar-label"><span>9090</span><b>120</b></div><div class="track"><div class="fill" style="width:11.2%"></div></div></li><li><div class="bar-label"><span>8001</span><b>112</b></div><div class="track"><div class="fill" style="width:10.5%"></div></div></li></ul></section><section class="panel"><h2>Source countries</h2><ul class="bars"><li><div class="bar-label"><span>United States</span><b>1,704</b></div><div class="track"><div class="fill" style="width:100.0%"></div></div></li><li><div class="bar-label"><span>United Kingdom</span><b>977</b></div><div class="track"><div class="fill" style="width:57.3%"></div></div></li><li><div class="bar-label"><span>France</span><b>445</b></div><div class="track"><div class="fill" style="width:26.1%"></div></div></li><li><div class="bar-label"><span>Netherlands</span><b>258</b></div><div class="track"><div class="fill" style="width:15.1%"></div></div></li><li><div class="bar-label"><span>Germany</span><b>239</b></div><div class="track"><div class="fill" style="width:14.0%"></div></div></li><li><div class="bar-label"><span>Hong Kong</span><b>234</b></div><div class="track"><div class="fill" style="width:13.7%"></div></div></li><li><div class="bar-label"><span>Unknown</span><b>208</b></div><div class="track"><div class="fill" style="width:12.2%"></div></div></li><li><div class="bar-label"><span>Belgium</span><b>173</b></div><div class="track"><div class="fill" style="width:10.2%"></div></div></li><li><div class="bar-label"><span>India</span><b>141</b></div><div class="track"><div class="fill" style="width:8.3%"></div></div></li><li><div class="bar-label"><span>Singapore</span><b>122</b></div><div class="track"><div class="fill" style="width:7.2%"></div></div></li></ul></section><section class="panel"><h2>Heuristic attack signals</h2><ul class="bars"><li><div class="bar-label"><span>common_probe_path</span><b>331</b></div><div class="track"><div class="fill" style="width:100.0%"></div></div></li><li><div class="bar-label"><span>path_traversal</span><b>10</b></div><div class="track"><div class="fill" style="width:3.0%"></div></div></li></ul></section><section class="panel"><h2>Top networks (ASN)</h2><table><thead><tr><th>ASN</th><th>Organization</th><th>Requests</th></tr></thead><tbody><tr><td>AS25369</td><td>Hydra Communications Ltd</td><td class="number">742</td></tr><tr><td>AS396982</td><td>Google LLC</td><td class="number">447</td></tr><tr><td>AS16509</td><td>Amazon.com, Inc.</td><td class="number">303</td></tr><tr><td>AS398324</td><td>Censys, Inc.</td><td class="number">267</td></tr><tr><td>AS211590</td><td>Bucklog SARL</td><td class="number">250</td></tr><tr><td>AS45102</td><td>Alibaba (US) Technology Co., Ltd.</td><td class="number">189</td></tr><tr><td>AS43357</td><td>Owl Limited</td><td class="number">180</td></tr><tr><td>AS6939</td><td>Hurricane Electric LLC</td><td class="number">171</td></tr><tr><td>AS43515</td><td>Google Ireland Limited</td><td class="number">159</td></tr><tr><td>AS8075</td><td>Microsoft Corporation</td><td class="number">140</td></tr></tbody></table></section></div>
 
 </main>
