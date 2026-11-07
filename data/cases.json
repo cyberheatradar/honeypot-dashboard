@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "total_matching_requests": 1240,
+  "total_matching_requests": 1402,
   "signal_totals": {
-    "path_traversal": 59,
-    "common_probe_path": 1176,
+    "path_traversal": 60,
+    "common_probe_path": 1337,
     "sensitive_file_probe": 5
   },
   "cases": [
@@ -27,7 +27,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 122
+      "matching_requests": 123
     },
     {
       "id": 3,
@@ -137,7 +137,7 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 340
+      "matching_requests": 494
     }
   ],
   "interpretation": "heuristic_only"
