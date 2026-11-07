@@ -11,7 +11,7 @@ for(const k of dims){
   k==="port" ? Number(a)-Number(b) : (k==="country" ? countryLabel(a).localeCompare(countryLabel(b)) : a.localeCompare(b)));
  for(const v of values){
   const opt=document.createElement("option");
-  opt.value=v;opt.textContent=k==="country"?countryLabel(v):v;
+  opt.value=v;opt.textContent=k==="country"?countryLabel(v):(k==="port"?v+"/tcp":v);
   selects[k].appendChild(opt);
  }
 }
@@ -47,8 +47,8 @@ function renderPortBreakdown(active,total){
   const button=document.createElement("button");
 
   button.type="button";
-  button.textContent=port;
-  button.title="Filter destination port "+port;
+  button.textContent=port+"/tcp";
+  button.title="Filter destination port "+port+"/tcp";
 
   button.addEventListener("click",()=>{
    selects.port.value=

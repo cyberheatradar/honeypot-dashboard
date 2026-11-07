@@ -95,7 +95,7 @@
     option.value=value;
 
     const label=key==="country" ?
-     countryName(value) : value;
+     countryName(value) : key==="port" ? value+"/tcp" : value;
 
     option.textContent=
      `${label} (${fmt(counts.get(value))})`;

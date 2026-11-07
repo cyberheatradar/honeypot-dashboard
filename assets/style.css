@@ -38,3 +38,5 @@ footer{margin-top:32px;font-size:.84rem}
 .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
 .container{padding:22px 14px}
 }
+
+.overview-period-pane[hidden]{display:none!important}

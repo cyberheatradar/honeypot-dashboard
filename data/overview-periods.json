@@ -1,0 +1,965 @@
+{
+  "schema": "honeypot-overview-periods-v1",
+  "periods": {
+    "day": {
+      "start_utc": "2026-11-05 00:00 UTC",
+      "end_exclusive_utc": "2026-11-06 00:00 UTC",
+      "coverage_start_utc": "2026-10-30 06:29 UTC",
+      "partial_initial_coverage": false,
+      "metrics": {
+        "http_requests": 1576,
+        "unique_source_ips": 637,
+        "destination_ports": 42,
+        "https_requests": 489
+      },
+      "daily": [
+        [
+          "2026-11-05",
+          1576,
+          637
+        ]
+      ],
+      "ports": [
+        [
+          443,
+          163
+        ],
+        [
+          8080,
+          149
+        ],
+        [
+          80,
+          130
+        ],
+        [
+          4443,
+          98
+        ],
+        [
+          9200,
+          94
+        ],
+        [
+          3000,
+          58
+        ],
+        [
+          8000,
+          56
+        ],
+        [
+          81,
+          47
+        ],
+        [
+          8443,
+          46
+        ],
+        [
+          8888,
+          43
+        ]
+      ],
+      "countries": [
+        [
+          "United States",
+          613
+        ],
+        [
+          "United Kingdom",
+          243
+        ],
+        [
+          "Hong Kong",
+          149
+        ],
+        [
+          "Germany",
+          124
+        ],
+        [
+          "France",
+          91
+        ],
+        [
+          "Netherlands",
+          78
+        ],
+        [
+          "Switzerland",
+          49
+        ],
+        [
+          "Belgium",
+          47
+        ],
+        [
+          "Sweden",
+          46
+        ],
+        [
+          "Singapore",
+          33
+        ]
+      ],
+      "asns": [
+        [
+          25369,
+          "Hydra Communications Ltd",
+          235
+        ],
+        [
+          14061,
+          "DigitalOcean, LLC",
+          153
+        ],
+        [
+          396982,
+          "Google LLC",
+          90
+        ],
+        [
+          218785,
+          "TC DATACENTER LIMITED",
+          88
+        ],
+        [
+          398324,
+          "Censys, Inc.",
+          85
+        ],
+        [
+          135377,
+          "UCLOUD INFORMATION TECHNOLOGY (HK) LIMITED",
+          65
+        ],
+        [
+          6939,
+          "Hurricane Electric LLC",
+          58
+        ],
+        [
+          36352,
+          "HostPapa",
+          58
+        ],
+        [
+          264617,
+          "GRUPO PANAGLOBAL 15 S.A",
+          57
+        ],
+        [
+          16509,
+          "Amazon.com, Inc.",
+          51
+        ]
+      ],
+      "signals": [
+        [
+          "common_probe_path",
+          66
+        ],
+        [
+          "path_traversal",
+          4
+        ],
+        [
+          "sensitive_file_probe",
+          1
+        ]
+      ],
+      "signals_available": true
+    },
+    "7days": {
+      "start_utc": "2026-10-30 00:00 UTC",
+      "end_exclusive_utc": "2026-11-06 00:00 UTC",
+      "coverage_start_utc": "2026-10-30 06:29 UTC",
+      "partial_initial_coverage": true,
+      "metrics": {
+        "http_requests": 10787,
+        "unique_source_ips": 2663,
+        "destination_ports": 42,
+        "https_requests": 3458
+      },
+      "daily": [
+        [
+          "2026-10-30",
+          1265,
+          386
+        ],
+        [
+          "2026-10-31",
+          1313,
+          576
+        ],
+        [
+          "2026-11-01",
+          1182,
+          595
+        ],
+        [
+          "2026-11-02",
+          2089,
+          634
+        ],
+        [
+          "2026-11-03",
+          1538,
+          610
+        ],
+        [
+          "2026-11-04",
+          1824,
+          603
+        ],
+        [
+          "2026-11-05",
+          1576,
+          637
+        ]
+      ],
+      "ports": [
+        [
+          80,
+          1969
+        ],
+        [
+          443,
+          1859
+        ],
+        [
+          8080,
+          768
+        ],
+        [
+          8443,
+          397
+        ],
+        [
+          8000,
+          342
+        ],
+        [
+          9200,
+          287
+        ],
+        [
+          3000,
+          284
+        ],
+        [
+          8081,
+          254
+        ],
+        [
+          81,
+          253
+        ],
+        [
+          7547,
+          223
+        ]
+      ],
+      "countries": [
+        [
+          "United States",
+          3582
+        ],
+        [
+          "United Kingdom",
+          1685
+        ],
+        [
+          "France",
+          652
+        ],
+        [
+          "Singapore",
+          603
+        ],
+        [
+          "Germany",
+          566
+        ],
+        [
+          "Hong Kong",
+          520
+        ],
+        [
+          "Hungary",
+          515
+        ],
+        [
+          "Netherlands",
+          491
+        ],
+        [
+          "Belgium",
+          329
+        ],
+        [
+          "Sweden",
+          232
+        ]
+      ],
+      "asns": [
+        [
+          25369,
+          "Hydra Communications Ltd",
+          1413
+        ],
+        [
+          396982,
+          "Google LLC",
+          1111
+        ],
+        [
+          398324,
+          "Censys, Inc.",
+          593
+        ],
+        [
+          204428,
+          "SS-Net",
+          514
+        ],
+        [
+          16509,
+          "Amazon.com, Inc.",
+          475
+        ],
+        [
+          14061,
+          "DigitalOcean, LLC",
+          446
+        ],
+        [
+          8075,
+          "Microsoft Corporation",
+          378
+        ],
+        [
+          63949,
+          "Akamai Technologies, Inc.",
+          330
+        ],
+        [
+          6939,
+          "Hurricane Electric LLC",
+          303
+        ],
+        [
+          43515,
+          "Google Ireland Limited",
+          297
+        ]
+      ],
+      "signals": [
+        [
+          "common_probe_path",
+          871
+        ],
+        [
+          "path_traversal",
+          57
+        ],
+        [
+          "sensitive_file_probe",
+          5
+        ]
+      ],
+      "signals_available": true
+    },
+    "month": {
+      "start_utc": "2026-11-01 00:00 UTC",
+      "end_exclusive_utc": "2026-11-06 00:00 UTC",
+      "coverage_start_utc": "2026-10-30 06:29 UTC",
+      "partial_initial_coverage": false,
+      "metrics": {
+        "http_requests": 8209,
+        "unique_source_ips": 2213,
+        "destination_ports": 42,
+        "https_requests": 2833
+      },
+      "daily": [
+        [
+          "2026-11-01",
+          1182,
+          595
+        ],
+        [
+          "2026-11-02",
+          2089,
+          634
+        ],
+        [
+          "2026-11-03",
+          1538,
+          610
+        ],
+        [
+          "2026-11-04",
+          1824,
+          603
+        ],
+        [
+          "2026-11-05",
+          1576,
+          637
+        ]
+      ],
+      "ports": [
+        [
+          443,
+          1557
+        ],
+        [
+          80,
+          1394
+        ],
+        [
+          8080,
+          619
+        ],
+        [
+          8443,
+          317
+        ],
+        [
+          8000,
+          256
+        ],
+        [
+          9200,
+          223
+        ],
+        [
+          8081,
+          194
+        ],
+        [
+          81,
+          193
+        ],
+        [
+          3000,
+          184
+        ],
+        [
+          7547,
+          175
+        ]
+      ],
+      "countries": [
+        [
+          "United States",
+          2754
+        ],
+        [
+          "United Kingdom",
+          1116
+        ],
+        [
+          "France",
+          575
+        ],
+        [
+          "Singapore",
+          538
+        ],
+        [
+          "Hungary",
+          515
+        ],
+        [
+          "Germany",
+          457
+        ],
+        [
+          "Hong Kong",
+          407
+        ],
+        [
+          "Netherlands",
+          317
+        ],
+        [
+          "Belgium",
+          235
+        ],
+        [
+          "Sweden",
+          204
+        ]
+      ],
+      "asns": [
+        [
+          25369,
+          "Hydra Communications Ltd",
+          1089
+        ],
+        [
+          396982,
+          "Google LLC",
+          844
+        ],
+        [
+          204428,
+          "SS-Net",
+          514
+        ],
+        [
+          398324,
+          "Censys, Inc.",
+          475
+        ],
+        [
+          14061,
+          "DigitalOcean, LLC",
+          412
+        ],
+        [
+          16509,
+          "Amazon.com, Inc.",
+          397
+        ],
+        [
+          8075,
+          "Microsoft Corporation",
+          325
+        ],
+        [
+          218785,
+          "TC DATACENTER LIMITED",
+          263
+        ],
+        [
+          63949,
+          "Akamai Technologies, Inc.",
+          255
+        ],
+        [
+          211590,
+          "Bucklog SARL",
+          250
+        ]
+      ],
+      "signals": [
+        [
+          "common_probe_path",
+          762
+        ],
+        [
+          "path_traversal",
+          49
+        ],
+        [
+          "sensitive_file_probe",
+          5
+        ]
+      ],
+      "signals_available": true
+    },
+    "quarter": {
+      "start_utc": "2026-10-01 00:00 UTC",
+      "end_exclusive_utc": "2026-11-06 00:00 UTC",
+      "coverage_start_utc": "2026-10-30 06:29 UTC",
+      "partial_initial_coverage": true,
+      "metrics": {
+        "http_requests": 10787,
+        "unique_source_ips": 2663,
+        "destination_ports": 42,
+        "https_requests": 3458
+      },
+      "daily": [
+        [
+          "2026-10-30",
+          1265,
+          386
+        ],
+        [
+          "2026-10-31",
+          1313,
+          576
+        ],
+        [
+          "2026-11-01",
+          1182,
+          595
+        ],
+        [
+          "2026-11-02",
+          2089,
+          634
+        ],
+        [
+          "2026-11-03",
+          1538,
+          610
+        ],
+        [
+          "2026-11-04",
+          1824,
+          603
+        ],
+        [
+          "2026-11-05",
+          1576,
+          637
+        ]
+      ],
+      "ports": [
+        [
+          80,
+          1969
+        ],
+        [
+          443,
+          1859
+        ],
+        [
+          8080,
+          768
+        ],
+        [
+          8443,
+          397
+        ],
+        [
+          8000,
+          342
+        ],
+        [
+          9200,
+          287
+        ],
+        [
+          3000,
+          284
+        ],
+        [
+          8081,
+          254
+        ],
+        [
+          81,
+          253
+        ],
+        [
+          7547,
+          223
+        ]
+      ],
+      "countries": [
+        [
+          "United States",
+          3582
+        ],
+        [
+          "United Kingdom",
+          1685
+        ],
+        [
+          "France",
+          652
+        ],
+        [
+          "Singapore",
+          603
+        ],
+        [
+          "Germany",
+          566
+        ],
+        [
+          "Hong Kong",
+          520
+        ],
+        [
+          "Hungary",
+          515
+        ],
+        [
+          "Netherlands",
+          491
+        ],
+        [
+          "Belgium",
+          329
+        ],
+        [
+          "Sweden",
+          232
+        ]
+      ],
+      "asns": [
+        [
+          25369,
+          "Hydra Communications Ltd",
+          1413
+        ],
+        [
+          396982,
+          "Google LLC",
+          1111
+        ],
+        [
+          398324,
+          "Censys, Inc.",
+          593
+        ],
+        [
+          204428,
+          "SS-Net",
+          514
+        ],
+        [
+          16509,
+          "Amazon.com, Inc.",
+          475
+        ],
+        [
+          14061,
+          "DigitalOcean, LLC",
+          446
+        ],
+        [
+          8075,
+          "Microsoft Corporation",
+          378
+        ],
+        [
+          63949,
+          "Akamai Technologies, Inc.",
+          330
+        ],
+        [
+          6939,
+          "Hurricane Electric LLC",
+          303
+        ],
+        [
+          43515,
+          "Google Ireland Limited",
+          297
+        ]
+      ],
+      "signals": [
+        [
+          "common_probe_path",
+          871
+        ],
+        [
+          "path_traversal",
+          57
+        ],
+        [
+          "sensitive_file_probe",
+          5
+        ]
+      ],
+      "signals_available": true
+    },
+    "year": {
+      "start_utc": "2026-01-01 00:00 UTC",
+      "end_exclusive_utc": "2026-11-06 00:00 UTC",
+      "coverage_start_utc": "2026-10-30 06:29 UTC",
+      "partial_initial_coverage": true,
+      "metrics": {
+        "http_requests": 10787,
+        "unique_source_ips": 2663,
+        "destination_ports": 42,
+        "https_requests": 3458
+      },
+      "daily": [
+        [
+          "2026-10-30",
+          1265,
+          386
+        ],
+        [
+          "2026-10-31",
+          1313,
+          576
+        ],
+        [
+          "2026-11-01",
+          1182,
+          595
+        ],
+        [
+          "2026-11-02",
+          2089,
+          634
+        ],
+        [
+          "2026-11-03",
+          1538,
+          610
+        ],
+        [
+          "2026-11-04",
+          1824,
+          603
+        ],
+        [
+          "2026-11-05",
+          1576,
+          637
+        ]
+      ],
+      "ports": [
+        [
+          80,
+          1969
+        ],
+        [
+          443,
+          1859
+        ],
+        [
+          8080,
+          768
+        ],
+        [
+          8443,
+          397
+        ],
+        [
+          8000,
+          342
+        ],
+        [
+          9200,
+          287
+        ],
+        [
+          3000,
+          284
+        ],
+        [
+          8081,
+          254
+        ],
+        [
+          81,
+          253
+        ],
+        [
+          7547,
+          223
+        ]
+      ],
+      "countries": [
+        [
+          "United States",
+          3582
+        ],
+        [
+          "United Kingdom",
+          1685
+        ],
+        [
+          "France",
+          652
+        ],
+        [
+          "Singapore",
+          603
+        ],
+        [
+          "Germany",
+          566
+        ],
+        [
+          "Hong Kong",
+          520
+        ],
+        [
+          "Hungary",
+          515
+        ],
+        [
+          "Netherlands",
+          491
+        ],
+        [
+          "Belgium",
+          329
+        ],
+        [
+          "Sweden",
+          232
+        ]
+      ],
+      "asns": [
+        [
+          25369,
+          "Hydra Communications Ltd",
+          1413
+        ],
+        [
+          396982,
+          "Google LLC",
+          1111
+        ],
+        [
+          398324,
+          "Censys, Inc.",
+          593
+        ],
+        [
+          204428,
+          "SS-Net",
+          514
+        ],
+        [
+          16509,
+          "Amazon.com, Inc.",
+          475
+        ],
+        [
+          14061,
+          "DigitalOcean, LLC",
+          446
+        ],
+        [
+          8075,
+          "Microsoft Corporation",
+          378
+        ],
+        [
+          63949,
+          "Akamai Technologies, Inc.",
+          330
+        ],
+        [
+          6939,
+          "Hurricane Electric LLC",
+          303
+        ],
+        [
+          43515,
+          "Google Ireland Limited",
+          297
+        ]
+      ],
+      "signals": [
+        [
+          "common_probe_path",
+          871
+        ],
+        [
+          "path_traversal",
+          57
+        ],
+        [
+          "sensitive_file_probe",
+          5
+        ]
+      ],
+      "signals_available": true
+    }
+  }
+}
