@@ -40,3 +40,29 @@ footer{margin-top:32px;font-size:.84rem}
 }
 
 .overview-period-pane[hidden]{display:none!important}
+
+.overview-date-fields{
+ display:flex;
+ flex-wrap:wrap;
+ align-items:end;
+ gap:12px;
+ margin:14px 0;
+}
+.overview-date-fields label{
+ display:grid;
+ gap:5px;
+}
+.overview-date-fields input,
+.overview-date-fields button{
+ min-height:38px;
+ padding:7px;
+ font:inherit;
+}
+.overview-days-scroll{
+ max-height:420px;
+ overflow:auto;
+}
+#overview-range-status{
+ margin:12px 0;
+ line-height:1.5;
+}
