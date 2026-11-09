@@ -9,6 +9,8 @@
 <title>Honeypot Observatory | Overview</title>
 <link rel="stylesheet" href="assets/style.css">
 <script src="assets/overview-periods.js" defer></script>
+<link rel="stylesheet" href="assets/porttime-ui.css">
+<script src="assets/porttime-ui.js" defer></script>
 </head>
 <body>
 <main class="container">
@@ -18,7 +20,7 @@
 <p><a href="explore.html">Explore Map</a> · <a href="cases.html">HTTP attack cases</a> · <small class="data-source"><a href="https://db-ip.com/">IP Geolocation by DB-IP</a></small></p>
 <p>Aggregated telemetry from a self-operated HTTP/HTTPS sensor.
 No source IPs, request bodies, or raw headers are published here.</p>
-<p class="muted">Generated 2026-11-08 18:15 UTC · Times shown in UTC</p>
+<p class="muted">Generated 2026-11-09 18:15 UTC · Times shown in UTC</p>
 </header>
 
 <section class="panel" id="overview-date-controls">
@@ -26,18 +28,18 @@ No source IPs, request bodies, or raw headers are published here.</p>
 <div class="overview-date-fields">
 <label>Start date (YYYY/MM/DD)
 <input type="date" id="overview-start-date"
- min="2026-10-30" max="2026-11-06"
- value="2026-10-31"></label>
+ min="2026-10-30" max="2026-11-07"
+ value="2026-11-01"></label>
 <label>End date (YYYY/MM/DD)
 <input type="date" id="overview-end-date"
- min="2026-10-30" max="2026-11-06"
- value="2026-11-06"></label>
+ min="2026-10-30" max="2026-11-07"
+ value="2026-11-07"></label>
 <button type="button" id="overview-range-apply">
 Show observations
 </button>
 </div>
 <p class="muted">
-Available UTC dates: 2026-10-30 to 2026-11-06.
+Available UTC dates: 2026-10-30 to 2026-11-07.
 Start and end days are included.
 Publication is delayed by at least 24 hours.
 </p>
@@ -53,42 +55,42 @@ snapshots, not interval totals.
 <!-- port-counter-overview:start -->
 <section class="panel" id="port-counter-overview">
 <h2>All-port observations: TCP SYN / UDP</h2>
-<p class="muted">Retained nftables counters sampled 2026-11-07T18:15:02Z (UTC)</p>
+<p class="muted">Retained nftables counters sampled 2026-11-08T18:15:02Z (UTC)</p>
 <div class="metrics">
-<article class="metric"><span>TCP SYN packets in retained counters</span><strong>146,240</strong></article>
-<article class="metric"><span>TCP SYN destination ports</span><strong>31,091</strong></article>
-<article class="metric"><span>UDP new packets in retained counters</span><strong>4,883</strong></article>
-<article class="metric"><span>UDP new destination ports</span><strong>463</strong></article>
+<article class="metric"><span>TCP SYN packets in retained counters</span><strong>138,595</strong></article>
+<article class="metric"><span>TCP SYN destination ports</span><strong>17,214</strong></article>
+<article class="metric"><span>UDP new packets in retained counters</span><strong>5,367</strong></article>
+<article class="metric"><span>UDP new destination ports</span><strong>413</strong></article>
 </div>
 <div class="columns">
 <section class="panel">
 <h2>TCP SYN: top destination ports</h2>
 <table><thead><tr><th>Port</th><th class="number">Packets</th><th class="number">Bytes</th></tr></thead><tbody>
-<tr><td>443/tcp</td><td class="number">5,246</td><td class="number">284,100</td></tr>
-<tr><td>23/tcp</td><td class="number">4,442</td><td class="number">230,630</td></tr>
-<tr><td>22/tcp</td><td class="number">4,028</td><td class="number">222,368</td></tr>
-<tr><td>8080/tcp</td><td class="number">3,333</td><td class="number">157,856</td></tr>
-<tr><td>80/tcp</td><td class="number">3,035</td><td class="number">156,366</td></tr>
-<tr><td>8443/tcp</td><td class="number">2,010</td><td class="number">106,906</td></tr>
-<tr><td>8000/tcp</td><td class="number">1,470</td><td class="number">73,820</td></tr>
-<tr><td>10443/tcp</td><td class="number">1,359</td><td class="number">76,940</td></tr>
-<tr><td>4443/tcp</td><td class="number">1,342</td><td class="number">75,036</td></tr>
-<tr><td>8088/tcp</td><td class="number">1,315</td><td class="number">66,980</td></tr>
+<tr><td>443/tcp</td><td class="number">5,945</td><td class="number">322,512</td></tr>
+<tr><td>23/tcp</td><td class="number">5,051</td><td class="number">260,870</td></tr>
+<tr><td>22/tcp</td><td class="number">4,296</td><td class="number">236,774</td></tr>
+<tr><td>8080/tcp</td><td class="number">3,877</td><td class="number">186,132</td></tr>
+<tr><td>80/tcp</td><td class="number">3,505</td><td class="number">181,129</td></tr>
+<tr><td>8443/tcp</td><td class="number">2,437</td><td class="number">129,314</td></tr>
+<tr><td>8000/tcp</td><td class="number">1,815</td><td class="number">91,316</td></tr>
+<tr><td>10443/tcp</td><td class="number">1,508</td><td class="number">84,676</td></tr>
+<tr><td>4443/tcp</td><td class="number">1,465</td><td class="number">80,956</td></tr>
+<tr><td>8888/tcp</td><td class="number">1,459</td><td class="number">73,860</td></tr>
 </tbody></table>
 </section>
 <section class="panel">
 <h2>UDP new: top destination ports</h2>
 <table><thead><tr><th>Port</th><th class="number">Packets</th><th class="number">Bytes</th></tr></thead><tbody>
-<tr><td>53/udp</td><td class="number">768</td><td class="number">67,426</td></tr>
-<tr><td>5060/udp</td><td class="number">363</td><td class="number">141,399</td></tr>
-<tr><td>123/udp</td><td class="number">207</td><td class="number">15,253</td></tr>
-<tr><td>161/udp</td><td class="number">196</td><td class="number">14,996</td></tr>
-<tr><td>500/udp</td><td class="number">150</td><td class="number">41,140</td></tr>
-<tr><td>1900/udp</td><td class="number">129</td><td class="number">15,150</td></tr>
-<tr><td>1194/udp</td><td class="number">105</td><td class="number">4,484</td></tr>
-<tr><td>137/udp</td><td class="number">88</td><td class="number">6,813</td></tr>
-<tr><td>5353/udp</td><td class="number">78</td><td class="number">5,967</td></tr>
-<tr><td>17/udp</td><td class="number">75</td><td class="number">5,670</td></tr>
+<tr><td>53/udp</td><td class="number">805</td><td class="number">69,848</td></tr>
+<tr><td>5060/udp</td><td class="number">411</td><td class="number">159,202</td></tr>
+<tr><td>123/udp</td><td class="number">236</td><td class="number">17,052</td></tr>
+<tr><td>161/udp</td><td class="number">226</td><td class="number">17,516</td></tr>
+<tr><td>500/udp</td><td class="number">173</td><td class="number">47,306</td></tr>
+<tr><td>1900/udp</td><td class="number">145</td><td class="number">16,929</td></tr>
+<tr><td>1194/udp</td><td class="number">120</td><td class="number">5,092</td></tr>
+<tr><td>3283/udp</td><td class="number">104</td><td class="number">6,624</td></tr>
+<tr><td>137/udp</td><td class="number">100</td><td class="number">7,749</td></tr>
+<tr><td>5353/udp</td><td class="number">88</td><td class="number">6,689</td></tr>
 </tbody></table>
 </section>
 </div>
@@ -97,6 +99,55 @@ snapshots, not interval totals.
 <!-- port-counter-overview:end -->
 
 
+
+
+<section id="porttime-dashboard" aria-labelledby="porttime-heading">
+  <h2 id="porttime-heading">全ポート着弾統計（TCP SYN / UDP）</h2>
+  <p>HTTPリクエスト統計とは別のパケット観測値です。未観測や欠測は攻撃ゼロを意味しません。</p>
+  <p id="porttime-status" role="status">観測準備中</p><p id="porttime-gap-status" role="status" hidden></p>
+  <div id="porttime-filters" class="porttime-filters" hidden>
+    <label>開始日（UTC）
+      <input id="porttime-start" type="date">
+    </label>
+    <label>終了日（UTC）
+      <input id="porttime-end" type="date">
+    </label>
+    <label>送信元国
+      <select id="porttime-country"><option value="">すべて</option></select>
+    </label>
+    <label>プロトコル
+      <select id="porttime-protocol">
+        <option value="">すべて</option>
+        <option value="TCP_SYN">TCP SYN</option>
+        <option value="UDP">UDP</option>
+      </select>
+    </label>
+    <label>宛先ポート
+      <input id="porttime-port" type="number" min="0" max="65535"
+             step="1" placeholder="すべて">
+    </label>
+    <button id="porttime-reset" type="button">条件をリセット</button>
+  </div>
+  <div id="porttime-results" hidden>
+    <p id="porttime-total" aria-live="polite"></p>
+    <p class="porttime-note">観測数の集計であり、全着弾パケットの完全捕捉を保証するものではありません</p>
+    <h3>国・プロトコル・ポート別ランキング</h3>
+    <div class="porttime-table-scroll">
+      <table>
+        <thead><tr><th>送信元国</th><th>種別</th><th>宛先ポート</th><th>観測数</th></tr></thead>
+        <tbody id="porttime-ranking"></tbody>
+      </table>
+    </div>
+    <p id="porttime-truncation"></p>
+    <h3>日別観測数（UTC）</h3>
+    <div class="porttime-table-scroll">
+      <table>
+        <thead><tr><th>日付</th><th>観測数</th></tr></thead>
+        <tbody id="porttime-daily"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
 
 </main>
 </body>

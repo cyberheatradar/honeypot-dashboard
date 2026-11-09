@@ -1,0 +1,60 @@
+
+#porttime-dashboard{
+  margin:32px 0;
+  padding:18px;
+  border:1px solid #46566a;
+  border-radius:12px;
+}
+#porttime-dashboard h2{margin-top:0}
+.porttime-filters{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin:16px 0;
+  align-items:end;
+}
+.porttime-filters[hidden],
+#porttime-results[hidden]{display:none!important}
+.porttime-filters label{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  min-width:125px;
+}
+.porttime-filters input,
+.porttime-filters select,
+.porttime-filters button{
+  padding:8px;
+  border-radius:6px;
+  font:inherit;
+  max-width:100%;
+}
+.porttime-table-scroll{
+  max-height:430px;
+  overflow:auto;
+  border:1px solid #46566a;
+  border-radius:8px;
+}
+#porttime-dashboard table{
+  border-collapse:collapse;
+  width:100%;
+}
+#porttime-dashboard th,
+#porttime-dashboard td{
+  padding:8px 10px;
+  border-bottom:1px solid #46566a;
+  text-align:left;
+}
+#porttime-dashboard th{
+  position:sticky;
+  top:0;
+  background:#172338;
+  color:#eef5fc;
+}
+#porttime-dashboard td:last-child,
+#porttime-dashboard th:last-child{text-align:right}
+.porttime-note{font-size:.88rem;opacity:.85}
+@media(max-width:600px){
+  #porttime-dashboard{padding:12px}
+  .porttime-filters label{min-width:calc(50% - 10px)}
+}
