@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "total_matching_requests": 2565,
+  "total_matching_requests": 3006,
   "signal_totals": {
-    "path_traversal": 70,
-    "common_probe_path": 2488,
+    "path_traversal": 77,
+    "common_probe_path": 2922,
     "sensitive_file_probe": 7
   },
   "cases": [
@@ -16,7 +16,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 1043
+      "matching_requests": 1180
     },
     {
       "id": 2,
@@ -27,7 +27,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 184
+      "matching_requests": 190
     },
     {
       "id": 3,
@@ -35,10 +35,10 @@
       "category": "Common application probe",
       "indicator": "PHPUnit path discovery",
       "method": "GET",
-      "destination_port": 80,
-      "transport": "http",
+      "destination_port": 443,
+      "transport": "https",
       "response_status": 404,
-      "matching_requests": 58
+      "matching_requests": 61
     },
     {
       "id": 4,
@@ -49,7 +49,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 51
+      "matching_requests": 54
     },
     {
       "id": 5,
@@ -60,7 +60,7 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 18
+      "matching_requests": 19
     },
     {
       "id": 6,
@@ -71,10 +71,21 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 11
+      "matching_requests": 13
     },
     {
       "id": 7,
+      "signal_type": "common_probe_path",
+      "category": "Common application probe",
+      "indicator": "WordPress login discovery",
+      "method": "GET",
+      "destination_port": 80,
+      "transport": "http",
+      "response_status": 404,
+      "matching_requests": 13
+    },
+    {
+      "id": 8,
       "signal_type": "sensitive_file_probe",
       "category": "Sensitive file probe",
       "indicator": "Process environment file probe",
@@ -85,7 +96,7 @@
       "matching_requests": 5
     },
     {
-      "id": 8,
+      "id": 9,
       "signal_type": "path_traversal",
       "category": "Path traversal probe",
       "indicator": "URL-encoded directory traversal",
@@ -96,7 +107,7 @@
       "matching_requests": 3
     },
     {
-      "id": 9,
+      "id": 10,
       "signal_type": "common_probe_path",
       "category": "Common application probe",
       "indicator": "WordPress XML-RPC discovery",
@@ -105,17 +116,6 @@
       "transport": "https",
       "response_status": 404,
       "matching_requests": 2
-    },
-    {
-      "id": 10,
-      "signal_type": "common_probe_path",
-      "category": "Common application probe",
-      "indicator": "WordPress login discovery",
-      "method": "GET",
-      "destination_port": 443,
-      "transport": "https",
-      "response_status": 404,
-      "matching_requests": 1
     },
     {
       "id": 11,
@@ -137,7 +137,7 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 870
+      "matching_requests": 1068
     }
   ],
   "interpretation": "heuristic_only"

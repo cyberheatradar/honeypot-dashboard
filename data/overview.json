@@ -1,17 +1,12 @@
 {
-  "generated_utc": "2026-11-09 18:15 UTC",
+  "generated_utc": "2026-11-10 09:42 UTC",
   "metrics": {
-    "http_requests": 16276,
-    "unique_source_ips": 2948,
+    "http_requests": 17819,
+    "unique_source_ips": 2959,
     "destination_ports": 42,
-    "https_requests": 5432
+    "https_requests": 6036
   },
   "daily_utc": [
-    {
-      "date": "2026-11-01",
-      "requests": 1182,
-      "unique_sources": 595
-    },
     {
       "date": "2026-11-02",
       "requests": 2089,
@@ -41,40 +36,45 @@
       "date": "2026-11-07",
       "requests": 4240,
       "unique_sources": 716
+    },
+    {
+      "date": "2026-11-08",
+      "requests": 2725,
+      "unique_sources": 620
     }
   ],
   "ports": [
     {
-      "port": 443,
-      "requests": 3331
+      "port": 80,
+      "requests": 3950
     },
     {
-      "port": 80,
-      "requests": 3186
+      "port": 443,
+      "requests": 3914
     },
     {
       "port": 8080,
-      "requests": 1059
+      "requests": 1086
     },
     {
       "port": 8443,
-      "requests": 611
+      "requests": 631
     },
     {
       "port": 8000,
-      "requests": 583
+      "requests": 596
     },
     {
       "port": 8088,
-      "requests": 492
+      "requests": 512
     },
     {
       "port": 8888,
-      "requests": 449
+      "requests": 448
     },
     {
       "port": 3000,
-      "requests": 407
+      "requests": 427
     },
     {
       "port": 9200,
@@ -82,66 +82,66 @@
     },
     {
       "port": 5000,
-      "requests": 376
+      "requests": 385
     }
   ],
   "countries": [
     {
       "country": "United States",
-      "requests": 5435
+      "requests": 5461
     },
     {
       "country": "Hungary",
-      "requests": 2984
+      "requests": 4210
     },
     {
       "country": "United Kingdom",
-      "requests": 1608
+      "requests": 1623
     },
     {
       "country": "Japan",
-      "requests": 1105
+      "requests": 1100
     },
     {
       "country": "France",
-      "requests": 688
+      "requests": 647
     },
     {
       "country": "Singapore",
-      "requests": 609
-    },
-    {
-      "country": "Germany",
-      "requests": 582
+      "requests": 591
     },
     {
       "country": "Sweden",
-      "requests": 558
+      "requests": 562
+    },
+    {
+      "country": "Germany",
+      "requests": 561
     },
     {
       "country": "Hong Kong",
-      "requests": 473
+      "requests": 487
     },
     {
       "country": "Netherlands",
-      "requests": 449
+      "requests": 486
     }
   ],
   "asns": [
     {
       "asn": 204428,
       "organization": "SS-Net",
-      "requests": 2982
+      "requests": 4208
     },
     {
       "asn": 25369,
       "organization": "Hydra Communications Ltd",
-      "requests": 1557
+      "requests": 1587
     },
     {
       "asn": 63949,
       "organization": "Akamai Technologies, Inc.",
-      "requests": 1518
+      "requests": 1566
     },
     {
       "asn": 206092,
@@ -151,42 +151,42 @@
     {
       "asn": 396982,
       "organization": "Google LLC",
-      "requests": 1037
+      "requests": 994
     },
     {
       "asn": 8075,
       "organization": "Microsoft Corporation",
-      "requests": 768
+      "requests": 845
     },
     {
       "asn": 398324,
       "organization": "Censys, Inc.",
-      "requests": 678
+      "requests": 724
     },
     {
       "asn": 14061,
       "organization": "DigitalOcean, LLC",
-      "requests": 509
+      "requests": 521
     },
     {
       "asn": 16509,
       "organization": "Amazon.com, Inc.",
-      "requests": 490
+      "requests": 477
     },
     {
       "asn": 6939,
       "organization": "Hurricane Electric LLC",
-      "requests": 341
+      "requests": 348
     }
   ],
   "signals": [
     {
       "type": "common_probe_path",
-      "requests": 2120
+      "requests": 2637
     },
     {
       "type": "path_traversal",
-      "requests": 57
+      "requests": 65
     },
     {
       "type": "sensitive_file_probe",
@@ -195,7 +195,7 @@
   ],
   "attribution": "IP geolocation by DB-IP Lite (CC BY 4.0)",
   "period_key": "7days",
-  "period_start_utc": "2026-11-01 00:00 UTC",
-  "period_end_exclusive_utc": "2026-11-08 00:00 UTC",
+  "period_start_utc": "2026-11-02 00:00 UTC",
+  "period_end_exclusive_utc": "2026-11-09 00:00 UTC",
   "partial_initial_coverage": false
 }
