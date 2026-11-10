@@ -157,19 +157,14 @@
       throw Error("UNEXPECTED_PORTTIME_SCHEMA");
     }
 
-    if (data.status === "awaiting_production_activation") {
-      status.textContent =
-        "観測準備中：常時収集の試験・有効化が未完了です";
-      return;
-    }
-    if (data.status === "no_eligible_completed_day") {
-      status.textContent =
-        "公開可能な日次データはまだありません（24時間遅延）";
+    if (data.status === "awaiting_production_activation" ||
+        data.status === "no_eligible_completed_day") {
       return;
     }
 
     rows = data.groups;
     if (!rows.length) {
+      status.hidden = false;
       status.textContent = "公開可能なデータを確認できません";
       return;
     }
@@ -201,8 +196,7 @@
       country.appendChild(option);
     }
 
-    status.textContent =
-      "観測データを表示中（UTC日単位・24時間以上の遅延）";
+    status.hidden = true;
     filters.hidden = false;
     results.hidden = false;
     render();
@@ -231,6 +225,7 @@
     .catch(() => {
       filters.hidden = true;
       results.hidden = true;
+      status.hidden = false;
       status.textContent =
         "観測データを読み込めません（欠測や攻撃0件とは異なります）";
     });
