@@ -20,7 +20,7 @@
 <p><a href="explore.html">Explore Map</a> · <a href="cases.html">HTTP attack cases</a> · <small class="data-source"><a href="https://db-ip.com/">IP Geolocation by DB-IP</a></small></p>
 <p>Aggregated telemetry from a self-operated HTTP/HTTPS sensor.
 No source IPs, request bodies, or raw headers are published here.</p>
-<p class="muted">Generated 2026-11-10 13:40 UTC · Times shown in UTC</p>
+<p class="muted">Generated 2026-11-12 13:45 UTC · Times shown in UTC</p>
 </header>
 
 <section class="panel" id="overview-date-controls">
@@ -28,20 +28,20 @@ No source IPs, request bodies, or raw headers are published here.</p>
 <div class="overview-date-fields">
 <label>Start date (YYYY/MM/DD)
 <input type="date" id="overview-start-date"
- min="2026-10-30" max="2026-11-08"
- value="2026-11-02"></label>
+ min="2026-10-30" max="2026-11-11"
+ value="2026-11-05"></label>
 <label>End date (YYYY/MM/DD)
 <input type="date" id="overview-end-date"
- min="2026-10-30" max="2026-11-08"
- value="2026-11-08"></label>
+ min="2026-10-30" max="2026-11-11"
+ value="2026-11-11"></label>
 <button type="button" id="overview-range-apply">
 Show observations
 </button>
 </div>
 <p class="muted">
-Available UTC dates: 2026-10-30 to 2026-11-08.
+Available UTC dates: 2026-10-30 to 2026-11-11.
 Start and end days are included.
-Publication is delayed by at least 24 hours.
+Only completed UTC days are published.
 </p>
 <p class="muted">
 Only HTTP summaries use this range.
@@ -55,42 +55,42 @@ snapshots, not interval totals.
 <!-- port-counter-overview:start -->
 <section class="panel" id="port-counter-overview">
 <h2>All-port observations: TCP SYN / UDP</h2>
-<p class="muted">Retained nftables counters sampled 2026-11-08T18:15:02Z (UTC)</p>
+<p class="muted">Retained nftables counters sampled 2026-11-11T18:15:02Z (UTC)</p>
 <div class="metrics">
-<article class="metric"><span>TCP SYN packets in retained counters</span><strong>138,595</strong></article>
-<article class="metric"><span>TCP SYN destination ports</span><strong>17,214</strong></article>
-<article class="metric"><span>UDP new packets in retained counters</span><strong>5,367</strong></article>
-<article class="metric"><span>UDP new destination ports</span><strong>413</strong></article>
+<article class="metric"><span>TCP SYN packets in retained counters</span><strong>222,544</strong></article>
+<article class="metric"><span>TCP SYN destination ports</span><strong>32,701</strong></article>
+<article class="metric"><span>UDP new packets in retained counters</span><strong>7,036</strong></article>
+<article class="metric"><span>UDP new destination ports</span><strong>464</strong></article>
 </div>
 <div class="columns">
 <section class="panel">
 <h2>TCP SYN: top destination ports</h2>
 <table><thead><tr><th>Port</th><th class="number">Packets</th><th class="number">Bytes</th></tr></thead><tbody>
-<tr><td>443/tcp</td><td class="number">5,945</td><td class="number">322,512</td></tr>
-<tr><td>23/tcp</td><td class="number">5,051</td><td class="number">260,870</td></tr>
-<tr><td>22/tcp</td><td class="number">4,296</td><td class="number">236,774</td></tr>
-<tr><td>8080/tcp</td><td class="number">3,877</td><td class="number">186,132</td></tr>
-<tr><td>80/tcp</td><td class="number">3,505</td><td class="number">181,129</td></tr>
-<tr><td>8443/tcp</td><td class="number">2,437</td><td class="number">129,314</td></tr>
-<tr><td>8000/tcp</td><td class="number">1,815</td><td class="number">91,316</td></tr>
-<tr><td>10443/tcp</td><td class="number">1,508</td><td class="number">84,676</td></tr>
-<tr><td>4443/tcp</td><td class="number">1,465</td><td class="number">80,956</td></tr>
-<tr><td>8888/tcp</td><td class="number">1,459</td><td class="number">73,860</td></tr>
+<tr><td>27419/tcp</td><td class="number">26,633</td><td class="number">1,591,796</td></tr>
+<tr><td>443/tcp</td><td class="number">8,439</td><td class="number">461,568</td></tr>
+<tr><td>23/tcp</td><td class="number">6,700</td><td class="number">349,988</td></tr>
+<tr><td>8080/tcp</td><td class="number">5,163</td><td class="number">248,744</td></tr>
+<tr><td>22/tcp</td><td class="number">5,098</td><td class="number">278,898</td></tr>
+<tr><td>80/tcp</td><td class="number">4,778</td><td class="number">248,738</td></tr>
+<tr><td>8443/tcp</td><td class="number">3,853</td><td class="number">207,338</td></tr>
+<tr><td>10443/tcp</td><td class="number">2,441</td><td class="number">138,488</td></tr>
+<tr><td>8000/tcp</td><td class="number">2,409</td><td class="number">122,304</td></tr>
+<tr><td>4443/tcp</td><td class="number">2,394</td><td class="number">134,216</td></tr>
 </tbody></table>
 </section>
 <section class="panel">
 <h2>UDP new: top destination ports</h2>
 <table><thead><tr><th>Port</th><th class="number">Packets</th><th class="number">Bytes</th></tr></thead><tbody>
-<tr><td>53/udp</td><td class="number">805</td><td class="number">69,848</td></tr>
-<tr><td>5060/udp</td><td class="number">411</td><td class="number">159,202</td></tr>
-<tr><td>123/udp</td><td class="number">236</td><td class="number">17,052</td></tr>
-<tr><td>161/udp</td><td class="number">226</td><td class="number">17,516</td></tr>
-<tr><td>500/udp</td><td class="number">173</td><td class="number">47,306</td></tr>
-<tr><td>1900/udp</td><td class="number">145</td><td class="number">16,929</td></tr>
-<tr><td>1194/udp</td><td class="number">120</td><td class="number">5,092</td></tr>
-<tr><td>3283/udp</td><td class="number">104</td><td class="number">6,624</td></tr>
-<tr><td>137/udp</td><td class="number">100</td><td class="number">7,749</td></tr>
-<tr><td>5353/udp</td><td class="number">88</td><td class="number">6,689</td></tr>
+<tr><td>53/udp</td><td class="number">909</td><td class="number">76,385</td></tr>
+<tr><td>5060/udp</td><td class="number">577</td><td class="number">225,073</td></tr>
+<tr><td>161/udp</td><td class="number">329</td><td class="number">25,803</td></tr>
+<tr><td>123/udp</td><td class="number">314</td><td class="number">22,435</td></tr>
+<tr><td>500/udp</td><td class="number">221</td><td class="number">62,832</td></tr>
+<tr><td>1900/udp</td><td class="number">204</td><td class="number">24,120</td></tr>
+<tr><td>1194/udp</td><td class="number">159</td><td class="number">6,708</td></tr>
+<tr><td>137/udp</td><td class="number">149</td><td class="number">11,571</td></tr>
+<tr><td>9034/udp</td><td class="number">133</td><td class="number">16,516</td></tr>
+<tr><td>3283/udp</td><td class="number">121</td><td class="number">7,185</td></tr>
 </tbody></table>
 </section>
 </div>
