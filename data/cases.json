@@ -2,8 +2,8 @@
   "schema_version": 1,
   "total_matching_requests": 5324,
   "signal_totals": {
-    "common_probe_path": 5224,
     "path_traversal": 93,
+    "common_probe_path": 5224,
     "sensitive_file_probe": 7
   },
   "cases": [
