@@ -68,6 +68,21 @@
    }
 
    const values=[...counts.keys()];
+   if(key==="port" && values.length>250){
+    values.sort((a,b)=>
+      counts.get(b)-counts.get(a)||
+      Number(a)-Number(b)
+    );
+    const keep=values.slice(0,250);
+    if(
+      chosen.port &&
+      counts.has(chosen.port) &&
+      !keep.includes(chosen.port)
+    ){
+      keep.push(chosen.port);
+    }
+    values.splice(0,values.length,...keep);
+   }
 
    values.sort((a,b)=>
     key==="port" ?
@@ -87,7 +102,7 @@
    const all=document.createElement("option");
    all.value="";
    all.textContent=
-    `All (${fmt(total)} requests)`;
+    `All (${fmt(total)} observations)`;
    select.appendChild(all);
 
    for(const value of values){
@@ -95,7 +110,7 @@
     option.value=value;
 
     const label=key==="country" ?
-     countryName(value) : key==="port" ? value+"/tcp" : value;
+     countryName(value) : key==="port" ? value+(window.HP_KIND==="UDP"?"/udp":window.HP_KIND==="all"?" (TCP+UDP)":"/tcp") : value;
 
     option.textContent=
      `${label} (${fmt(counts.get(value))})`;

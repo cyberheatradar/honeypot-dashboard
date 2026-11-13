@@ -178,7 +178,7 @@
 
   status.textContent=
    `${arcs.length} international country arcs · `+
-   `${fmt(counts.get("JP")||0)} domestic requests`+
+   `${fmt(counts.get("JP")||0)} domestic observations`+
    (unmapped ?
     ` · ${unmapped} source countries not mapped` :
     "");
@@ -434,7 +434,7 @@
     .arcDashAnimateTime(2800)
     .arcLabel(
      d=>safe(d.name)+": "+
-      fmt(d.count)+" requests"
+      fmt(d.count)+" observations"
     )
     .pointsData([])
     .pointLat(d=>d.lat)
@@ -449,7 +449,7 @@
     )
     .pointLabel(
      d=>safe(d.name)+": "+
-      fmt(d.count)+" requests"
+      fmt(d.count)+" observations"
     )
     .onArcClick(
      d=>setCountry(d.code)

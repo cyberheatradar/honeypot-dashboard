@@ -7,6 +7,7 @@ const rows=payload.rows;
 const dims=["day","country","port","transport","method","signal"];
 const selects=Object.fromEntries(dims.map(k=>[k,document.getElementById("f-"+k)]));
 for(const k of dims){
+ if(k==="port")continue;
  const values=[...new Set(rows.map(r=>String(r[k])))].sort((a,b)=>
   k==="port" ? Number(a)-Number(b) : (k==="country" ? countryLabel(a).localeCompare(countryLabel(b)) : a.localeCompare(b)));
  for(const v of values){
@@ -39,7 +40,7 @@ function renderPortBreakdown(active,total){
 
  mapPortRows.replaceChildren();
 
- for(const [port,count] of sorted){
+ for(const [port,count] of sorted.slice(0,200)){
   const tr=document.createElement("tr");
   const tdPort=document.createElement("td");
   const tdCount=document.createElement("td");
@@ -47,12 +48,12 @@ function renderPortBreakdown(active,total){
   const button=document.createElement("button");
 
   button.type="button";
-  button.textContent=port+"/tcp";
+  button.textContent=port+(window.HP_KIND==="UDP"?"/udp":window.HP_KIND==="all"?" (TCP+UDP)":"/tcp");
   button.title="Filter destination port "+port+"/tcp";
 
   button.addEventListener("click",()=>{
-   selects.port.value=
-    selects.port.value===port?"":port;
+   if(![...selects.port.options].some(o=>o.value===port))selects.port.add(new Option(port,port));
+   selects.port.value=selects.port.value===port?"":port;
 
    selects.port.dispatchEvent(
     new Event("change",{bubbles:true})
@@ -73,7 +74,7 @@ function renderPortBreakdown(active,total){
   const tr=document.createElement("tr");
   const td=document.createElement("td");
   td.colSpan=3;
-  td.textContent="No matching requests";
+  td.textContent="No matching observations";
   tr.append(td);
   mapPortRows.append(tr);
  }
@@ -100,11 +101,11 @@ function render(){
   const title=node.querySelector("title");
   if(title){
    const name=title.textContent.split(" — ")[0];
-   title.textContent=`${name} — ${format(n)} requests`;
+   title.textContent=`${name} — ${format(n)} observations`;
   }
  }
  renderPortBreakdown(active,total);
- summary.textContent=`${format(total)} requests matching filters · `+
+ summary.textContent=`${format(total)} observations matching filters · `+
   `${countryCounts.size} source-country categories`;
  tbody.replaceChildren();
  const sorted=[...countryCounts.entries()].sort((a,b)=>
@@ -474,7 +475,7 @@ render();
 
   status.textContent=
    `${drawn} source-country beams toward Japan`+
-   ` · ${jpCount.toLocaleString("en-US")} domestic requests`+
+   ` · ${jpCount.toLocaleString("en-US")} domestic observations`+
    (unmapped?` · ${unmapped} unmapped countries`:"");
  }
 
