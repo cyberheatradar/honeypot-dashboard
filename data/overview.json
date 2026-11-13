@@ -1,17 +1,12 @@
 {
-  "generated_utc": "2026-11-12 13:45 UTC",
+  "generated_utc": "2026-11-13 00:15 UTC",
   "metrics": {
-    "http_requests": 23490,
-    "unique_source_ips": 3083,
+    "http_requests": 23333,
+    "unique_source_ips": 3100,
     "destination_ports": 42,
-    "https_requests": 7366
+    "https_requests": 7228
   },
   "daily_utc": [
-    {
-      "date": "2026-11-05",
-      "requests": 1576,
-      "unique_sources": 637
-    },
     {
       "date": "2026-11-06",
       "requests": 3827,
@@ -41,90 +36,95 @@
       "date": "2026-11-11",
       "requests": 3138,
       "unique_sources": 687
+    },
+    {
+      "date": "2026-11-12",
+      "requests": 1419,
+      "unique_sources": 641
     }
   ],
   "ports": [
     {
       "port": 80,
-      "requests": 4766
+      "requests": 4746
     },
     {
       "port": 443,
-      "requests": 4277
+      "requests": 4238
     },
     {
       "port": 8080,
-      "requests": 1094
+      "requests": 1029
     },
     {
       "port": 8000,
-      "requests": 721
+      "requests": 710
     },
     {
       "port": 8443,
-      "requests": 667
+      "requests": 674
     },
     {
       "port": 9200,
-      "requests": 637
-    },
-    {
-      "port": 8008,
-      "requests": 564
+      "requests": 589
     },
     {
       "port": 5000,
-      "requests": 558
+      "requests": 581
+    },
+    {
+      "port": 8008,
+      "requests": 565
     },
     {
       "port": 8088,
-      "requests": 545
+      "requests": 560
     },
     {
-      "port": 8888,
+      "port": 3000,
       "requests": 539
     }
   ],
   "countries": [
     {
       "country": "United States",
-      "requests": 5435
+      "requests": 5359
     },
     {
       "country": "Hungary",
-      "requests": 5000
+      "requests": 4999
     },
     {
       "country": "Japan",
-      "requests": 2602
+      "requests": 2605
     },
     {
       "country": "Germany",
-      "requests": 1861
+      "requests": 1858
     },
     {
       "country": "France",
-      "requests": 1819
+      "requests": 1787
     },
     {
       "country": "United Kingdom",
-      "requests": 1713
-    },
-    {
-      "country": "Sweden",
-      "requests": 667
-    },
-    {
-      "country": "Netherlands",
-      "requests": 630
-    },
-    {
-      "country": "Hong Kong",
-      "requests": 627
+      "requests": 1691
     },
     {
       "country": "Belgium",
-      "requests": 609
+      "requests": 724
+    },
+    {
+      "country": "Sweden",
+      "requests": 660
+    },
+    {
+      "country": "Netherlands",
+      "requests": 623
+    },
+    {
+      "country": "Andorra",
+      "requests": 487
     }
   ],
   "asns": [
@@ -136,12 +136,12 @@
     {
       "asn": 63949,
       "organization": "Akamai Technologies, Inc.",
-      "requests": 2988
+      "requests": 3074
     },
     {
       "asn": 25369,
       "organization": "Hydra Communications Ltd",
-      "requests": 1654
+      "requests": 1653
     },
     {
       "asn": 211590,
@@ -151,7 +151,7 @@
     {
       "asn": 8075,
       "organization": "Microsoft Corporation",
-      "requests": 1320
+      "requests": 1321
     },
     {
       "asn": 213790,
@@ -164,38 +164,38 @@
       "requests": 1143
     },
     {
+      "asn": 43515,
+      "organization": "Google Ireland Limited",
+      "requests": 681
+    },
+    {
       "asn": 398324,
       "organization": "Censys, Inc.",
-      "requests": 656
+      "requests": 662
     },
     {
       "asn": 396982,
       "organization": "Google LLC",
-      "requests": 648
-    },
-    {
-      "asn": 43515,
-      "organization": "Google Ireland Limited",
-      "requests": 561
+      "requests": 631
     }
   ],
   "signals": [
     {
       "type": "common_probe_path",
-      "requests": 4419
+      "requests": 4386
     },
     {
       "type": "path_traversal",
-      "requests": 40
+      "requests": 36
     },
     {
       "type": "sensitive_file_probe",
-      "requests": 3
+      "requests": 2
     }
   ],
   "attribution": "IP geolocation by DB-IP Lite (CC BY 4.0)",
   "period_key": "7days",
-  "period_start_utc": "2026-11-05 00:00 UTC",
-  "period_end_exclusive_utc": "2026-11-12 00:00 UTC",
+  "period_start_utc": "2026-11-06 00:00 UTC",
+  "period_end_exclusive_utc": "2026-11-13 00:00 UTC",
   "partial_initial_coverage": false
 }
