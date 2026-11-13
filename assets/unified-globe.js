@@ -177,11 +177,9 @@
   });
 
   status.textContent=
-   `${arcs.length} international country arcs · `+
-   `${fmt(counts.get("JP")||0)} domestic observations`+
-   (unmapped ?
-    ` · ${unmapped} source countries not mapped` :
-    "");
+   `${arcs.length} source-country beams toward Japan`+
+   ` · ${fmt(counts.get("JP")||0)} domestic observations`+
+   (unmapped?` · ${unmapped} unmapped countries`:"");
  }
 
  function fitStage(){

@@ -14,7 +14,7 @@
 <script src="assets/map.js?v=20261113-v2" defer></script>
 <link rel="stylesheet"
  href="assets/unified.css?v=20261104-m10b">
-<script src="assets/unified-globe.js?v=20261113-v2"
+<script src="assets/unified-globe.js?v=20261113-footer3"
  defer></script>
 <script src="assets/unified-filter-counts.js?v=20261113-v2" defer></script>
 
@@ -24,7 +24,7 @@
 }
 .hp-port-stats{
   display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:10px;
 }
 .hp-port-stat{
@@ -143,6 +143,16 @@ body:not(.hp-http-mode) .hp-http-only{
   color:#91a4b8;
 }
 </style>
+
+<style id="hp-globe-status-style">
+#map-beam-status,
+#unified-globe-status{
+  color:#a9dfe5;
+  font-size:.78rem;
+  font-weight:400;
+  line-height:1.5;
+}
+</style>
 </head>
 <body>
 <main class="container map-layout-page">
@@ -152,7 +162,7 @@ body:not(.hp-http-mode) .hp-http-only{
 
 
 </header>
-<section class="hp-port-summary" aria-label="TCP and UDP all-port statistics"><div class="hp-port-stats"><div class="hp-port-stat"><span>Observed TCP SYN packets</span><strong>82,390</strong></div><div class="hp-port-stat"><span>Observed UDP packets</span><strong>1,520</strong></div><div class="hp-port-stat"><span>TCP destination ports</span><strong>30,365</strong></div><div class="hp-port-stat"><span>UDP destination ports</span><strong>648</strong></div></div></section>
+<section class="hp-port-summary" aria-label="TCP and UDP all-port statistics"><div class="hp-port-stats"><div class="hp-port-stat"><span>Observed TCP SYN packets</span><strong>82,390</strong></div><div class="hp-port-stat"><span>Observed UDP packets</span><strong>1,520</strong></div><div class="hp-port-stat"><span>Last updated</span><strong>20261113 UTC</strong></div></div></section>
 <div class="map-workspace">
 <section class="panel map-filters-panel">
 <h2>Filter observations</h2>
