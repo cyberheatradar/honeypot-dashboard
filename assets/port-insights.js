@@ -101,24 +101,6 @@
     throw Error("PORT_INSIGHTS_HEADER_MISMATCH");
   }
 
-  // Display distinct destination ports below the
-  // existing destination-port filter.
-
-  const portLabel = portSelect.closest("label");
-
-  if (!portLabel) {
-    throw Error("PORT_INSIGHTS_FILTER_LABEL_MISSING");
-  }
-
-  const distinct = document.createElement("p");
-
-  distinct.className = "hp-insight-distinct";
-  distinct.setAttribute("aria-live", "polite");
-
-  portLabel.insertAdjacentElement(
-    "afterend",
-    distinct
-  );
 
   let scheduled = false;
 
@@ -144,7 +126,7 @@
     const selectedCountry = countrySelect.value;
     const selectedPort = portSelect.value;
 
-    const distinctPorts = new Set();
+
 
     const countriesByPort = new Map();
     const portsByCountry = new Map();
@@ -179,7 +161,7 @@
       const port = String(row.port);
       const country = String(row.country);
 
-      distinctPorts.add(port);
+
       total += count;
 
       observationsByPort.set(
@@ -211,11 +193,6 @@
       }
     }
 
-    // LEFT: distinct destination ports.
-
-    distinct.textContent =
-      "Distinct destination ports: " +
-      fmt(distinctPorts.size);
 
     // RIGHT TOP: Share / Countries.
 
