@@ -11,7 +11,7 @@
  }
 
  const packets=JSON.parse(source.textContent);
- const allowed=new Set(["all","TCP_SYN","UDP"]);
+ const allowed=new Set(["TCP_SYN","UDP"]);
 
  if(
    !Array.isArray(packets.rows) ||
@@ -22,7 +22,7 @@
 
  const params=new URLSearchParams(location.search);
  const requested=params.get("kind");
- const selected=allowed.has(requested)?requested:"all";
+ const selected=allowed.has(requested)?requested:"TCP_SYN";
 
  window.HP_KIND=selected;
  mode.value=selected;
