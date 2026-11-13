@@ -52,6 +52,7 @@
  }
 
  const isHTTP=selected==="HTTP";
+ document.body.classList.toggle("hp-http-mode",isHTTP);
 
  status.textContent=isHTTP
    ?"HTTP request observations (separate metric)"
