@@ -2,17 +2,16 @@
  "use strict";
 
  const by=id=>document.getElementById(id);
-
  const base=by("map-data");
  const source=by("hp-packet-data");
  const mode=by("hp-kind");
- const status=by("hp-status");
 
- if(!base||!source||!mode||!status){
+ if(!base||!source||!mode){
    throw Error("PORT_MAP_BOOTSTRAP_MISSING");
  }
 
  const packets=JSON.parse(source.textContent);
+ const allowed=new Set(["all","TCP_SYN","UDP"]);
 
  if(
    !Array.isArray(packets.rows) ||
@@ -21,55 +20,33 @@
    throw Error("PORT_MAP_BOOTSTRAP_SCHEMA");
  }
 
- const permitted=new Set([
-   "all","TCP_SYN","UDP","HTTP"
- ]);
-
- const url=new URLSearchParams(location.search);
-
- const selected=permitted.has(url.get("kind"))
-   ?url.get("kind")
-   :"all";
+ const params=new URLSearchParams(location.search);
+ const requested=params.get("kind");
+ const selected=allowed.has(requested)?requested:"all";
 
  window.HP_KIND=selected;
  mode.value=selected;
 
- if(selected!=="HTTP"){
-   const rows=selected==="all"
-     ?packets.rows
-     :packets.rows.filter(
-       r=>r.transport===selected
-     );
+ const rows=selected==="all"
+   ?packets.rows
+   :packets.rows.filter(
+      r=>r.transport===selected
+    );
 
-   const sum=rows.reduce(
-     (n,r)=>n+r.count,0
-   );
+ const sum=rows.reduce((n,r)=>n+r.count,0);
 
-   base.textContent=JSON.stringify({
-     rows,
-     total:sum
-   });
+ if(!Number.isSafeInteger(sum)){
+   throw Error("PORT_MAP_COUNT_INVALID");
  }
 
- const isHTTP=selected==="HTTP";
- document.body.classList.toggle("hp-http-mode",isHTTP);
-
- status.textContent=isHTTP
-   ?"HTTP request observations (separate metric)"
-   :(selected==="all"?"TCP SYN + UDP":selected)+
-    " observed packets · "+
-    new Intl.NumberFormat("en-US").format(
-      JSON.parse(base.textContent).total
-    )+
-    (packets.coverage_verified
-      ?" · coverage verified"
-      :" · coverage not verified; do not infer all inbound traffic");
+ base.textContent=JSON.stringify({
+   rows:rows,
+   total:sum
+ });
 
  for(const key of ["method","signal"]){
    const el=by("f-"+key);
-   if(el){
-     el.disabled=!isHTTP;
-   }
+   if(el)el.disabled=true;
  }
 
  mode.addEventListener("change",()=>{
