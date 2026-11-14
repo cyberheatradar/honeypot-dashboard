@@ -72,15 +72,6 @@
     ]
   );
 
-  const countryMode = addModeSelect(
-    findHeading("Source country ranking"),
-    "Country ranking metric",
-    [
-      ["observations", "Observations"],
-      ["ports", "Ports"]
-    ]
-  );
-
   const portTable = portBody.closest("table");
   const countryTable = countryBody.closest("table");
 
@@ -100,6 +91,13 @@
   ) {
     throw Error("PORT_INSIGHTS_HEADER_MISMATCH");
   }
+
+  countryTable.classList.add("hp-country-metrics");
+  countryHeaders[1].textContent = "Packets";
+
+  const targetedHeader = document.createElement("th");
+  targetedHeader.textContent = "Targeted ports";
+  countryHeaders[1].after(targetedHeader);
 
 
   let scheduled = false;
@@ -229,12 +227,7 @@
       }
     }
 
-    // RIGHT BOTTOM: Observations / Ports.
-
-    countryHeaders[1].textContent =
-      countryMode.value === "ports"
-        ? "Ports"
-        : "Observations";
+    // RIGHT BOTTOM: packets and unique targeted ports.
 
     // Match the original map renderer's ranking order.
     const ranking = [
@@ -245,22 +238,29 @@
         a[0].localeCompare(b[0])
     );
 
-    if (ranking.length === countryBody.rows.length) {
-      for (let i = 0; i < ranking.length; i++) {
-        const cells = countryBody.rows[i].cells;
+    if (ranking.length !== countryBody.rows.length) {
+      throw Error("COUNTRY_RANKING_ROW_MISMATCH");
+    }
 
-        if (cells.length !== 2) continue;
+    for (let i = 0; i < ranking.length; i++) {
+      const tr = countryBody.rows[i];
 
-        const country = ranking[i][0];
-
-        if (countryMode.value === "ports") {
-          cells[1].textContent = fmt(
-            portsByCountry.get(country)?.size || 0
-          );
-        } else {
-          cells[1].textContent = fmt(ranking[i][1]);
-        }
+      if (tr.cells.length === 2) {
+        const td = document.createElement("td");
+        td.className = "number";
+        tr.appendChild(td);
       }
+
+      if (tr.cells.length !== 3) {
+        throw Error("COUNTRY_RANKING_COLUMNS_INVALID");
+      }
+
+      const country = ranking[i][0];
+
+      tr.cells[1].textContent = fmt(ranking[i][1]);
+      tr.cells[2].textContent = fmt(
+        portsByCountry.get(country)?.size || 0
+      );
     }
   }
 
@@ -268,8 +268,7 @@
     daySelect,
     countrySelect,
     portSelect,
-    portMode,
-    countryMode
+    portMode
   ]) {
     control.addEventListener("change", schedule);
   }
