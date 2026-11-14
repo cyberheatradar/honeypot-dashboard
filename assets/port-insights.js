@@ -32,46 +32,6 @@
   const fmt = value =>
     Number(value).toLocaleString("en-US");
 
-  function findHeading(text) {
-    return [...document.querySelectorAll("h2,h3")]
-      .find(element =>
-        element.textContent.trim() === text
-      );
-  }
-
-  // Add compact metric selectors to the existing
-  // ranking headings; no new columns are required.
-
-  function addModeSelect(heading, label, options) {
-    if (!heading) {
-      throw Error("PORT_INSIGHTS_HEADING_MISSING");
-    }
-
-    const select = document.createElement("select");
-
-    select.className = "hp-insight-mode";
-    select.setAttribute("aria-label", label);
-
-    for (const [value, caption] of options) {
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = caption;
-      select.appendChild(option);
-    }
-
-    heading.appendChild(select);
-    return select;
-  }
-
-  const portMode = addModeSelect(
-    findHeading("Destination port ranking"),
-    "Port ranking metric",
-    [
-      ["share", "Share"],
-      ["countries", "Countries"]
-    ]
-  );
-
   const portTable = portBody.closest("table");
   const countryTable = countryBody.closest("table");
 
@@ -91,6 +51,17 @@
   ) {
     throw Error("PORT_INSIGHTS_HEADER_MISMATCH");
   }
+
+  portTable.classList.add(
+    "hp-port-four-columns"
+  );
+
+  portHeaders[1].textContent = "Packets";
+  portHeaders[2].textContent = "Share";
+
+  const countriesHeader = document.createElement("th");
+  countriesHeader.textContent = "Countries";
+  portHeaders[2].after(countriesHeader);
 
   countryTable.classList.add("hp-country-metrics");
   countryHeaders[1].textContent = "Packets";
@@ -192,39 +163,53 @@
     }
 
 
-    // RIGHT TOP: Share / Countries.
-
-    portHeaders[2].textContent =
-      portMode.value === "countries"
-        ? "Countries"
-        : "Share";
+    // RIGHT TOP: Packets / Share / Countries.
 
     for (const row of portBody.rows) {
-      const cells = row.cells;
+      // The original map renderer creates three cells.
+      // Add the fourth cell after each map update.
 
-      if (cells.length !== 3) continue;
+      if (row.cells.length === 1) {
+        // No matching observations.
+        row.cells[0].colSpan = 4;
+        continue;
+      }
+
+      if (row.cells.length === 3) {
+        const td = document.createElement("td");
+        td.className = "number";
+        row.appendChild(td);
+      }
+
+      if (row.cells.length !== 4) {
+        throw Error("PORT_RANKING_COLUMNS_INVALID");
+      }
+
+      const cells = row.cells;
 
       const match = cells[0].textContent.match(
         /^\s*(\d{1,5})(?:\/tcp|\/udp)\b/
       );
 
-      if (!match) continue;
+      if (!match) {
+        throw Error("PORT_RANKING_PORT_INVALID");
+      }
 
       const port = String(Number(match[1]));
 
-      if (portMode.value === "countries") {
-        const countries =
-          countriesByPort.get(port)?.size || 0;
+      const packets =
+        observationsByPort.get(port) || 0;
 
-        cells[2].textContent = fmt(countries);
-      } else {
-        const count =
-          observationsByPort.get(port) || 0;
+      const countries =
+        countriesByPort.get(port)?.size || 0;
 
-        cells[2].textContent = total
-          ? (100 * count / total).toFixed(1) + "%"
-          : "0.0%";
-      }
+      cells[1].textContent = fmt(packets);
+
+      cells[2].textContent = total
+        ? (100 * packets / total).toFixed(1) + "%"
+        : "0.0%";
+
+      cells[3].textContent = fmt(countries);
     }
 
     // RIGHT BOTTOM: packets and unique targeted ports.
@@ -267,8 +252,7 @@
   for (const control of [
     daySelect,
     countrySelect,
-    portSelect,
-    portMode
+    portSelect
   ]) {
     control.addEventListener("change", schedule);
   }
