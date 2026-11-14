@@ -3,8 +3,8 @@
   "total_matching_requests": 5357,
   "signal_totals": {
     "common_probe_path": 5257,
-    "sensitive_file_probe": 7,
-    "path_traversal": 93
+    "path_traversal": 93,
+    "sensitive_file_probe": 7
   },
   "cases": [
     {

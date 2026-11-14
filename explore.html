@@ -287,34 +287,156 @@ body:not(.hp-http-mode) .hp-http-only{
 }
 </style>
 
-<style id="hp-ranking-sticky-style">
 
-/* Keep ranking names at the top of each panel. */
+<style id="hp-ranking-excel-scroll-style">
 
-.map-ports-panel h2,
-.map-countries-panel h2 {
-    position: sticky;
-    top: 0;
-    z-index: 6;
+/*
+ * Ranking panels no longer scroll as a whole.
+ * Only each table's tbody is scrollable.
+ */
+
+.map-ranking-pair > .map-ranking-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    min-height: 0 !important;
+}
+
+/* Fixed ranking title. */
+
+.map-ranking-pair > .map-ranking-panel > h2 {
+    position: static !important;
+    top: auto !important;
+    z-index: auto !important;
+    flex: 0 0 auto;
     background: #141f31;
 }
 
-/* Table headers remain below the ranking names. */
+/*
+ * Table becomes a two-row layout:
+ * row 1 = fixed column headings
+ * row 2 = scrollable data
+ */
+
+.map-ranking-pair > .map-ranking-panel table {
+    display: grid !important;
+    grid-template-rows:
+        max-content minmax(0, 1fr) !important;
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    border-spacing: 0 !important;
+}
+
+/* Column headings: outside scroll area. */
+
+.map-ranking-pair > .map-ranking-panel thead {
+    display: block !important;
+    overflow: hidden !important;
+    scrollbar-gutter: stable;
+    background: #141f31;
+    flex-shrink: 0;
+}
+
+.map-ranking-pair > .map-ranking-panel thead th {
+    position: static !important;
+    top: auto !important;
+    z-index: auto !important;
+    background: #141f31 !important;
+}
+
+/* Data rows: the only scrollable region. */
+
+.map-ranking-pair > .map-ranking-panel tbody {
+    display: block !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin;
+    scrollbar-color: #466079 #141f31;
+    scrollbar-gutter: stable;
+}
+
+/*
+ * Use the same grid columns for both the headings
+ * and the data rows, keeping values aligned.
+ */
+
+.map-ranking-pair > .map-ranking-panel tr {
+    display: grid !important;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+}
+
+.map-ports-panel tr {
+    grid-template-columns:
+        30% 23% 19% 28%;
+}
+
+.map-countries-panel tr {
+    grid-template-columns:
+        43% 24% 33%;
+}
+
+.map-ranking-pair > .map-ranking-panel
+tr > th,
+.map-ranking-pair > .map-ranking-panel
+tr > td {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.map-ranking-pair > .map-ranking-panel
+tr > th:first-child,
+.map-ranking-pair > .map-ranking-panel
+tr > td:first-child {
+    text-align: left !important;
+}
+
+.map-ranking-pair > .map-ranking-panel
+tr > th:not(:first-child),
+.map-ranking-pair > .map-ranking-panel
+tr > td:not(:first-child) {
+    text-align: right !important;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Keep empty-state messages across full table width. */
+
+.map-ports-panel tbody tr > td:only-child {
+    grid-column: 1 / -1;
+}
+
+.map-countries-panel tbody tr > td:only-child {
+    grid-column: 1 / -1;
+}
+
+/* Preserve compact columns within the current width. */
 
 .map-ports-panel thead th,
 .map-countries-panel thead th {
-    position: sticky;
-    top: var(--hp-ranking-title-offset, 36px);
-    z-index: 5;
-    background: #141f31;
+    font-size: 11px !important;
+    padding: 7px 3px !important;
 }
 
-/* Maintain the original independent scroll panels. */
+.map-ports-panel tbody td,
+.map-countries-panel tbody td {
+    font-size: 12px;
+    padding: 7px 3px !important;
+}
 
-.map-ports-panel,
-.map-countries-panel {
-    scrollbar-width: thin;
-    scrollbar-color: #466079 #141f31;
+/* Existing desktop half-height panels are preserved. */
+
+@media (max-width: 1199px) {
+    .map-ranking-pair > .map-ranking-panel {
+        height: 340px;
+        max-height: 340px;
+    }
 }
 
 </style>
@@ -327,7 +449,7 @@ body:not(.hp-http-mode) .hp-http-only{
 
 
 </header>
-<section class="hp-port-summary" aria-label="TCP and UDP all-port statistics"><div class="hp-port-stats"><div class="hp-port-stat"><span>Observed TCP SYN packets</span><strong>106,059</strong></div><div class="hp-port-stat"><span>Observed UDP packets</span><strong>1,981</strong></div><div class="hp-port-stat"><span>Last updated</span><strong>2026/11/14 22:36:36 JST</strong></div></div></section>
+<section class="hp-port-summary" aria-label="TCP and UDP all-port statistics"><div class="hp-port-stats"><div class="hp-port-stat"><span>Observed TCP SYN packets</span><strong>106,059</strong></div><div class="hp-port-stat"><span>Observed UDP packets</span><strong>1,981</strong></div><div class="hp-port-stat"><span>Last updated</span><strong>2026/11/14 22:44:05 JST</strong></div></div></section>
 <div class="map-workspace">
 <section class="panel map-filters-panel">
 <h2>Filter observations</h2>
@@ -412,80 +534,4 @@ Drag to rotate; Ctrl + drag or Ctrl + wheel to zoom.
 <script src="assets/allports-bootstrap.js?v=20261113-two-protocols1"></script>
 <script src="assets/port-insights.js?v=20261114-port4-v1" defer></script>
 
-<script id="hp-ranking-sticky-script">
-(() => {
-    "use strict";
-
-    function initialize() {
-        const panels = [
-            document.querySelector(".map-ports-panel"),
-            document.querySelector(".map-countries-panel")
-        ];
-
-        if (panels.some(panel => !panel)) {
-            throw Error("RANKING_PANEL_MISSING");
-        }
-
-        const update = panel => {
-            const heading = panel.querySelector("h2");
-            const tableHead = panel.querySelector(
-                "table thead"
-            );
-
-            if (!heading || !tableHead) {
-                throw Error("RANKING_HEADER_MISSING");
-            }
-
-            const style = getComputedStyle(heading);
-            const margin = parseFloat(
-                style.marginBottom
-            ) || 0;
-
-            const height = Math.ceil(
-                heading.getBoundingClientRect().height
-                + margin
-            );
-
-            panel.style.setProperty(
-                "--hp-ranking-title-offset",
-                height + "px"
-            );
-        };
-
-        for (const panel of panels) {
-            update(panel);
-        }
-
-        if (typeof ResizeObserver === "function") {
-            const observer = new ResizeObserver(() => {
-                for (const panel of panels) {
-                    update(panel);
-                }
-            });
-
-            for (const panel of panels) {
-                observer.observe(
-                    panel.querySelector("h2")
-                );
-            }
-        }
-
-        window.addEventListener("resize", () => {
-            for (const panel of panels) {
-                update(panel);
-            }
-        });
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener(
-            "DOMContentLoaded",
-            initialize,
-            {once: true}
-        );
-    } else {
-        initialize();
-    }
-})();
-</script>
 </body></html>
