@@ -67,7 +67,7 @@
   countryHeaders[1].textContent = "Packets";
 
   const targetedHeader = document.createElement("th");
-  targetedHeader.textContent = "Targeted ports";
+  targetedHeader.textContent = "Unique ports";
   countryHeaders[1].after(targetedHeader);
 
 
