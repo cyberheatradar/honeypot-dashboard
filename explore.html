@@ -487,58 +487,66 @@ tr > td:not(:first-child) {
 
 </style>
 
-<style id="hp-observation-summary-style">
 
-.hp-port-stats.hp-observation-trial-ready {
-    display: grid !important;
-    grid-template-columns:
-        minmax(0, 2fr) minmax(230px, 1fr) !important;
-    gap: 10px;
-    align-items: stretch;
+
+<style id="hp-summary-repair-style">
+[data-hp-summary-root="true"] {
+  display: grid !important;
+  grid-template-columns:
+    minmax(0,2fr) minmax(220px,1fr) !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+}
+
+/* Retain original nodes for existing filter scripts. */
+[data-hp-summary-root="true"] > :nth-child(2),
+[data-hp-summary-root="true"] > :nth-child(3) {
+  display: none !important;
 }
 
 .hp-observation-summary {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    min-width: 0;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  background: #141f31;
+  border: 1px solid #34445c;
+  border-radius: 12px;
 }
 
-.hp-observation-summary .hp-summary-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 6px;
+.hp-summary-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
-.hp-observation-summary .hp-summary-title {
-    font-size: 14px;
-    font-weight: 650;
-    color: #eff7ff;
+.hp-summary-heading strong {
+  font-size: 14px;
+  color: #f1f7ff;
 }
 
-.hp-observation-summary .hp-summary-period {
-    font-size: 10px;
-    color: #9bb4c9;
+.hp-summary-heading span {
+  font-size: 10px;
+  color: #9eb3ca;
 }
 
-.hp-observation-summary .hp-summary-text {
-    margin: 0;
-    color: #d7e9f4;
-    font-size: 12.5px;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
+.hp-observation-summary p {
+  margin: 0;
+  color: #dce8f6;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
-@media (max-width: 760px) {
-    .hp-port-stats.hp-observation-trial-ready {
-        grid-template-columns: minmax(0, 1fr) !important;
-    }
+@media (max-width:760px) {
+  [data-hp-summary-root="true"] {
+    grid-template-columns: 1fr !important;
+  }
 }
-
 </style>
 </head>
 <body>
@@ -549,7 +557,21 @@ tr > td:not(:first-child) {
 
 
 </header>
-<section class="hp-port-summary" aria-label="TCP and UDP all-port statistics"><div class="hp-port-stats"><div class="hp-port-stat"><span>Observed TCP SYN packets</span><strong>106,059</strong></div><div class="hp-port-stat"><span>Observed UDP packets</span><strong>1,981</strong></div><div class="hp-port-stat"><span>Last updated</span><strong>2026/11/15 18:35:34 JST</strong></div></div></section>
+<section class="hp-port-summary" aria-label="TCP and UDP all-port statistics"><div class="hp-port-stats" data-hp-summary-root="true">
+<div id="hp-observation-summary"
+     class="hp-observation-summary">
+  <div class="hp-summary-heading">
+    <strong>Observation summary</strong>
+    <span>Trial · 2026/11/10–12 UTC</span>
+  </div>
+  <p>
+    27419/tcpへの着弾が31,688件（TCP SYN全体の29.9%）と突出している。
+    米国は40,286件が22,050種類のポートに分散する一方、
+    スロベニアは31,641件がわずか7種類に集中している。
+    通信量だけでなく、宛先ポートの広がり方にも大きな違いが見られる。
+  </p>
+</div>
+<div class="hp-port-stat"><span>Observed TCP SYN packets</span><strong>106,059</strong></div><div class="hp-port-stat"><span>Observed UDP packets</span><strong>1,981</strong></div><div class="hp-port-stat"><span>Last updated</span><strong>2026/11/15 23:40:52 JST</strong></div></div></section>
 <div class="map-workspace">
 <section class="panel map-filters-panel">
 <h2>Filter observations</h2>
@@ -635,112 +657,5 @@ Drag to rotate; Ctrl + drag or Ctrl + wheel to zoom.
 <script src="assets/port-insights.js?v=20261115-lines2" defer></script>
 
 
-<script id="hp-observation-summary-script">
-(() => {
-  "use strict";
 
-  // Trial only: no OpenAI API request is made.
-
-  function installSummary() {
-    const stats = document.querySelector(".hp-port-stats");
-
-    if (!stats) {
-      throw Error("SUMMARY_CONTAINER_MISSING");
-    }
-
-    if (stats.classList.contains(
-      "hp-observation-trial-ready"
-    )) {
-      return;
-    }
-
-    const cards = [
-      ...stats.querySelectorAll(".hp-port-stat")
-    ];
-
-    function getCard(label) {
-      return cards.find(card =>
-        [...card.querySelectorAll("span")].some(
-          span => span.textContent.trim() === label
-        )
-      );
-    }
-
-    const tcp = getCard("Observed TCP SYN packets");
-    const udp = getCard("Observed UDP packets");
-    const updated = getCard("Last updated");
-
-    if (!tcp || !udp || !updated) {
-      throw Error("SUMMARY_SOURCE_CARDS_MISSING");
-    }
-
-    if (
-      tcp.parentElement !== udp.parentElement ||
-      tcp.parentElement !== updated.parentElement
-    ) {
-      throw Error("SUMMARY_CARD_LAYOUT_CHANGED");
-    }
-
-    const summary = document.createElement(
-      tcp.tagName.toLowerCase()
-    );
-
-    summary.className =
-      tcp.className + " hp-observation-summary";
-
-    summary.id = "hp-observation-summary";
-
-    const heading = document.createElement("div");
-    heading.className = "hp-summary-heading";
-
-    const title = document.createElement("strong");
-    title.className = "hp-summary-title";
-    title.textContent = "Observation summary";
-
-    const period = document.createElement("span");
-    period.className = "hp-summary-period";
-    period.textContent =
-      "Trial · 2026/11/10–12 UTC";
-
-    heading.append(title, period);
-
-    const text = document.createElement("p");
-    text.className = "hp-summary-text";
-
-    text.textContent =
-      "27419/tcpへの着弾が31,688件（TCP SYN全体の29.9%）と突出している。" +
-      "米国は40,286件が22,050種類のポートに分散する一方、" +
-      "スロベニアは31,641件がわずか7種類に集中している。" +
-      "通信量だけでなく、宛先ポートの広がり方にも大きな違いが見られる。";
-
-    summary.append(heading, text);
-
-    // Replace the two original cards.
-    // Existing day-filter handlers are allowed to finish
-    // before their source card nodes are detached.
-
-    tcp.before(summary);
-    tcp.remove();
-    udp.remove();
-
-    stats.classList.add(
-      "hp-observation-trial-ready"
-    );
-  }
-
-  function scheduleInstall() {
-    requestAnimationFrame(installSummary);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener(
-      "DOMContentLoaded",
-      scheduleInstall,
-      {once: true}
-    );
-  } else {
-    scheduleInstall();
-  }
-})();
-</script>
 </body></html>
