@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "total_matching_requests": 5357,
+  "total_matching_requests": 7520,
   "signal_totals": {
-    "common_probe_path": 5257,
-    "path_traversal": 93,
-    "sensitive_file_probe": 7
+    "common_probe_path": 7392,
+    "path_traversal": 118,
+    "sensitive_file_probe": 10
   },
   "cases": [
     {
@@ -16,7 +16,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 1707
+      "matching_requests": 1986
     },
     {
       "id": 2,
@@ -27,10 +27,21 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 263
+      "matching_requests": 277
     },
     {
       "id": 3,
+      "signal_type": "common_probe_path",
+      "category": "Common application probe",
+      "indicator": "PHPUnit path discovery",
+      "method": "GET",
+      "destination_port": 80,
+      "transport": "http",
+      "response_status": 404,
+      "matching_requests": 87
+    },
+    {
+      "id": 4,
       "signal_type": "path_traversal",
       "category": "Path traversal probe",
       "indicator": "Parent-directory traversal",
@@ -38,18 +49,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 65
-    },
-    {
-      "id": 4,
-      "signal_type": "common_probe_path",
-      "category": "Common application probe",
-      "indicator": "PHPUnit path discovery",
-      "method": "GET",
-      "destination_port": 443,
-      "transport": "https",
-      "response_status": 404,
-      "matching_requests": 61
+      "matching_requests": 68
     },
     {
       "id": 5,
@@ -60,7 +60,7 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 24
+      "matching_requests": 26
     },
     {
       "id": 6,
@@ -71,7 +71,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 14
+      "matching_requests": 19
     },
     {
       "id": 7,
@@ -104,7 +104,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 3
+      "matching_requests": 4
     },
     {
       "id": 10,
@@ -119,25 +119,25 @@
     },
     {
       "id": 11,
-      "signal_type": "sensitive_file_probe",
-      "category": "Sensitive file probe",
-      "indicator": "Linux account file probe",
+      "signal_type": "path_traversal",
+      "category": "Path traversal probe",
+      "indicator": "Double-encoded directory traversal",
       "method": "GET",
-      "destination_port": 9200,
+      "destination_port": 8001,
       "transport": "http",
       "response_status": 404,
       "matching_requests": 1
     },
     {
       "id": 12,
-      "signal_type": "common_probe_path",
-      "category": "Common application probe",
-      "indicator": "Environment file discovery",
+      "signal_type": "sensitive_file_probe",
+      "category": "Sensitive file probe",
+      "indicator": "Linux account file probe",
       "method": "GET",
-      "destination_port": 80,
+      "destination_port": 3000,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 1511
+      "matching_requests": 1
     }
   ],
   "interpretation": "heuristic_only"
