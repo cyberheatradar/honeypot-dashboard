@@ -567,7 +567,7 @@ tr > td:not(:first-child) {
   <p id="hp-summary-text">公開済み全期間：TCP SYN 250,998件、UDP 4,795件を観測。TCP SYNの最多宛先は27419/tcp（82,966件、33.1%）。スロベニアから82,809件、宛先9種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は5060/udp（279件）。</p>
 
 </div>
-<div class="hp-port-stat"><span>Observed TCP SYN packets</span><strong>250,998</strong></div><div class="hp-port-stat"><span>Observed UDP packets</span><strong>4,795</strong></div><div class="hp-port-stat"><span>Last updated</span><strong>2026/11/17 09:44:13 JST</strong></div></div></section>
+<div class="hp-port-stat"><span>Observed TCP SYN packets</span><strong>250,998</strong></div><div class="hp-port-stat"><span>Observed UDP packets</span><strong>4,795</strong></div><div class="hp-port-stat"><span>Last updated</span><strong>2026/11/17 10:00:07 JST</strong></div></div></section>
 <div class="map-workspace">
 <section class="panel map-filters-panel">
 <h2>Filter observations</h2>
@@ -655,45 +655,7 @@ Drag to rotate; Ctrl + drag or Ctrl + wheel to zoom.
 
 
 
-<script id="hp-observation-day-switch">
-(() => {
-  "use strict";
-
-  const summaries = {"all":"公開済み全期間：TCP SYN 250,998件、UDP 4,795件を観測。TCP SYNの最多宛先は27419/tcp（82,966件、33.1%）。スロベニアから82,809件、宛先9種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は5060/udp（279件）。","days":{"2026-11-10":"2026-11-10 UTC：TCP SYN 23,669件、UDP 461件を観測。TCP SYNの最多宛先は27419/tcp（9,113件、38.5%）。スロベニアから9,098件、宛先4種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は5060/udp（33件）。","2026-11-11":"2026-11-11 UTC：TCP SYN 60,616件、UDP 851件を観測。TCP SYNの最多宛先は27419/tcp（13,895件、22.9%）。米国から31,307件、宛先21,073種類を観測。宛先ポートが広く分散している。UDPの最多宛先は5060/udp（54件）。","2026-11-12":"2026-11-12 UTC：TCP SYN 38,984件、UDP 892件を観測。TCP SYNの最多宛先は27419/tcp（13,831件、35.5%）。スロベニアから13,817件、宛先5種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は5060/udp（53件）。","2026-11-13":"2026-11-13 UTC：TCP SYN 42,953件、UDP 631件を観測。TCP SYNの最多宛先は27419/tcp（14,478件、33.7%）。スロベニアから14,453件、宛先4種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は53/udp（43件）。","2026-11-14":"2026-11-14 UTC：TCP SYN 38,687件、UDP 925件を観測。TCP SYNの最多宛先は27419/tcp（14,248件、36.8%）。スロベニアから14,241件、宛先5種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は5060/udp（44件）。","2026-11-15":"2026-11-15 UTC：TCP SYN 40,252件、UDP 916件を観測。TCP SYNの最多宛先は27419/tcp（14,778件、36.7%）。スロベニアから14,704件、宛先4種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は46276/udp（84件）。","2026-11-16":"2026-11-16 UTC：TCP SYN 5,837件、UDP 119件を観測。TCP SYNの最多宛先は27419/tcp（2,623件、44.9%）。スロベニアから2,619件、宛先2種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は53/udp（10件）。"}};
-
-  function bind() {
-    const day = document.getElementById("f-day");
-    const target = document.getElementById("hp-summary-text");
-
-    if (!day || !target) {
-      return;
-    }
-
-    function update() {
-      const value = day.value;
-
-      target.textContent = value
-        ? (
-            summaries.days[value] ||
-            "この日の総括は未作成です"
-          )
-        : summaries.all;
-    }
-
-    day.addEventListener("change", update);
-    update();
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener(
-      "DOMContentLoaded",
-      bind,
-      {once: true}
-    );
-  } else {
-    bind();
-  }
-})();
-</script>
+<script type="application/json" id="hp-observation-summary-data">{"all":"公開済み全期間：TCP SYN 250,998件、UDP 4,795件を観測。TCP SYNの最多宛先は27419/tcp（82,966件、33.1%）。スロベニアから82,809件、宛先9種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は5060/udp（279件）。","days":{"2026-11-10":"2026-11-10 UTC：TCP SYN 23,669件、UDP 461件を観測。TCP SYNの最多宛先は27419/tcp（9,113件、38.5%）。スロベニアから9,098件、宛先4種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は5060/udp（33件）。","2026-11-11":"2026-11-11 UTC：TCP SYN 60,616件、UDP 851件を観測。TCP SYNの最多宛先は27419/tcp（13,895件、22.9%）。米国から31,307件、宛先21,073種類を観測。宛先ポートが広く分散している。UDPの最多宛先は5060/udp（54件）。","2026-11-12":"2026-11-12 UTC：TCP SYN 38,984件、UDP 892件を観測。TCP SYNの最多宛先は27419/tcp（13,831件、35.5%）。スロベニアから13,817件、宛先5種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は5060/udp（53件）。","2026-11-13":"2026-11-13 UTC：TCP SYN 42,953件、UDP 631件を観測。TCP SYNの最多宛先は27419/tcp（14,478件、33.7%）。スロベニアから14,453件、宛先4種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は53/udp（43件）。","2026-11-14":"2026-11-14 UTC：TCP SYN 38,687件、UDP 925件を観測。TCP SYNの最多宛先は27419/tcp（14,248件、36.8%）。スロベニアから14,241件、宛先5種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は5060/udp（44件）。","2026-11-15":"2026-11-15 UTC：TCP SYN 40,252件、UDP 916件を観測。TCP SYNの最多宛先は27419/tcp（14,778件、36.7%）。スロベニアから14,704件、宛先4種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は46276/udp（84件）。","2026-11-16":"2026-11-16 UTC：TCP SYN 5,837件、UDP 119件を観測。TCP SYNの最多宛先は27419/tcp（2,623件、44.9%）。スロベニアから2,619件、宛先2種類を観測。特定ポートへの着弾集中が目立つ。UDPの最多宛先は53/udp（10件）。"}}</script>
+<script src="assets/hp-observation-day.js?v=20261117-csp1" defer></script>
 
 </body></html>
