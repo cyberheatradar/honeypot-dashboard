@@ -1,17 +1,12 @@
 {
-  "generated_utc": "2026-11-16 10:03 UTC",
+  "generated_utc": "2026-11-17 00:44 UTC",
   "metrics": {
-    "http_requests": 25053,
-    "unique_source_ips": 3224,
+    "http_requests": 22828,
+    "unique_source_ips": 3039,
     "destination_ports": 42,
-    "https_requests": 6831
+    "https_requests": 6091
   },
   "daily_utc": [
-    {
-      "date": "2026-11-09",
-      "requests": 2983,
-      "unique_sources": 690
-    },
     {
       "date": "2026-11-10",
       "requests": 5001,
@@ -41,112 +36,112 @@
       "date": "2026-11-15",
       "requests": 2180,
       "unique_sources": 727
+    },
+    {
+      "date": "2026-11-16",
+      "requests": 758,
+      "unique_sources": 385
     }
   ],
   "ports": [
     {
       "port": 80,
-      "requests": 3368
+      "requests": 2481
     },
     {
       "port": 443,
-      "requests": 2827
-    },
-    {
-      "port": 8080,
-      "requests": 982
+      "requests": 2179
     },
     {
       "port": 5000,
       "requests": 883
     },
     {
+      "port": 8080,
+      "requests": 881
+    },
+    {
       "port": 9200,
-      "requests": 882
+      "requests": 856
     },
     {
       "port": 8008,
-      "requests": 863
+      "requests": 842
     },
     {
       "port": 8088,
-      "requests": 823
+      "requests": 817
     },
     {
       "port": 8443,
-      "requests": 775
+      "requests": 747
     },
     {
-      "port": 8000,
-      "requests": 755
+      "port": 8001,
+      "requests": 742
     },
     {
       "port": 81,
-      "requests": 745
+      "requests": 738
     }
   ],
   "countries": [
     {
       "country": "United States",
-      "requests": 5314
+      "requests": 4845
     },
     {
       "country": "Hungary",
-      "requests": 5034
+      "requests": 4382
     },
     {
       "country": "Japan",
-      "requests": 3130
+      "requests": 3142
     },
     {
       "country": "Germany",
-      "requests": 2018
+      "requests": 1977
     },
     {
       "country": "United Kingdom",
-      "requests": 1721
+      "requests": 1631
     },
     {
       "country": "France",
-      "requests": 1707
+      "requests": 1523
     },
     {
       "country": "Netherlands",
-      "requests": 1127
+      "requests": 1061
     },
     {
       "country": "Belgium",
-      "requests": 973
-    },
-    {
-      "country": "Hong Kong",
-      "requests": 556
+      "requests": 1001
     },
     {
       "country": "Mexico",
-      "requests": 546
+      "requests": 548
+    },
+    {
+      "country": "Sweden",
+      "requests": 359
     }
   ],
   "asns": [
     {
       "asn": 204428,
       "organization": "SS-Net",
-      "requests": 5031
+      "requests": 4379
     },
     {
       "asn": 63949,
       "organization": "Akamai Technologies, Inc.",
-      "requests": 3453
+      "requests": 3417
     },
     {
       "asn": 25369,
       "organization": "Hydra Communications Ltd",
-      "requests": 1661
-    },
-    {
-      "asn": 211590,
-      "organization": "Bucklog SARL",
-      "requests": 1419
+      "requests": 1578
     },
     {
       "asn": 213790,
@@ -154,9 +149,14 @@
       "requests": 1318
     },
     {
+      "asn": 211590,
+      "organization": "Bucklog SARL",
+      "requests": 1294
+    },
+    {
       "asn": 43515,
       "organization": "Google Ireland Limited",
-      "requests": 1155
+      "requests": 1186
     },
     {
       "asn": 62240,
@@ -166,27 +166,27 @@
     {
       "asn": 8075,
       "organization": "Microsoft Corporation",
-      "requests": 1075
+      "requests": 683
     },
     {
       "asn": 398324,
       "organization": "Censys, Inc.",
-      "requests": 658
+      "requests": 599
     },
     {
-      "asn": 396982,
-      "organization": "Google LLC",
-      "requests": 567
+      "asn": 262916,
+      "organization": "Mega Cable, S.A. de C.V.",
+      "requests": 546
     }
   ],
   "signals": [
     {
       "type": "common_probe_path",
-      "requests": 4577
+      "requests": 3962
     },
     {
       "type": "path_traversal",
-      "requests": 43
+      "requests": 30
     },
     {
       "type": "sensitive_file_probe",
@@ -195,7 +195,7 @@
   ],
   "attribution": "IP geolocation by DB-IP Lite (CC BY 4.0)",
   "period_key": "7days",
-  "period_start_utc": "2026-11-09 00:00 UTC",
-  "period_end_exclusive_utc": "2026-11-16 00:00 UTC",
+  "period_start_utc": "2026-11-10 00:00 UTC",
+  "period_end_exclusive_utc": "2026-11-17 00:00 UTC",
   "partial_initial_coverage": false
 }
