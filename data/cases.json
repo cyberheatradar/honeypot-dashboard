@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "total_matching_requests": 8515,
+  "total_matching_requests": 9209,
   "signal_totals": {
-    "common_probe_path": 8375,
-    "path_traversal": 129,
-    "sensitive_file_probe": 11
+    "common_probe_path": 9058,
+    "path_traversal": 138,
+    "sensitive_file_probe": 13
   },
   "cases": [
     {
@@ -16,7 +16,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 1994
+      "matching_requests": 2001
     },
     {
       "id": 2,
@@ -27,7 +27,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 280
+      "matching_requests": 281
     },
     {
       "id": 3,
@@ -49,7 +49,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 68
+      "matching_requests": 70
     },
     {
       "id": 5,
@@ -108,23 +108,23 @@
     },
     {
       "id": 10,
-      "signal_type": "common_probe_path",
-      "category": "Common application probe",
-      "indicator": "WordPress XML-RPC discovery",
-      "method": "GET",
-      "destination_port": 443,
-      "transport": "https",
-      "response_status": 404,
-      "matching_requests": 2
-    },
-    {
-      "id": 11,
       "signal_type": "sensitive_file_probe",
       "category": "Sensitive file probe",
       "indicator": "Linux account file probe",
       "method": "GET",
       "destination_port": 3000,
       "transport": "http",
+      "response_status": 404,
+      "matching_requests": 3
+    },
+    {
+      "id": 11,
+      "signal_type": "common_probe_path",
+      "category": "Common application probe",
+      "indicator": "WordPress XML-RPC discovery",
+      "method": "GET",
+      "destination_port": 443,
+      "transport": "https",
       "response_status": 404,
       "matching_requests": 2
     },
