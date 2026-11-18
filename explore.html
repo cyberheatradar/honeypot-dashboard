@@ -548,6 +548,48 @@ tr > td:not(:first-child) {
   }
 }
 </style>
+
+<style id="hp-filter-header-trial-style">
+.map-layout-page .map-view-head {
+  align-items:flex-end;
+  gap:8px;
+}
+.map-layout-page .map-view-head > .filters {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  flex:1 1 460px;
+  min-width:0;
+  gap:7px;
+}
+.map-layout-page .map-view-head > .filters label {
+  min-width:0;
+  gap:4px;
+  font-size:11px;
+}
+.map-layout-page .map-view-head > .filters select {
+  width:100%;
+  min-width:0;
+  padding:7px 5px;
+  font-size:12px;
+}
+.map-layout-page .map-view-head > .filters label[hidden],
+.map-layout-page .map-view-head > .filters .hp-http-only {
+  display:none!important;
+}
+.map-layout-page .map-view-head > .map-view-switch {
+  flex:0 0 auto;
+  align-self:flex-end;
+}
+@media(max-width:1280px) {
+  .map-layout-page .map-view-head > .filters {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    flex-basis:100%;
+  }
+  .map-layout-page .map-view-head > .map-view-switch {
+    margin-left:auto;
+  }
+}
+</style>
 </head>
 <body>
 <main class="container map-layout-page">
@@ -567,16 +609,15 @@ tr > td:not(:first-child) {
   <p id="hp-summary-text">公開済み全期間：TCP SYN 208,654件、UDP 6,012件を観測。TCP SYNの最多宛先は23/tcp（5,539件、2.7%）。米国から79,784件、宛先25,126種類を観測。宛先ポートが広く分散している。UDPの最多宛先は5060/udp（353件）。</p>
 
 </div>
-<div class="hp-port-stat"><span>Observed TCP SYN packets</span><strong>208,654</strong></div><div class="hp-port-stat"><span>Observed UDP packets</span><strong>6,012</strong></div><div class="hp-port-stat"><span>Last updated</span><strong>2026/11/18 21:28:00 JST</strong></div></div></section>
+<div class="hp-port-stat"><span>Observed TCP SYN packets</span><strong>208,654</strong></div><div class="hp-port-stat"><span>Observed UDP packets</span><strong>6,012</strong></div><div class="hp-port-stat"><span>Last updated</span><strong>2026/11/18 21:50:18 JST</strong></div></div></section>
 <div class="map-workspace">
 <section class="panel map-filters-panel">
-<h2>Filter observations</h2>
-<div class="filters"><label>Day (UTC)<select id="f-day"><option value="">All</option></select></label><label>Traffic category<select id="hp-kind"><option value="TCP_SYN">TCP SYN</option><option value="UDP">UDP</option></select></label><label>Country<select id="f-country"><option value="">All</option></select></label><label>Destination port<select id="f-port"><option value="">All</option></select></label><label hidden>Transport<select id="f-transport"><option value="">All</option></select></label><label class="hp-http-only">HTTP method<select id="f-method"><option value="">All</option></select></label><label class="hp-http-only">Signal<select id="f-signal"><option value="">All</option></select></label></div>
+
 <p id="hp-status" aria-live="polite" hidden></p><p id="summary" aria-live="polite" hidden></p>
 </section>
 <section class="panel map-panel map-center-panel">
 <div class="map-view-head">
-<h2>Inbound port observations towards Japan</h2>
+<div class="filters"><label>Day (UTC)<select id="f-day"><option value="">All</option></select></label><label>Traffic category<select id="hp-kind"><option value="TCP_SYN">TCP SYN</option><option value="UDP">UDP</option></select></label><label>Country<select id="f-country"><option value="">All</option></select></label><label>Destination port<select id="f-port"><option value="">All</option></select></label><label hidden>Transport<select id="f-transport"><option value="">All</option></select></label><label class="hp-http-only">HTTP method<select id="f-method"><option value="">All</option></select></label><label class="hp-http-only">Signal<select id="f-signal"><option value="">All</option></select></label></div>
 <div class="map-view-switch" role="group"
  aria-label="Map display mode">
 <button type="button" id="map-view-2d"
