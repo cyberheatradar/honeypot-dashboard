@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "total_matching_requests": 9233,
+  "total_matching_requests": 9254,
   "signal_totals": {
-    "common_probe_path": 9080,
-    "path_traversal": 139,
-    "sensitive_file_probe": 14
+    "common_probe_path": 9094,
+    "sensitive_file_probe": 21,
+    "path_traversal": 139
   },
   "cases": [
     {
@@ -16,7 +16,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 2009
+      "matching_requests": 2012
     },
     {
       "id": 2,
@@ -27,7 +27,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 284
+      "matching_requests": 286
     },
     {
       "id": 3,
@@ -60,7 +60,7 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 31
+      "matching_requests": 33
     },
     {
       "id": 6,
@@ -71,7 +71,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 19
+      "matching_requests": 20
     },
     {
       "id": 7,
@@ -88,6 +88,17 @@
       "id": 8,
       "signal_type": "sensitive_file_probe",
       "category": "Sensitive file probe",
+      "indicator": "Linux account file probe",
+      "method": "GET",
+      "destination_port": 3000,
+      "transport": "http",
+      "response_status": 404,
+      "matching_requests": 6
+    },
+    {
+      "id": 9,
+      "signal_type": "sensitive_file_probe",
+      "category": "Sensitive file probe",
       "indicator": "Process environment file probe",
       "method": "GET",
       "destination_port": 443,
@@ -96,24 +107,13 @@
       "matching_requests": 5
     },
     {
-      "id": 9,
+      "id": 10,
       "signal_type": "path_traversal",
       "category": "Path traversal probe",
       "indicator": "URL-encoded directory traversal",
       "method": "GET",
       "destination_port": 443,
       "transport": "https",
-      "response_status": 404,
-      "matching_requests": 4
-    },
-    {
-      "id": 10,
-      "signal_type": "sensitive_file_probe",
-      "category": "Sensitive file probe",
-      "indicator": "Linux account file probe",
-      "method": "GET",
-      "destination_port": 3000,
-      "transport": "http",
       "response_status": 404,
       "matching_requests": 4
     },

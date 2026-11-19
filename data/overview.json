@@ -1,10 +1,10 @@
 {
-  "generated_utc": "2026-11-19 13:32 UTC",
+  "generated_utc": "2026-11-19 13:40 UTC",
   "metrics": {
-    "http_requests": 23855,
-    "unique_source_ips": 3228,
+    "http_requests": 24426,
+    "unique_source_ips": 3392,
     "destination_ports": 42,
-    "https_requests": 6063
+    "https_requests": 6218
   },
   "daily_utc": [
     {
@@ -39,60 +39,60 @@
     },
     {
       "date": "2026-11-18",
-      "requests": 2491,
-      "unique_sources": 435
+      "requests": 3062,
+      "unique_sources": 724
     }
   ],
   "ports": [
     {
       "port": 80,
-      "requests": 2118
+      "requests": 2152
     },
     {
       "port": 443,
-      "requests": 1786
+      "requests": 1827
     },
     {
       "port": 8080,
-      "requests": 1388
+      "requests": 1410
     },
     {
       "port": 5000,
-      "requests": 1049
+      "requests": 1056
     },
     {
       "port": 9200,
-      "requests": 987
+      "requests": 997
     },
     {
       "port": 9000,
-      "requests": 901
+      "requests": 921
     },
     {
       "port": 2375,
-      "requests": 881
+      "requests": 898
     },
     {
       "port": 8008,
-      "requests": 853
+      "requests": 864
     },
     {
       "port": 8088,
-      "requests": 817
+      "requests": 848
     },
     {
       "port": 8443,
-      "requests": 805
+      "requests": 821
     }
   ],
   "countries": [
     {
       "country": "United States",
-      "requests": 5213
+      "requests": 5458
     },
     {
       "country": "Germany",
-      "requests": 4598
+      "requests": 4651
     },
     {
       "country": "Hungary",
@@ -100,19 +100,19 @@
     },
     {
       "country": "Japan",
-      "requests": 3232
+      "requests": 3238
     },
     {
       "country": "United Kingdom",
-      "requests": 1645
+      "requests": 1730
     },
     {
       "country": "Belgium",
-      "requests": 1312
+      "requests": 1330
     },
     {
       "country": "Netherlands",
-      "requests": 998
+      "requests": 1059
     },
     {
       "country": "Mexico",
@@ -120,11 +120,11 @@
     },
     {
       "country": "Hong Kong",
-      "requests": 415
+      "requests": 436
     },
     {
       "country": "China",
-      "requests": 293
+      "requests": 295
     }
   ],
   "asns": [
@@ -136,7 +136,7 @@
     {
       "asn": 63949,
       "organization": "Akamai Technologies, Inc.",
-      "requests": 3652
+      "requests": 3719
     },
     {
       "asn": 208137,
@@ -146,12 +146,12 @@
     {
       "asn": 25369,
       "organization": "Hydra Communications Ltd",
-      "requests": 1525
+      "requests": 1632
     },
     {
       "asn": 43515,
       "organization": "Google Ireland Limited",
-      "requests": 1481
+      "requests": 1487
     },
     {
       "asn": 62240,
@@ -161,12 +161,12 @@
     {
       "asn": 14061,
       "organization": "DigitalOcean, LLC",
-      "requests": 646
+      "requests": 683
     },
     {
       "asn": 398324,
       "organization": "Censys, Inc.",
-      "requests": 605
+      "requests": 675
     },
     {
       "asn": 262916,
@@ -176,13 +176,13 @@
     {
       "asn": 396982,
       "organization": "Google LLC",
-      "requests": 489
+      "requests": 532
     }
   ],
   "signals": [
     {
       "type": "common_probe_path",
-      "requests": 3856
+      "requests": 3870
     },
     {
       "type": "path_traversal",
@@ -190,7 +190,7 @@
     },
     {
       "type": "sensitive_file_probe",
-      "requests": 7
+      "requests": 14
     }
   ],
   "attribution": "IP geolocation by DB-IP Lite (CC BY 4.0)",
