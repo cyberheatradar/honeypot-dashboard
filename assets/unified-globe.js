@@ -50,6 +50,10 @@
  let globe=null;
  let loading=null;
  let loadLibrary=null;
+ let globeBeamToggle=null;
+ let globeZoomReset=null;
+ let globeZoomLevel=null;
+ const initialPOV={lat:32,lng:128,altitude:2.6};
 
  if(
   !two||!three||!btn2||!btn3||
@@ -58,6 +62,121 @@
   keys.some(k=>!selects[k])
  ){
   throw Error("UNIFIED_INIT_MISSING");
+ }
+
+
+ function sharedRow(a,b,stop){
+  let p=a.parentElement;
+  while(p && p!==stop && !p.contains(b))
+   p=p.parentElement;
+  if(!p || p===stop)
+   throw Error('GLOBE_FOOTER_2D_ROW_MISSING');
+  return p;
+ }
+
+ function mountGlobeFooter(){
+  const originalToggle=el('map-beam-toggle');
+  const originalStatus=el('map-beam-status');
+  const originalReset=el('map-zoom-reset');
+  const originalLevel=el('map-zoom-level');
+
+  if(!originalToggle||!originalStatus||
+     !originalReset||!originalLevel){
+   throw Error('GLOBE_FOOTER_2D_CONTROLS_MISSING');
+  }
+
+  const beamRow=sharedRow(
+   originalToggle,originalStatus,two
+  ).cloneNode(true);
+
+  const zoomRow=sharedRow(
+   originalReset,originalLevel,two
+  ).cloneNode(true);
+
+  globeBeamToggle=beamRow.querySelector(
+   '#map-beam-toggle'
+  );
+  const copiedStatus=beamRow.querySelector(
+   '#map-beam-status'
+  );
+  globeZoomReset=zoomRow.querySelector(
+   '#map-zoom-reset'
+  );
+  globeZoomLevel=zoomRow.querySelector(
+   '#map-zoom-level'
+  );
+
+  if(!globeBeamToggle||!copiedStatus||
+     !globeZoomReset||!globeZoomLevel){
+   throw Error('GLOBE_FOOTER_CLONE_INVALID');
+  }
+
+  globeBeamToggle.id='globe-beam-toggle';
+  globeBeamToggle.checked=originalToggle.checked;
+  globeZoomReset.id='globe-zoom-reset';
+  globeZoomLevel.id='globe-zoom-level';
+
+  const oldParent=status.parentElement;
+  copiedStatus.replaceWith(status);
+
+  const walker=document.createTreeWalker(
+   zoomRow,NodeFilter.SHOW_TEXT
+  );
+
+  let node;
+  while((node=walker.nextNode())){
+   if(/Drag to pan|Ctrl\s*\+\s*drag/.test(
+    node.nodeValue||''
+   )){
+    node.nodeValue=
+     'Drag to rotate · Ctrl + drag ↑↓ / Ctrl + wheel to zoom';
+   }
+  }
+
+  const hint=[...three.querySelectorAll('*')].find(
+   e=>e.childElementCount===0 &&
+   /Drag to rotate/.test(e.textContent||'')
+  );
+  if(hint)hint.remove();
+
+  stage.insertAdjacentElement('afterend',beamRow);
+  beamRow.insertAdjacentElement('afterend',zoomRow);
+
+  if(oldParent!==three &&
+     oldParent.children.length===0 &&
+     !oldParent.textContent.trim()){
+   oldParent.remove();
+  }
+
+  stage.addEventListener('pointerdown',()=>{
+   if(globe)globeZoomReset.disabled=false;
+  },true);
+
+  globeBeamToggle.addEventListener(
+   'change',updateGlobe
+  );
+
+  globeZoomReset.addEventListener('click',()=>{
+   if(!globe)return;
+   globe.pointOfView({...initialPOV},0);
+   update3dZoom();
+  });
+ }
+
+ function update3dZoom(){
+  if(!globe||!globeZoomLevel||
+     !globeZoomReset)return;
+
+  const pov=globe.pointOfView();
+
+  globeZoomLevel.textContent=(
+   initialPOV.altitude/pov.altitude
+  ).toFixed(1)+'×';
+
+  globeZoomReset.disabled=
+   Math.abs(pov.altitude-initialPOV.altitude)<.001 &&
+   Math.abs(pov.lat-initialPOV.lat)<.001 &&
+   Math.abs(pov.lng-initialPOV.lng)<.001;
  }
 
  function setCountry(code){
@@ -161,7 +280,7 @@
    });
   }
 
-  globe.arcsData(arcs);
+  globe.arcsData(globeBeamToggle.checked ? arcs : []);
   globe.pointsData(points);
 
   globe.polygonCapColor(feature=>{
@@ -214,6 +333,7 @@
      .25,Math.min(6,value)
     )
    },0);
+   update3dZoom();
   };
 
   stage.addEventListener(
@@ -465,6 +585,7 @@
     },0);
 
    configureControl();
+   update3dZoom();
 
    if("ResizeObserver" in window){
     const observer=
@@ -541,7 +662,10 @@
   rows=event.detail.rows;
   if(mode==="3d")updateGlobe();
  });
+ mountGlobeFooter();
  switchView("2d");
 })();
 
 // HP_FACET_GLOBE_V2
+
+// HP_GLOBE_FOOTER_MATCH_2D_V1
