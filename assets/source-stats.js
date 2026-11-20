@@ -175,7 +175,7 @@
         asn:k==='?'?null:Number(k),org:bestOrg.get(k)?.org||'',count
       })).sort((a,b)=>b.count-a.count||String(a.asn).localeCompare(String(b.asn)));
       table(ips,ipsRank,false);table(asns,asnsRank,true);
-      status.textContent=fmt(total)+' observed packets · '+fmt(ipCounts.size)+' source IPs · '+fmt(asnCounts.size)+' ASNs';
+      status.textContent='Filtered TCP SYN / UDP packet counts · '+fmt(ipCounts.size)+' source IPs · '+fmt(asnCounts.size)+' ASNs';
     }catch(e){
       if(ticket!==seq)return;
       status.textContent='Source statistics unavailable (not zero observations)';
