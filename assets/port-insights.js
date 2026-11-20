@@ -27,7 +27,7 @@
     throw Error("PORT_INSIGHTS_DATA_INVALID");
   }
 
-  const packetRows = parsed.rows;
+  let packetRows = parsed.rows;
 
   const fmt = value =>
     Number(value).toLocaleString("en-US");
@@ -272,5 +272,11 @@
     {childList: true}
   );
 
+  document.addEventListener("hp-source-facets-rows",event=>{
+    packetRows=event.detail.rows;
+    schedule();
+  });
   schedule();
 })();
+
+// HP_FACET_INSIGHTS_V2

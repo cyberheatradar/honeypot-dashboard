@@ -23,7 +23,7 @@
   ).textContent
  );
 
- const rows=data.rows;
+ let rows=data.rows;
  const names=meta.country_names;
  const world=document.getElementById("world");
 
@@ -206,5 +206,14 @@
   subtree:true
  });
 
+ document.addEventListener("hp-source-facets-rows",event=>{
+  rows=event.detail.rows;
+  const reset=refreshChoices();
+  if(reset)selects.country.dispatchEvent(
+   new Event("change",{bubbles:true})
+  );
+ });
  refreshChoices();
 })();
+
+// HP_FACET_COUNTS_V2

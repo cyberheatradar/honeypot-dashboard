@@ -100,3 +100,40 @@
 #hp-source-state {
     display: none !important;
 }
+
+/* HP_FACET_LAYOUT_V2 */
+.map-center-panel .map-view-head{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) auto;
+ gap:10px;
+ align-items:end;
+}
+.map-center-panel .map-view-head .filters{
+ display:grid!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:9px;
+ width:100%;
+ min-width:0;
+}
+.map-center-panel #f-source-ip{
+ display:block;
+ width:100%;
+ min-width:0;
+ box-sizing:border-box;
+ padding:8px;
+ border:1px solid #42506a;
+ border-radius:8px;
+ background:#101b2c;
+ color:#eff7ff;
+ font:inherit;
+}
+@media(max-width:1300px){
+ .map-center-panel .map-view-head{
+  grid-template-columns:minmax(0,1fr);
+ }
+}
+@media(max-width:760px){
+ .map-center-panel .map-view-head .filters{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+}

@@ -27,7 +27,7 @@
   el("unified-globe-meta").textContent
  );
 
- const rows=source.rows;
+ let rows=source.rows;
  const positions=meta.country_positions;
  const destination=meta.destination;
  const names=meta.country_names;
@@ -541,5 +541,11 @@
   );
  }
 
+ document.addEventListener("hp-source-facets-rows",event=>{
+  rows=event.detail.rows;
+  if(mode==="3d")updateGlobe();
+ });
  switchView("2d");
 })();
+
+// HP_FACET_GLOBE_V2

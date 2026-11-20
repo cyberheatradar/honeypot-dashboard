@@ -152,6 +152,8 @@
             if(fPort!==''&&pNum!==Number(fPort))continue;
             const [ip,asn,org,cc]=data.sources[src];
             if(fCountry!==''&&cc!==fCountry)continue;
+            if(window.HP_SOURCE_ASN&&(asn===null?'?':String(asn))!==window.HP_SOURCE_ASN)continue;
+            if(window.HP_SOURCE_IP&&ip!==window.HP_SOURCE_IP)continue;
             total+=n;
             const ipKey=ip||'';
             ipCounts.set(ipKey,(ipCounts.get(ipKey)||0)+n);
@@ -187,5 +189,8 @@
   if(summary&&typeof MutationObserver==='function'){
     new MutationObserver(render).observe(summary,{childList:true,characterData:true,subtree:true});
   }
+  document.addEventListener('hp-source-facets-rows',render);
   render();
 })();
+
+// HP_FACET_SOURCE_RANK_V2
