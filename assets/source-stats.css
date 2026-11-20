@@ -12,7 +12,7 @@
  display:grid;
  grid-template-rows:minmax(0,1fr) minmax(0,1fr);
  gap:12px;
- height:525px;
+ height:588px;
  min-width:0;
 }
 
