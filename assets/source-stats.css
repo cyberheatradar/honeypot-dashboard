@@ -95,3 +95,8 @@
   height:560px;
  }
 }
+
+/* HP_SOURCE_SUMMARY_HIDDEN_V1 */
+#hp-source-state {
+    display: none !important;
+}
