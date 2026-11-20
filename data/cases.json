@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "total_matching_requests": 9254,
+  "total_matching_requests": 9415,
   "signal_totals": {
-    "common_probe_path": 9094,
-    "sensitive_file_probe": 21,
-    "path_traversal": 139
+    "common_probe_path": 9255,
+    "path_traversal": 139,
+    "sensitive_file_probe": 21
   },
   "cases": [
     {
@@ -16,7 +16,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 2012
+      "matching_requests": 2070
     },
     {
       "id": 2,
@@ -27,7 +27,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 286
+      "matching_requests": 297
     },
     {
       "id": 3,
@@ -60,7 +60,7 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 33
+      "matching_requests": 35
     },
     {
       "id": 6,
@@ -82,7 +82,7 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 14
+      "matching_requests": 15
     },
     {
       "id": 8,

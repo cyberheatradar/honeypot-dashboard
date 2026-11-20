@@ -1,11 +1,97 @@
-.hp-source-stats{min-width:0}
-.hp-source-stats h2{font-size:1.05rem;margin:0 0 8px}
-.hp-source-stats h3{font-size:.95rem;margin:20px 0 8px}
-.hp-source-note{color:#a8bfd2;font-size:.78rem;line-height:1.4;margin:0 0 10px}
-#hp-source-state{font-size:.78rem;color:#a8e6d1;line-height:1.5;overflow-wrap:anywhere}
-.hp-source-tablewrap{max-height:340px;overflow:auto}
-.hp-source-stats table{width:100%;border-collapse:collapse;font-size:.8rem;table-layout:fixed}
-.hp-source-stats th,.hp-source-stats td{padding:7px 5px;text-align:left;border-bottom:1px solid #304157;overflow-wrap:anywhere}
-.hp-source-stats th:last-child,.hp-source-number{text-align:right!important;width:30%;font-variant-numeric:tabular-nums}
-.hp-source-org{display:block;color:#a8bfd2;font-size:.74rem;margin-top:2px;overflow-wrap:anywhere}
-.hp-source-ip{font-variant-numeric:tabular-nums}
+/* HP_SOURCE_SPLIT_V2 */
+
+.map-workspace > .map-filters-panel{
+ background:transparent;
+ border:0;
+ box-shadow:none;
+ padding:0;
+ min-width:0;
+}
+
+#hp-source-rankings{
+ display:grid;
+ grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+ gap:12px;
+ height:525px;
+ min-width:0;
+}
+
+#hp-source-rankings .hp-source-ranking-panel{
+ display:flex;
+ flex-direction:column;
+ min-width:0;
+ min-height:0;
+ overflow:hidden;
+ margin:0;
+ padding:14px;
+}
+
+#hp-source-rankings h2{
+ margin:0 0 10px;
+ font-size:1.02rem;
+}
+
+#hp-source-state{
+ color:#a8e6d1;
+ font-size:.76rem;
+ line-height:1.35;
+ margin:0 0 8px;
+ overflow-wrap:anywhere;
+}
+
+#hp-source-rankings .hp-source-tablewrap{
+ flex:1 1 auto;
+ min-height:0;
+ max-height:none;
+ overflow-x:hidden;
+ overflow-y:auto;
+ scrollbar-width:thin;
+ scrollbar-color:#61758d #142033;
+}
+
+#hp-source-rankings table{
+ width:100%;
+ border-collapse:collapse;
+ table-layout:fixed;
+ font-size:.78rem;
+}
+
+#hp-source-rankings thead{
+ position:sticky;
+ top:0;
+ z-index:1;
+ background:#142033;
+}
+
+#hp-source-rankings th,
+#hp-source-rankings td{
+ padding:7px 5px;
+ border-bottom:1px solid #304157;
+ text-align:left;
+ overflow-wrap:anywhere;
+}
+
+#hp-source-rankings th:last-child,
+#hp-source-rankings .hp-source-number{
+ text-align:right;
+ width:29%;
+ font-variant-numeric:tabular-nums;
+}
+
+#hp-source-rankings .hp-source-org{
+ display:block;
+ color:#a8bfd2;
+ font-size:.73rem;
+ margin-top:3px;
+ overflow-wrap:anywhere;
+}
+
+#hp-source-rankings .hp-source-ip{
+ font-variant-numeric:tabular-nums;
+}
+
+@media(max-width:739px){
+ #hp-source-rankings{
+  height:560px;
+ }
+}

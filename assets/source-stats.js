@@ -2,6 +2,44 @@
   'use strict';
   const root=document.getElementById('hp-source-stats');
   if(!root)return;
+
+  // HP_SOURCE_SPLIT_V2
+  const oldAsn=root.querySelector('#hp-source-asns');
+  const oldIp=root.querySelector('#hp-source-ips');
+  const oldStatus=root.querySelector('#hp-source-state');
+
+  if(!oldAsn||!oldIp||!oldStatus)
+    throw Error('SOURCE_PANEL_STRUCTURE_CHANGED');
+
+  const asnWrap=oldAsn.closest('.hp-source-tablewrap');
+  const ipWrap=oldIp.closest('.hp-source-tablewrap');
+
+  if(!asnWrap||!ipWrap)
+    throw Error('SOURCE_TABLE_WRAPPER_MISSING');
+
+  function makePanel(title,wrap,state){
+    const panel=document.createElement('section');
+    panel.className='panel hp-source-ranking-panel';
+
+    const heading=document.createElement('h2');
+    heading.textContent=title;
+    panel.append(heading);
+
+    if(state)panel.append(state);
+    panel.append(wrap);
+    return panel;
+  }
+
+  const asnPanel=makePanel(
+    'Source ASN ranking',asnWrap,oldStatus
+  );
+  const ipPanel=makePanel(
+    'Source IP ranking',ipWrap,null
+  );
+
+  root.replaceChildren(asnPanel,ipPanel);
+  root.id='hp-source-rankings';
+  root.className='hp-source-rankings';
   const day=document.getElementById('f-day');
   const country=document.getElementById('f-country');
   const port=document.getElementById('f-port');
@@ -21,32 +59,79 @@
       .then(v=>{if(v.schema!=='hp-source-day-v1'||v.day!==d||!Array.isArray(v.sources)||!Array.isArray(v.rows))throw Error('day schema');return v}));
     return cache.get(d);
   }
+
   function table(target,records,asnMode){
     target.replaceChildren();
-    for(const item of records.slice(0,20)){
-      const tr=document.createElement('tr');
-      const label=document.createElement('td');
-      const count=document.createElement('td');
-      count.textContent=fmt(item.count);
-      count.className='hp-source-number';
-      if(asnMode){
-        const id=document.createElement('strong');
-        id.textContent=item.asn===null?'Unknown ASN':'AS'+item.asn;
-        const org=document.createElement('span');
-        org.className='hp-source-org';
-        org.textContent=item.org||'Unknown organization';
-        label.append(id,org);
-      }else{
-        label.textContent=item.ip||'Unknown IP';
-        label.className='hp-source-ip';
-      }
-      tr.append(label,count);target.append(tr);
-    }
+
+    const scroller=target.closest('.hp-source-tablewrap');
+    if(!scroller)
+      throw Error('SOURCE_SCROLLER_MISSING');
+
+    scroller.onscroll=null;
+    scroller.scrollTop=0;
+
     if(records.length===0){
-      const tr=document.createElement('tr'),td=document.createElement('td');
-      td.colSpan=2;td.textContent='No matching observations';tr.append(td);target.append(tr);
+      const tr=document.createElement('tr');
+      const td=document.createElement('td');
+      td.colSpan=2;
+      td.textContent='No matching observations';
+      tr.append(td);
+      target.append(tr);
+      return;
     }
+
+    let offset=0;
+    const batchSize=150;
+
+    function appendBatch(){
+      if(offset>=records.length)return;
+
+      const fragment=document.createDocumentFragment();
+      const end=Math.min(offset+batchSize,records.length);
+
+      for(;offset<end;offset++){
+        const item=records[offset];
+
+        const tr=document.createElement('tr');
+        const label=document.createElement('td');
+        const count=document.createElement('td');
+
+        count.textContent=fmt(item.count);
+        count.className='hp-source-number';
+
+        if(asnMode){
+          const id=document.createElement('strong');
+          id.textContent=item.asn===null
+            ?'Unknown ASN':'AS'+item.asn;
+
+          const org=document.createElement('span');
+          org.className='hp-source-org';
+          org.textContent=item.org||'Unknown organization';
+
+          label.append(id,org);
+        }else{
+          label.textContent=item.ip||'Unknown IP';
+          label.className='hp-source-ip';
+        }
+
+        tr.append(label,count);
+        fragment.append(tr);
+      }
+
+      target.append(fragment);
+    }
+
+    appendBatch();
+
+    scroller.onscroll=()=>{
+      const nearBottom=
+        scroller.scrollTop+scroller.clientHeight >=
+        scroller.scrollHeight-200;
+
+      if(nearBottom)appendBatch();
+    };
   }
+
   async function render(){
     const ticket=++seq;
     status.textContent='Loading source statistics...';
