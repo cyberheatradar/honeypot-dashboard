@@ -102,7 +102,7 @@
    const all=document.createElement("option");
    all.value="";
    all.textContent=
-    `All (${fmt(total)} observations)`;
+    `All (${fmt(total)})`;
    select.appendChild(all);
 
    for(const value of values){
