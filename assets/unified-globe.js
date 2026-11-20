@@ -53,8 +53,6 @@
  let globeBeamToggle=null;
  let globeZoomReset=null;
  let globeZoomLevel=null;
- let twoBeamRow=null;
- let twoZoomRow=null;
  const initialPOV={lat:32,lng:128,altitude:2.6};
 
  if(
@@ -67,90 +65,94 @@
  }
 
 
- function sharedRow(a,b,stop){
-  let p=a.parentElement;
-  while(p && p!==stop && !p.contains(b))
-   p=p.parentElement;
-  if(!p || p===stop)
-   throw Error('GLOBE_FOOTER_2D_ROW_MISSING');
-  return p;
- }
 
  function mountGlobeFooter(){
   const originalToggle=el('map-beam-toggle');
-  const originalStatus=el('map-beam-status');
   const originalReset=el('map-zoom-reset');
-  const originalLevel=el('map-zoom-level');
 
-  if(!originalToggle||!originalStatus||
-     !originalReset||!originalLevel){
-   throw Error('GLOBE_FOOTER_2D_CONTROLS_MISSING');
+  if(!originalToggle||!originalReset){
+   throw Error('GLOBE_2D_CONTROLS_MISSING');
   }
 
-  twoBeamRow=sharedRow(originalToggle,originalStatus,two);
-  const beamRow=twoBeamRow.cloneNode(true);
+  const original=originalToggle.closest(
+   '.beam-controls'
+  );
 
-  twoZoomRow=sharedRow(originalReset,originalLevel,two);
-  const zoomRow=twoZoomRow.cloneNode(true);
+  const oldFooter=status.closest(
+   '.hp-globe-footer'
+  );
 
-  globeBeamToggle=beamRow.querySelector(
+  if(
+   !original ||
+   !two.contains(original) ||
+   !original.contains(originalReset) ||
+   !oldFooter ||
+   !three.contains(oldFooter)
+  ){
+   throw Error('GLOBE_FOOTER_STRUCTURE_INVALID');
+  }
+
+  // Clone exactly one complete 2D control group.
+  const footer=original.cloneNode(true);
+
+  footer.classList.add('hp-globe-footer');
+  footer.title=oldFooter.title;
+
+  globeBeamToggle=footer.querySelector(
    '#map-beam-toggle'
   );
-  const copiedStatus=beamRow.querySelector(
-   '#map-beam-status'
-  );
-  globeZoomReset=zoomRow.querySelector(
+
+  globeZoomReset=footer.querySelector(
    '#map-zoom-reset'
   );
-  globeZoomLevel=zoomRow.querySelector(
+
+  globeZoomLevel=footer.querySelector(
    '#map-zoom-level'
   );
 
-  if(!globeBeamToggle||!copiedStatus||
-     !globeZoomReset||!globeZoomLevel){
-   throw Error('GLOBE_FOOTER_CLONE_INVALID');
+  const copiedStatus=footer.querySelector(
+   '#map-beam-status'
+  );
+
+  const hint=footer.querySelector('.muted');
+
+  if(
+   !globeBeamToggle ||
+   !globeZoomReset ||
+   !globeZoomLevel ||
+   !copiedStatus ||
+   !hint
+  ){
+   throw Error('GLOBE_CLONE_CONTROLS_MISSING');
   }
 
   globeBeamToggle.id='globe-beam-toggle';
-  globeBeamToggle.checked=originalToggle.checked;
   globeZoomReset.id='globe-zoom-reset';
   globeZoomLevel.id='globe-zoom-level';
 
-  const oldParent=status.parentElement;
+  globeBeamToggle.checked=originalToggle.checked;
+
   copiedStatus.replaceWith(status);
 
-  const walker=document.createTreeWalker(
-   zoomRow,NodeFilter.SHOW_TEXT
-  );
+  hint.textContent=
+   'Drag to rotate · Ctrl + drag ↑↓ / Ctrl + wheel to zoom';
 
-  let node;
-  while((node=walker.nextNode())){
-   if(/Drag to pan|Ctrl\s*\+\s*drag/.test(
-    node.nodeValue||''
-   )){
-    node.nodeValue=
-     'Drag to rotate · Ctrl + drag ↑↓ / Ctrl + wheel to zoom';
-   }
+  // Replace the old 3D footer; do not append another.
+  oldFooter.replaceWith(footer);
+
+  if(
+   three.querySelectorAll('.beam-controls').length!==1
+  ){
+   throw Error('GLOBE_FOOTER_COUNT_INVALID');
   }
 
-  const hint=[...three.querySelectorAll('*')].find(
-   e=>e.childElementCount===0 &&
-   /Drag to rotate/.test(e.textContent||'')
+  stage.addEventListener(
+   'pointerdown',
+   ()=>{
+    if(globe)globeZoomReset.disabled=false;
+   },
+   true
   );
-  if(hint)hint.remove();
-
-  stage.insertAdjacentElement('afterend',beamRow);
-  beamRow.insertAdjacentElement('afterend',zoomRow);
-
-  if(oldParent!==three &&
-     oldParent.children.length===0 &&
-     !oldParent.textContent.trim()){
-   oldParent.remove();
-  }
-
-  stage.addEventListener('pointerdown',()=>{
-   if(globe)globeZoomReset.disabled=false;
-  },true);
 
   globeBeamToggle.addEventListener(
    'change',updateGlobe
@@ -158,6 +160,7 @@
 
   globeZoomReset.addEventListener('click',()=>{
    if(!globe)return;
+
    globe.pointOfView({...initialPOV},0);
    update3dZoom();
   });
@@ -623,12 +626,6 @@
 
   two.hidden=next!=="2d";
   three.hidden=next!=="3d";
-  if(!twoBeamRow||!twoZoomRow){
-   throw Error("GLOBE_2D_FOOTER_ROWS_MISSING");
-  }
-  twoBeamRow.hidden=twoZoomRow.hidden=next==="3d";
-  twoBeamRow.style.display=next==="3d"?"none":"";
-  twoZoomRow.style.display=next==="3d"?"none":"";
 
   btn2.setAttribute(
    "aria-pressed",
@@ -676,4 +673,4 @@
 
 // HP_GLOBE_FOOTER_MATCH_2D_V1
 
-// HP_GLOBE_FOOTER_VISIBILITY_V1
+// HP_GLOBE_FOOTER_SINGLE_CLONE_V3
