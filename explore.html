@@ -14,7 +14,7 @@
 <script src="assets/map.js?v=20261120-facet2" defer></script>
 <link rel="stylesheet"
  href="assets/unified.css?v=20261104-m10b">
-<script src="assets/unified-globe.js?v=20261120-facet2"
+<script src="assets/unified-globe.js?v=20261120-globe2d1"
  defer></script>
 <script src="assets/unified-filter-counts.js?v=20261120-facet2" defer></script>
 
@@ -590,7 +590,7 @@ tr > td:not(:first-child) {
   }
 }
 </style>
-<link rel="stylesheet" href="assets/source-stats.css?v=20261120-asof1">
+<link rel="stylesheet" href="assets/source-stats.css?v=20261120-globe2d1">
 <script src="assets/source-facets.js?v=20261120-ipsearch4" defer></script>
 <script src="assets/source-stats.js?v=20261120-facet2" defer></script>
 </head>
@@ -670,13 +670,14 @@ Loading beams...</span>
 </div>
 <div id="view-3d" hidden>
 <div id="unified-globe-stage"></div>
-<p id="unified-globe-status" role="status">
-3D globe not initialized</p>
-<p class="muted">
-Arcs show approximate source-country locations
-toward Japan, not actual packet routes.
-Drag to rotate; Ctrl + drag or Ctrl + wheel to zoom.
-</p>
+<div class="beam-controls hp-globe-footer"
+ title="Arcs show approximate source-country locations toward Japan, not actual packet routes">
+<span id="unified-globe-status" role="status">
+3D globe not initialized</span>
+<span class="muted">
+Drag to rotate · Ctrl + drag ↑↓ / Ctrl + wheel to zoom
+</span>
+</div>
 </div>
 </section>
 <div class="map-ranking-slot map-ranking-pair">

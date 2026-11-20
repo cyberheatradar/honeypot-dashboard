@@ -166,3 +166,41 @@
   white-space:normal;
  }
 }
+
+
+/* HP_GLOBE_2D_PARITY_V1 */
+
+#unified-globe-stage {
+    min-height:0 !important;
+}
+
+#view-3d .hp-globe-footer {
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:8px 13px;
+    margin:10px 0 0;
+    font-size:.78rem;
+    line-height:1.4;
+}
+
+#view-3d #unified-globe-status {
+    margin:0 !important;
+    font-size:.78rem;
+    font-weight:400;
+    line-height:1.4;
+}
+
+#view-3d .hp-globe-footer .muted {
+    margin:0;
+    font-size:.78rem;
+    line-height:1.4;
+}
+
+@media(min-width:1200px) {
+    .map-workspace > .map-ranking-pair {
+        height:588px !important;
+        min-height:0 !important;
+        align-self:start;
+    }
+}

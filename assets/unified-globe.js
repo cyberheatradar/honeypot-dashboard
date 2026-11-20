@@ -190,9 +190,7 @@
   );
 
   globe.width(w).height(
-   Math.max(
-    420,Math.min(640,w*.62)
-   )
+   Math.max(320,Math.round(w/2))
   );
  }
 
@@ -394,9 +392,7 @@
     320,stage.clientWidth
    );
 
-   const h=Math.max(
-    420,Math.min(640,w*.62)
-   );
+   const h=Math.max(320,Math.round(w/2));
 
    globe=new window.Globe(stage,{
     animateIn:false,
