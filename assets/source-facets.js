@@ -31,29 +31,21 @@
   asnLabel.append(asn);
   filters.append(asnLabel);
 
-  const ip=document.createElement('input');
+  const ip=document.createElement('select');
   ip.id='f-source-ip';
-  ip.type='search';
-  ip.placeholder='All / exact IP';
-  ip.autocomplete='off';
-  ip.maxLength=45;
   ip.disabled=true;
+  ip.append(new Option('Loading source IPs...',''));
 
   const ipLabel=document.createElement('label');
   ipLabel.textContent='Source IP';
   ipLabel.append(ip);
   filters.append(ipLabel);
 
-  const datalist=document.createElement('datalist');
-  datalist.id='hp-source-ip-list';
-  ip.setAttribute('list',datalist.id);
-  filters.append(datalist);
 
   window.HP_SOURCE_ASN='';
   window.HP_SOURCE_IP='';
 
   let documents=[];
-  let timer=null;
 
   const fmt=n=>Number(n).toLocaleString('en-US');
 
@@ -61,7 +53,7 @@
     if(asn.disabled)return;
 
     const selectedAsn=asn.value;
-    const selectedIp=ip.value.trim();
+    const selectedIp=ip.value;
 
     window.HP_SOURCE_ASN=selectedAsn;
     window.HP_SOURCE_IP=selectedIp;
@@ -203,31 +195,33 @@
       ));
     }
 
-    for(const [address] of [...ipCounts]
-      .sort((a,b)=>b[1]-a[1]).slice(0,500)){
-      if(address)
-        datalist.append(new Option(address,address));
+    const options=document.createDocumentFragment();
+    options.append(new Option('All IPs',''));
+
+    for(const [address,count] of [...ipCounts]
+      .filter(([address])=>Boolean(address))
+      .sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))){
+      options.append(
+        new Option(address+' ('+fmt(count)+')',address)
+      );
     }
+
+    ip.replaceChildren(options);
 
     asn.disabled=false;
     ip.disabled=false;
   }
 
   asn.addEventListener('change',apply);
-  ip.addEventListener('input',()=>{
-    if(timer!==null)clearTimeout(timer);
-    timer=setTimeout(apply,300);
-  });
-  ip.addEventListener('change',()=>{
-    if(timer!==null)clearTimeout(timer);
-    apply();
-  });
+  ip.addEventListener('change',apply);
 
   initialize().catch(err=>{
     asn.replaceChildren(new Option('Data unavailable',''));
     asn.disabled=true;
     ip.disabled=true;
-    ip.placeholder='Data unavailable';
+    ip.replaceChildren(new Option('Data unavailable',''));
     console.error('SOURCE_FACETS_LOAD',err);
   });
 })();
+
+// HP_SOURCE_IP_SELECT_V3
