@@ -137,3 +137,32 @@
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
  }
 }
+
+/* HP_HEADER_OBSERVED_V1 */
+.hp-port-stats{
+ grid-template-columns:minmax(0,1fr)!important;
+}
+.hp-port-stats > :has(#hp-summary-text){
+ grid-column:1/-1!important;
+ width:100%!important;
+ min-width:0!important;
+}
+#hp-published-asof{
+ display:inline-block;
+ margin-left:16px;
+ font-size:.76rem;
+ font-weight:500;
+ letter-spacing:normal;
+ text-transform:none;
+ color:#aebfd2;
+ white-space:nowrap;
+ vertical-align:middle;
+}
+@media(max-width:740px){
+ #hp-published-asof{
+  display:block;
+  margin-left:0;
+  margin-top:3px;
+  white-space:normal;
+ }
+}
