@@ -53,6 +53,8 @@
  let globeBeamToggle=null;
  let globeZoomReset=null;
  let globeZoomLevel=null;
+ let twoBeamRow=null;
+ let twoZoomRow=null;
  const initialPOV={lat:32,lng:128,altitude:2.6};
 
  if(
@@ -85,13 +87,11 @@
    throw Error('GLOBE_FOOTER_2D_CONTROLS_MISSING');
   }
 
-  const beamRow=sharedRow(
-   originalToggle,originalStatus,two
-  ).cloneNode(true);
+  twoBeamRow=sharedRow(originalToggle,originalStatus,two);
+  const beamRow=twoBeamRow.cloneNode(true);
 
-  const zoomRow=sharedRow(
-   originalReset,originalLevel,two
-  ).cloneNode(true);
+  twoZoomRow=sharedRow(originalReset,originalLevel,two);
+  const zoomRow=twoZoomRow.cloneNode(true);
 
   globeBeamToggle=beamRow.querySelector(
    '#map-beam-toggle'
@@ -623,6 +623,12 @@
 
   two.hidden=next!=="2d";
   three.hidden=next!=="3d";
+  if(!twoBeamRow||!twoZoomRow){
+   throw Error("GLOBE_2D_FOOTER_ROWS_MISSING");
+  }
+  twoBeamRow.hidden=twoZoomRow.hidden=next==="3d";
+  twoBeamRow.style.display=next==="3d"?"none":"";
+  twoZoomRow.style.display=next==="3d"?"none":"";
 
   btn2.setAttribute(
    "aria-pressed",
@@ -669,3 +675,5 @@
 // HP_FACET_GLOBE_V2
 
 // HP_GLOBE_FOOTER_MATCH_2D_V1
+
+// HP_GLOBE_FOOTER_VISIBILITY_V1
