@@ -40,3 +40,25 @@
   color:#fff;
   font-weight:700;
 }
+
+/* HP_RESPONSIVE_RANKING_HEIGHT_V1 */
+
+/*
+ Desktop:
+ Use the center map panel as the grid-row height.
+ Both ranking columns stretch to the same bottom edge.
+ Tables retain their own scroll containers.
+*/
+@media (min-width:1200px) {
+  .map-workspace > #hp-source-rankings {
+    height:auto !important;
+    min-height:0 !important;
+    align-self:stretch !important;
+  }
+
+  .map-workspace > .map-ranking-pair {
+    height:auto !important;
+    min-height:0 !important;
+    align-self:stretch !important;
+  }
+}
