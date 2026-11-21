@@ -1,0 +1,25 @@
+/* HP_SEARCH_FILTERS_CSS_V1 */
+
+.map-center-panel .filters
+select[aria-hidden="true"][hidden]{
+  display:none!important;
+}
+
+.map-center-panel .map-view-head
+.filters input.hp-search-input{
+  display:block;
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  padding:8px;
+  border:1px solid #42506a;
+  border-radius:8px;
+  background:#101b2c;
+  color:#eff7ff;
+  font:inherit;
+}
+
+.map-center-panel .filters
+input.hp-search-input[aria-invalid="true"]{
+  border-color:#d49a65;
+}
