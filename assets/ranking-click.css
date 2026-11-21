@@ -62,3 +62,26 @@
     align-self:stretch !important;
   }
 }
+
+
+/* HP_RESPONSIVE_RANKING_HEIGHT_V2 */
+/* Correct actual DOM nesting and stretch ranking grid. */
+
+@media (min-width:1200px) {
+
+  .map-workspace > .map-filters-panel {
+    display:flex !important;
+    flex-direction:column !important;
+    align-self:stretch !important;
+    min-height:0 !important;
+  }
+
+  .map-workspace > .map-filters-panel > #hp-source-rankings {
+    flex:1 1 0% !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    align-self:stretch !important;
+  }
+
+}
