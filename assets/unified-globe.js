@@ -53,6 +53,11 @@
  let globeBeamToggle=null;
  let globeZoomReset=null;
  let globeZoomLevel=null;
+ let twoStatus=null;
+ let sharedHint=null;
+ let twoHint="";
+ let twoZoomText="1.0×";
+ let twoZoomDisabled=true;
  const initialPOV={lat:32,lng:128,altitude:2.6};
 
  if(
@@ -67,107 +72,74 @@
 
 
  function mountGlobeFooter(){
-  const originalToggle=el('map-beam-toggle');
-  const originalReset=el('map-zoom-reset');
+  const toggle=el('map-beam-toggle');
+  const reset=el('map-zoom-reset');
+  const level=el('map-zoom-level');
+  const status2d=el('map-beam-status');
+  const original=toggle&&toggle.closest('.beam-controls');
+  const old3d=status.closest('.hp-globe-footer');
+  const hint=original&&original.querySelector('.muted');
 
-  if(!originalToggle||!originalReset){
-   throw Error('GLOBE_2D_CONTROLS_MISSING');
+  if(!toggle||!reset||!level||!status2d||
+     !original||!hint||!old3d||
+     !two.contains(original)||
+     !original.contains(reset)||
+     !three.contains(old3d)||
+     two.parentElement!==three.parentElement){
+   throw Error('SHARED_MAP_CONTROLS_STRUCTURE_INVALID');
   }
 
-  const original=originalToggle.closest(
-   '.beam-controls'
-  );
+  // Move original controls outside both renderers.
+  // Existing 2D event listeners stay attached.
+  twoStatus=status2d;
+  globeBeamToggle=toggle;
+  globeZoomReset=reset;
+  globeZoomLevel=level;
+  sharedHint=hint;
+  twoHint=hint.textContent.trim();
+  twoZoomText=level.textContent;
+  twoZoomDisabled=reset.disabled;
 
-  const oldFooter=status.closest(
-   '.hp-globe-footer'
-  );
+  original.id='hp-shared-map-controls';
+  original.title=old3d.title;
 
-  if(
-   !original ||
-   !two.contains(original) ||
-   !original.contains(originalReset) ||
-   !oldFooter ||
-   !three.contains(oldFooter)
-  ){
-   throw Error('GLOBE_FOOTER_STRUCTURE_INVALID');
+  status.style.margin='0';
+  status.style.fontWeight='inherit';
+  status.style.color='inherit';
+  status.hidden=true;
+
+  status2d.insertAdjacentElement('afterend',status);
+  old3d.remove();
+  three.insertAdjacentElement('afterend',original);
+
+  if(document.querySelectorAll('#map-beam-toggle').length!==1||
+     document.querySelectorAll('#map-zoom-reset').length!==1||
+     document.querySelectorAll('#hp-shared-map-controls').length!==1||
+     two.querySelector('.beam-controls')||
+     three.querySelector('.beam-controls')){
+   throw Error('SHARED_MAP_CONTROLS_DUPLICATION');
   }
 
-  // Clone exactly one complete 2D control group.
-  const footer=original.cloneNode(true);
+  toggle.addEventListener('change',()=>{
+   if(mode==='3d')updateGlobe();
+  });
 
-  footer.classList.add('hp-globe-footer');
-  footer.title=oldFooter.title;
+  // Intercept reset only in 3D.
+  reset.addEventListener('click',event=>{
+   if(mode!=='3d')return;
 
-  globeBeamToggle=footer.querySelector(
-   '#map-beam-toggle'
-  );
+   event.preventDefault();
+   event.stopImmediatePropagation();
 
-  globeZoomReset=footer.querySelector(
-   '#map-zoom-reset'
-  );
-
-  globeZoomLevel=footer.querySelector(
-   '#map-zoom-level'
-  );
-
-  const copiedStatus=footer.querySelector(
-   '#map-beam-status'
-  );
-
-  const hint=footer.querySelector('.muted');
-
-  if(
-   !globeBeamToggle ||
-   !globeZoomReset ||
-   !globeZoomLevel ||
-   !copiedStatus ||
-   !hint
-  ){
-   throw Error('GLOBE_CLONE_CONTROLS_MISSING');
-  }
-
-  globeBeamToggle.id='globe-beam-toggle';
-  globeZoomReset.id='globe-zoom-reset';
-  globeZoomLevel.id='globe-zoom-level';
-
-  globeBeamToggle.checked=originalToggle.checked;
-
-  copiedStatus.replaceWith(status);
-
-  hint.textContent=
-   'Drag to rotate · Ctrl + drag ↑↓ / Ctrl + wheel to zoom';
-
-  // Replace the old 3D footer; do not append another.
-  oldFooter.replaceWith(footer);
-
-  if(
-   three.querySelectorAll('.beam-controls').length!==1
-  ){
-   throw Error('GLOBE_FOOTER_COUNT_INVALID');
-  }
-
-  stage.addEventListener(
-   'pointerdown',
-   ()=>{
-    if(globe)globeZoomReset.disabled=false;
-   },
-   true
-  );
-
-  globeBeamToggle.addEventListener(
-   'change',updateGlobe
-  );
-
-  globeZoomReset.addEventListener('click',()=>{
    if(!globe)return;
 
    globe.pointOfView({...initialPOV},0);
    update3dZoom();
-  });
+  },true);
  }
 
  function update3dZoom(){
-  if(!globe||!globeZoomLevel||
+  if(mode!=="3d"||!globe||!globeZoomLevel||
      !globeZoomReset)return;
 
   const pov=globe.pointOfView();
@@ -323,6 +295,7 @@
   controls.autoRotate=false;
   controls.enableZoom=false;
   controls.enablePan=false;
+  controls.addEventListener("change",update3dZoom);
 
   const zoomTo=value=>{
    if(!Number.isFinite(value))return;
@@ -622,10 +595,31 @@
    next!=="3d"
   )return;
 
+  if(mode==="2d"&&next==="3d"){
+   twoZoomText=globeZoomLevel.textContent;
+   twoZoomDisabled=globeZoomReset.disabled;
+  }
+
   mode=next;
 
   two.hidden=next!=="2d";
   three.hidden=next!=="3d";
+  twoStatus.hidden=next==="3d";
+  status.hidden=next!=="3d";
+
+  sharedHint.textContent=next==="3d" ?
+   'Drag to rotate · Ctrl + drag ↑↓ / Ctrl + wheel to zoom':
+   twoHint;
+
+  if(next==="2d"){
+   globeZoomLevel.textContent=twoZoomText;
+   globeZoomReset.disabled=twoZoomDisabled;
+  }else if(globe){
+   update3dZoom();
+  }else{
+   globeZoomLevel.textContent="1.0×";
+   globeZoomReset.disabled=true;
+  }
 
   btn2.setAttribute(
    "aria-pressed",
@@ -673,4 +667,4 @@
 
 // HP_GLOBE_FOOTER_MATCH_2D_V1
 
-// HP_GLOBE_FOOTER_SINGLE_CLONE_V3
+// HP_SHARED_MAP_CONTROLS_V4
