@@ -94,7 +94,7 @@
     );
   }
 
-  function resolve(key,value){
+  function resolve(key,value,confirmCode=false){
     const text=value.trim();
 
     if(!text)return '';
@@ -156,7 +156,8 @@
     }
 
     const matching=entries.filter(o=>
-      normalize(o.value)===input||
+      ((key!=='country'||confirmCode)&&
+       normalize(o.value)===input)||
       normalize(display(key,o.value))===input
     );
 
@@ -207,11 +208,11 @@
     }
   }
 
-  function apply(key){
+  function apply(key,confirmCode=false){
     const state=ui[key];
     const native=selects[key];
     const raw=state.input.value;
-    const resolved=resolve(key,raw);
+    const resolved=resolve(key,raw,confirmCode);
 
     state.input.setAttribute(
       'aria-invalid',
@@ -354,7 +355,7 @@
       if(event.key!=='Enter')return;
 
       clearTimeout(ui[key].timer);
-      apply(key);
+      apply(key,key==='country');
     });
 
     native.addEventListener('change',()=>{
@@ -397,3 +398,5 @@
     }
   );
 })();
+
+// HP_COUNTRY_EXPLICIT_CODE_V2
