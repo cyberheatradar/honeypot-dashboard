@@ -1,0 +1,42 @@
+/* HP_RANKING_CLICK_FILTER_CSS_V1 */
+
+#hp-source-asns button.hp-ranking-filter,
+#hp-source-ips button.hp-ranking-filter,
+#countries button.hp-ranking-filter{
+  display:block;
+  width:100%;
+  text-align:left;
+  background:transparent;
+  border:0;
+  padding:0;
+  margin:0;
+  color:#8ddaf6;
+  font:inherit;
+  line-height:inherit;
+  overflow-wrap:anywhere;
+  cursor:pointer;
+}
+
+#hp-source-asns button.hp-ranking-filter strong{
+  color:inherit;
+}
+
+#hp-source-asns button.hp-ranking-filter .hp-source-org{
+  color:#a8bfd2;
+}
+
+#hp-source-asns button.hp-ranking-filter:hover,
+#hp-source-ips button.hp-ranking-filter:hover,
+#countries button.hp-ranking-filter:hover,
+#hp-source-asns button.hp-ranking-filter:focus-visible,
+#hp-source-ips button.hp-ranking-filter:focus-visible,
+#countries button.hp-ranking-filter:focus-visible{
+  text-decoration:underline;
+}
+
+#hp-source-asns button.hp-ranking-filter[aria-pressed="true"],
+#hp-source-ips button.hp-ranking-filter[aria-pressed="true"],
+#countries button.hp-ranking-filter[aria-pressed="true"]{
+  color:#fff;
+  font-weight:700;
+}
