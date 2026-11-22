@@ -2,6 +2,9 @@
   'use strict';
 
   // HP_IP_RANKING_V2
+
+  // HP_IP_INTEL_LIVE_PREVIEW
+  let intel = {ips:{},daily:{}};
   const tbody = document.getElementById('hp-source-ips');
   const root = document.getElementById('hp-source-rankings');
 
@@ -92,36 +95,69 @@
         continue;
       }
 
-      // Remove the retired AbuseIPDB hardcoded preview.
-      // Do not classify these IPs until 3 CTI feeds exist.
-      const reputation = tr.cells[2];
 
-      if (reputation.textContent !== '—') {
-        reputation.textContent = '—';
+      const ip = tr.cells[0].textContent.trim();
+      const day = document.getElementById('f-day')?.value || '';
+      const global = intel.ips[ip] || {};
+      const detail = day
+        ? (intel.daily?.[day]?.[ip] || {})
+        : global;
+
+      const sources = Array.isArray(global.r) ? global.r : [];
+      const reputation = tr.cells[2];
+      const label = sources.length ? 'suspicious' : '—';
+
+      if (reputation.textContent !== label) {
+        reputation.textContent = label;
       }
 
-      reputation.classList.remove(
-        'hp-cti-preview-detected'
+      reputation.classList.toggle(
+        'hp-cti-preview-detected',
+        sources.length > 0
       );
-      reputation.classList.add(
-        'hp-cti-preview-unknown'
+      reputation.classList.toggle(
+        'hp-cti-preview-unknown',
+        sources.length === 0
       );
 
-      reputation.title =
-        'Not evaluated: IPsum, FireHOL, ThreatFox';
+      reputation.title = sources.length
+        ? 'Listed: ' + sources.join(', ') +
+          '; ThreatFox not checked'
+        : 'No match in fetched feeds; ThreatFox not checked';
 
-      if (tr.cells.length === 3) {
-        for (const description of [
-          'Not yet analyzed by attack detection',
-          'Not yet analyzed for tool fingerprints'
-        ]) {
-          const td = document.createElement('td');
-          td.textContent = '—';
-          td.title = description;
-          td.className = 'hp-ip-unanalysed';
+      for (const [idx,key,empty] of [
+        [3,'a','HTTP signal not detected or not analyzed'],
+        [4,'t','No known UA match; AI usage not established']
+      ]) {
+        let td = tr.cells[idx];
+
+        if (!td) {
+          td = document.createElement('td');
           tr.append(td);
         }
+
+        const matches = Array.isArray(detail[key])
+          ? detail[key]
+          : [];
+
+        const value = matches.length
+          ? matches.map(x => x[0]).join(', ')
+          : '—';
+
+        if (td.textContent !== value) {
+          td.textContent = value;
+        }
+
+        td.title = matches.length
+          ? matches.map(x => x[0] + ' (' + x[1] + ')').join('; ')
+          : empty;
+
+        td.classList.toggle(
+          'hp-ip-unanalysed',
+          matches.length === 0
+        );
       }
+
     }
   }
 
@@ -131,6 +167,42 @@
     childList:true,
     subtree:true
   });
+
+
+  const dateFilter = document.getElementById('f-day');
+
+  if (dateFilter) {
+    dateFilter.addEventListener('change', decorate);
+  }
+
+  fetch('data/source-ip-intel/preview.json', {
+    cache: 'no-store'
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw Error('SOURCE_INTEL_HTTP_' + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (
+        data.schema !== 'hp-source-intel-preview-v1' ||
+        !data.ips || !data.daily
+      ) {
+        throw Error('SOURCE_INTEL_SCHEMA');
+      }
+
+      intel = data;
+
+      note.textContent =
+        'Preview · IPsum / FireHOL · ThreatFox pending';
+
+      note.title = 'Snapshot: ' + data.generated_utc;
+      decorate();
+    })
+    .catch(error => {
+      console.error('SOURCE_INTEL_PREVIEW', error);
+    });
 
   console.info('HP_IP_RANKING_V2=PASS');
 })();
