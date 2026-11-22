@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "total_matching_requests": 9415,
+  "total_matching_requests": 10186,
   "signal_totals": {
-    "common_probe_path": 9255,
-    "path_traversal": 139,
-    "sensitive_file_probe": 21
+    "common_probe_path": 10012,
+    "path_traversal": 147,
+    "sensitive_file_probe": 27
   },
   "cases": [
     {
@@ -16,7 +16,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 2070
+      "matching_requests": 2112
     },
     {
       "id": 2,
@@ -27,7 +27,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 297
+      "matching_requests": 323
     },
     {
       "id": 3,
@@ -49,7 +49,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 70
+      "matching_requests": 73
     },
     {
       "id": 5,
@@ -60,7 +60,7 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 35
+      "matching_requests": 39
     },
     {
       "id": 6,
@@ -71,7 +71,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 20
+      "matching_requests": 21
     },
     {
       "id": 7,
@@ -93,7 +93,7 @@
       "destination_port": 3000,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 6
+      "matching_requests": 7
     },
     {
       "id": 9,

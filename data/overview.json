@@ -1,10 +1,10 @@
 {
-  "generated_utc": "2026-11-22 02:38 UTC",
+  "generated_utc": "2026-11-22 07:57 UTC",
   "metrics": {
-    "http_requests": 14439,
-    "unique_source_ips": 2544,
+    "http_requests": 20193,
+    "unique_source_ips": 3542,
     "destination_ports": 42,
-    "https_requests": 3705
+    "https_requests": 5724
   },
   "daily_utc": [
     {
@@ -29,158 +29,168 @@
     },
     {
       "date": "2026-11-19",
-      "requests": 1764,
-      "unique_sources": 473
+      "requests": 2289,
+      "unique_sources": 712
+    },
+    {
+      "date": "2026-11-20",
+      "requests": 1822,
+      "unique_sources": 750
+    },
+    {
+      "date": "2026-11-21",
+      "requests": 3407,
+      "unique_sources": 752
     }
   ],
   "ports": [
     {
       "port": 80,
-      "requests": 1548
+      "requests": 1958
     },
     {
       "port": 443,
-      "requests": 1125
+      "requests": 1639
     },
     {
       "port": 8080,
-      "requests": 1094
+      "requests": 1333
     },
     {
-      "port": 9200,
-      "requests": 554
+      "port": 10250,
+      "requests": 835
     },
     {
       "port": 5000,
-      "requests": 516
+      "requests": 806
+    },
+    {
+      "port": 9200,
+      "requests": 757
+    },
+    {
+      "port": 2376,
+      "requests": 721
     },
     {
       "port": 9000,
-      "requests": 506
+      "requests": 655
     },
     {
       "port": 2375,
-      "requests": 494
+      "requests": 644
     },
     {
       "port": 8008,
-      "requests": 485
-    },
-    {
-      "port": 8443,
-      "requests": 478
-    },
-    {
-      "port": 8001,
-      "requests": 438
+      "requests": 620
     }
   ],
   "countries": [
     {
       "country": "Germany",
-      "requests": 4422
+      "requests": 6340
     },
     {
       "country": "United States",
-      "requests": 3157
-    },
-    {
-      "country": "Japan",
-      "requests": 1710
+      "requests": 4395
     },
     {
       "country": "United Kingdom",
-      "requests": 1195
+      "requests": 1813
+    },
+    {
+      "country": "Japan",
+      "requests": 1751
     },
     {
       "country": "Netherlands",
-      "requests": 886
+      "requests": 1492
     },
     {
       "country": "Belgium",
-      "requests": 840
+      "requests": 1124
     },
     {
       "country": "Singapore",
-      "requests": 587
+      "requests": 678
     },
     {
       "country": "Hong Kong",
-      "requests": 334
-    },
-    {
-      "country": "China",
-      "requests": 203
+      "requests": 400
     },
     {
       "country": "Sweden",
-      "requests": 142
+      "requests": 359
+    },
+    {
+      "country": "Switzerland",
+      "requests": 275
     }
   ],
   "asns": [
     {
       "asn": 208137,
       "organization": "Feo Prest SRL",
-      "requests": 3558
+      "requests": 4150
     },
     {
       "asn": 63949,
       "organization": "Akamai Technologies, Inc.",
-      "requests": 2028
+      "requests": 2199
     },
     {
       "asn": 43515,
       "organization": "Google Ireland Limited",
-      "requests": 1173
+      "requests": 1702
     },
     {
       "asn": 25369,
       "organization": "Hydra Communications Ltd",
-      "requests": 1094
+      "requests": 1657
+    },
+    {
+      "asn": 213790,
+      "organization": "Limited Network LTD",
+      "requests": 1052
     },
     {
       "asn": 14061,
       "organization": "DigitalOcean, LLC",
-      "requests": 640
+      "requests": 793
     },
     {
       "asn": 8075,
       "organization": "Microsoft Corporation",
-      "requests": 461
-    },
-    {
-      "asn": 20473,
-      "organization": "The Constant Company, LLC",
-      "requests": 454
+      "requests": 679
     },
     {
       "asn": 398324,
       "organization": "Censys, Inc.",
-      "requests": 423
-    },
-    {
-      "asn": 199457,
-      "organization": "SolidCore Hosting LTD",
-      "requests": 386
+      "requests": 663
     },
     {
       "asn": 396982,
       "organization": "Google LLC",
-      "requests": 348
+      "requests": 569
+    },
+    {
+      "asn": 20473,
+      "organization": "The Constant Company, LLC",
+      "requests": 464
     }
   ],
   "signals": [
     {
       "type": "common_probe_path",
-      "requests": 1926
+      "requests": 2683
     },
     {
       "type": "path_traversal",
-      "requests": 27
+      "requests": 35
     },
     {
       "type": "sensitive_file_probe",
-      "requests": 13
+      "requests": 19
     }
   ],
   "attribution": "IP geolocation by DB-IP Lite (CC BY 4.0)",
