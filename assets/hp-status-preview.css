@@ -1,0 +1,34 @@
+/* HP_STATUS_HONEYPOT_PREVIEW_V1 */
+/* Preserve existing panel heights and scrolling. */
+
+#hp-source-rankings .hp-source-ranking-panel:last-child table th:nth-child(1),
+#hp-source-rankings .hp-source-ranking-panel:last-child table td:nth-child(1){
+  width:43%;
+}
+
+#hp-source-rankings .hp-source-ranking-panel:last-child table th:nth-child(2),
+#hp-source-rankings .hp-source-ranking-panel:last-child table td:nth-child(2){
+  width:24%;
+  text-align:right;
+}
+
+#hp-source-rankings .hp-source-ranking-panel:last-child table th:nth-child(3),
+#hp-source-rankings .hp-source-ranking-panel:last-child table td:nth-child(3){
+  width:33%;
+  text-align:right;
+}
+
+#hp-source-rankings td.hp-cti-preview-status{
+  font-size:.70rem;
+  white-space:nowrap;
+}
+
+#hp-source-rankings td.hp-cti-preview-detected{
+  color:#ff6678;
+  font-weight:800;
+  text-decoration:underline;
+}
+
+#hp-source-rankings td.hp-cti-preview-unknown{
+  color:#aebfd2;
+}
