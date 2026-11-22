@@ -137,3 +137,136 @@ body.hp-ip-ranking-open::before{
     padding:12px;
   }
 }
+
+/* HP_DESKTOP_FIVE_COLUMN_LAYOUT_V1 */
+
+/* Remove preview caption from the published GUI. */
+#hp-source-rankings .hp-ip-ranking-note{
+  display:none!important;
+}
+#hp-source-rankings .hp-ip-ranking-controls{
+  justify-content:flex-end!important;
+}
+
+/*
+ * Desktop/tablet:
+ * Flatten layout wrappers so existing panels can
+ * occupy independent grid cells.
+ *
+ * No DOM mutation and no data-processing changes.
+ */
+@media(min-width:1000px){
+
+  .map-workspace{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-rows:auto auto auto!important;
+    gap:12px!important;
+    align-items:stretch!important;
+  }
+
+  .map-workspace > .map-filters-panel,
+  .map-workspace > .map-filters-panel > #hp-source-rankings{
+    display:contents!important;
+  }
+
+  .map-workspace #hp-source-rankings > .hp-source-ranking-panel{
+    box-sizing:border-box;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+  }
+
+  /* Medium PC: full-width IP ranking first. */
+  .map-workspace #hp-source-rankings > .hp-ip-ranking-v2{
+    grid-column:1 / -1;
+    grid-row:1;
+    height:430px!important;
+    max-height:none!important;
+    min-height:0!important;
+    align-self:stretch!important;
+  }
+
+  .map-workspace > .map-center-panel{
+    grid-column:1 / -1;
+    grid-row:2;
+    min-width:0!important;
+    width:auto!important;
+  }
+
+  .map-workspace #hp-source-rankings >
+  .hp-source-ranking-panel:not(.hp-ip-ranking-v2){
+    grid-column:1;
+    grid-row:3;
+    height:420px!important;
+    max-height:420px!important;
+  }
+
+  .map-workspace > .map-ranking-pair{
+    grid-column:2;
+    grid-row:3;
+    height:420px!important;
+    max-height:420px!important;
+    min-width:0!important;
+    align-self:stretch!important;
+  }
+
+  /* Five columns visible within the normal panel. */
+  #hp-source-rankings .hp-ip-ranking-v2 table{
+    width:100%!important;
+    min-width:0!important;
+    table-layout:fixed!important;
+    font-size:.74rem;
+  }
+
+  #hp-source-rankings .hp-ip-ranking-v2 th,
+  #hp-source-rankings .hp-ip-ranking-v2 td{
+    padding:8px 6px!important;
+  }
+
+  #hp-source-rankings .hp-ip-ranking-v2 .hp-source-tablewrap{
+    flex:1 1 auto!important;
+    min-width:0!important;
+    min-height:0!important;
+    overflow-x:auto!important;
+    overflow-y:auto!important;
+  }
+}
+
+/*
+ * Wide PC: map on the left, full five-column
+ * Source IP ranking on the right.
+ * Other rankings occupy the second row.
+ */
+@media(min-width:1450px){
+
+  .map-workspace{
+    grid-template-columns:minmax(0,42fr) minmax(0,58fr)!important;
+    grid-template-rows:auto auto!important;
+  }
+
+  .map-workspace > .map-center-panel{
+    grid-column:1;
+    grid-row:1;
+  }
+
+  .map-workspace #hp-source-rankings > .hp-ip-ranking-v2{
+    grid-column:2;
+    grid-row:1;
+    height:auto!important;
+    min-height:540px!important;
+    max-height:none!important;
+    align-self:stretch!important;
+  }
+
+  .map-workspace #hp-source-rankings >
+  .hp-source-ranking-panel:not(.hp-ip-ranking-v2){
+    grid-column:1;
+    grid-row:2;
+  }
+
+  .map-workspace > .map-ranking-pair{
+    grid-column:2;
+    grid-row:2;
+  }
+}
