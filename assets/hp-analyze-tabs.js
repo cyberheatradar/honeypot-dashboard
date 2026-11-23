@@ -57,6 +57,28 @@ try {
    if(el!==card) throw Error('STOP=ANALYZE_TABLE_PARENT_'+name);
  }
 
+ // HP_ATTACK_TOOLS_TAB_V1
+ const attack=document.createElement('section');
+ attack.className='hp-analyze-card hp-attack-panel';
+ attack.id='hp-analyze-panel-attack';
+ attack.innerHTML=`
+   <h2>HTTP indicators</h2>
+   <p class="hp-attack-note" id="hp-attack-status">Loading data...</p>
+   <div class="hp-attack-modes">
+     <button type="button" data-mode="patterns">Attack patterns</button>
+     <button type="button" data-mode="user_agents">User-Agent fingerprints</button>
+   </div>
+   <div class="hp-attack-scroll">
+     <table>
+       <thead><tr>
+         <th>Indicator</th><th>Requests</th>
+         <th>Source IPs</th><th>Top IP share</th>
+       </tr></thead>
+       <tbody id="hp-attack-rows"></tbody>
+     </table>
+   </div>`;
+ cards.attack=attack;
+
  const left=document.createElement('div');
  left.className='hp-analyze-left';
 
@@ -79,7 +101,8 @@ try {
    ['ip','Source IP'],
    ['asn','Source ASN'],
    ['port','Destination port'],
-   ['country','Source country']
+   ['country','Source country'],
+   ['attack','Attack & Tools']
  ];
 
  const buttons={};
@@ -126,8 +149,8 @@ try {
      e.preventDefault();
 
      const j=e.key==='Home'?0:
-       e.key==='End'?3:
-       (i+(e.key==='ArrowRight'?1:3))%4;
+       e.key==='End'?choices.length-1:
+       (i+(e.key==='ArrowRight'?1:choices.length-1))%choices.length;
 
      select(choices[j][0]);
      buttons[choices[j][0]].focus();
@@ -139,12 +162,167 @@ try {
  });
 
  left.append(f,m);
- body.append(r,p);
+ body.append(r,p,attack);
  right.append(title,tabs,body);
  w.append(left,right);
 
  w.classList.add('hp-analyze-layout');
  select('ip');
+
+ // HTTP analysis under the shared MAP filter selections.
+ let attackData=null;
+ let attackMode='patterns';
+ const attackStatus=attack.querySelector('#hp-attack-status');
+ const attackRows=attack.querySelector('#hp-attack-rows');
+ const attackBtns=[...attack.querySelectorAll('[data-mode]')];
+ const fmt=n=>Number(n).toLocaleString('en-US');
+ let renderTimer=0;
+
+ function renderAttack(){
+   if(!attackData)return;
+
+   attackBtns.forEach(b=>
+     b.setAttribute(
+       'aria-pressed',String(b.dataset.mode===attackMode)
+     )
+   );
+
+   const day=document.getElementById('f-day')?.value||'';
+   const country=document.getElementById('f-country')?.value||'';
+   const port=document.getElementById('f-port')?.value||'';
+   const asn=window.HP_SOURCE_ASN||
+     document.getElementById('f-asn')?.value||'';
+   const ip=window.HP_SOURCE_IP||'';
+   const honeypot=
+     document.getElementById('f-honeypot')?.value||'all';
+   const udp=window.HP_KIND==='UDP';
+
+   const groups=new Map();
+
+   if(!udp){
+     for(const row of attackData[attackMode]){
+       const [d,src,cc,asnId,dport,hp,label,n]=row;
+
+       if(day&&d!==day)continue;
+       if(country&&cc!==country)continue;
+       if(port&&dport!==Number(port))continue;
+       if(asn&&asnId!==asn)continue;
+       if(ip&&src!==ip)continue;
+       if(honeypot!=='all'&&hp!==honeypot)continue;
+
+       if(!groups.has(label)){
+         groups.set(label,{count:0,ips:new Map()});
+       }
+
+       const item=groups.get(label);
+       item.count+=n;
+       item.ips.set(src,(item.ips.get(src)||0)+n);
+     }
+   }
+
+   const ranked=[...groups].sort(
+     (a,b)=>b[1].count-a[1].count||a[0].localeCompare(b[0])
+   );
+
+   attackRows.replaceChildren();
+
+   for(const [label,g] of ranked){
+     const tr=document.createElement('tr');
+     const largest=[...g.ips.values()].reduce(
+       (a,b)=>Math.max(a,b),0
+     );
+
+     for(const value of [
+       label,fmt(g.count),fmt(g.ips.size),
+       (100*largest/g.count).toFixed(1)+'%'
+     ]){
+       const td=document.createElement('td');
+       td.textContent=value;
+       tr.append(td);
+     }
+     attackRows.append(tr);
+   }
+
+   if(!ranked.length){
+     const tr=document.createElement('tr');
+     const td=document.createElement('td');
+     td.colSpan=4;
+     td.textContent=udp
+       ?'HTTP analysis is not applicable to UDP observations'
+       :'No matching HTTP indicators (not a benign verdict)';
+     tr.append(td);
+     attackRows.append(tr);
+   }
+
+   const days=attackData.coverage_days;
+   attackStatus.textContent=
+     (attackMode==='patterns'
+       ?'HTTP URI indicators · multi-label'
+       :'HTTP User-Agent signatures · unverified tool identity')+
+     ' · '+days[0]+' – '+days[days.length-1]+
+     ' · '+fmt(ranked.reduce((s,x)=>s+x[1].count,0))+
+     ' matches';
+ }
+
+ function scheduleAttack(){
+   clearTimeout(renderTimer);
+   renderTimer=setTimeout(renderAttack,360);
+ }
+
+ for(const b of attackBtns){
+   b.addEventListener('click',()=>{
+     attackMode=b.dataset.mode;
+     renderAttack();
+   });
+ }
+
+ for(const id of [
+   'f-day','f-country','f-port','f-asn','f-honeypot'
+ ]){
+   document.getElementById(id)?.addEventListener(
+     'change',scheduleAttack
+   );
+ }
+
+ for(const type of ['input','change']){
+   document.getElementById('f-source-ip')?.addEventListener(
+     type,scheduleAttack
+   );
+ }
+
+ document.addEventListener(
+   'hp-source-facets-rows',scheduleAttack
+ );
+
+ const sum=document.getElementById('summary');
+ if(sum){
+   new MutationObserver(scheduleAttack).observe(
+     sum,{childList:true,subtree:true,characterData:true}
+   );
+ }
+
+ fetch('data/analyze/attack-tools.json',{cache:'no-store'})
+   .then(res=>{
+     if(!res.ok)throw Error('ATTACK_DATA_HTTP_'+res.status);
+     return res.json();
+   })
+   .then(data=>{
+     if(
+       data.schema!=='hp-analyze-attack-tools-v1'||
+       !Array.isArray(data.patterns)||
+       !Array.isArray(data.user_agents)||
+       !Array.isArray(data.coverage_days)||
+       !data.coverage_days.length
+     )throw Error('ATTACK_DATA_SCHEMA');
+
+     attackData=data;
+     renderAttack();
+   })
+   .catch(err=>{
+     attackStatus.textContent=
+       'HTTP indicator data unavailable (not zero matches)';
+     console.error('HP_ATTACK_TOOLS',err);
+   });
 
  const fit=()=>{
    if(innerWidth>=1280){

@@ -400,3 +400,77 @@
    line-height:1.35;
  }
 }
+
+/* HP_ATTACK_TOOLS_TAB_V1 */
+
+.map-workspace.hp-analyze-layout .hp-attack-panel{
+  padding:8px!important;
+  gap:10px!important;
+  color:#e6f1fa;
+}
+.map-workspace.hp-analyze-layout .hp-attack-panel h2{
+  margin:0!important;
+  font-size:1rem!important;
+}
+.map-workspace.hp-analyze-layout .hp-attack-note{
+  margin:0!important;
+  color:#aebfd2;
+  font-size:.75rem;
+  line-height:1.5;
+}
+.map-workspace.hp-analyze-layout .hp-attack-modes{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.map-workspace.hp-analyze-layout .hp-attack-modes button{
+  border:1px solid #4d6b85;
+  color:#d5e5f4;
+  border-radius:6px;
+  background:#15263b;
+  padding:6px 10px;
+  cursor:pointer;
+  font:inherit;
+  font-size:.75rem;
+}
+.map-workspace.hp-analyze-layout
+.hp-attack-modes button[aria-pressed=true]{
+  background:#27576a;
+  border-color:#66a5ba;
+  color:white;
+}
+.map-workspace.hp-analyze-layout .hp-attack-scroll{
+  flex:1 1 auto;
+  min-height:0;
+  width:100%;
+  overflow:auto;
+}
+.map-workspace.hp-analyze-layout .hp-attack-scroll table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  font-size:.78rem;
+}
+.map-workspace.hp-analyze-layout .hp-attack-scroll th,
+.map-workspace.hp-analyze-layout .hp-attack-scroll td{
+  padding:9px 8px;
+  text-align:left;
+  overflow-wrap:anywhere;
+  border-bottom:1px solid #30465c;
+}
+.map-workspace.hp-analyze-layout
+.hp-attack-scroll th:first-child{
+  width:37%;
+}
+.map-workspace.hp-analyze-layout
+.hp-attack-scroll th:not(:first-child),
+.map-workspace.hp-analyze-layout
+.hp-attack-scroll td:not(:first-child){
+  text-align:right;
+}
+.map-workspace.hp-analyze-layout .hp-attack-scroll th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:#141f31;
+}
