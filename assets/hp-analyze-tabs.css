@@ -198,3 +198,205 @@
   max-height:700px!important;
  }
 }
+
+/* HP_ANALYZE_TABS_V2_FIX */
+
+@media(min-width:1280px){
+ .map-workspace.hp-analyze-layout>.hp-analyze-left{
+   height:var(--hp-analyze-height)!important;
+   max-height:var(--hp-analyze-height)!important;
+   overflow:hidden!important;
+   display:flex!important;
+   flex-direction:column!important;
+   gap:0!important;
+ }
+
+ .map-workspace.hp-analyze-layout
+ .hp-analyze-left>.map-center-panel{
+   flex:1 1 auto!important;
+   height:100%!important;
+   min-height:0!important;
+   max-height:100%!important;
+   overflow-y:auto!important;
+   overflow-x:hidden!important;
+ }
+}
+
+/* Remove the empty observations panel. */
+.map-workspace.hp-analyze-layout
+.hp-analyze-left>.map-filters-panel{
+ display:none!important;
+}
+
+/* Use one shared ranking viewport. */
+.map-workspace.hp-analyze-layout .hp-analyze-body{
+ position:relative!important;
+ display:block!important;
+ isolation:isolate;
+ min-width:0!important;
+ min-height:0!important;
+ overflow:hidden!important;
+}
+
+.map-workspace.hp-analyze-layout
+.hp-analyze-body>#hp-source-rankings,
+.map-workspace.hp-analyze-layout
+.hp-analyze-body>.map-ranking-pair{
+ position:absolute!important;
+ inset:0!important;
+ display:block!important;
+ box-sizing:border-box!important;
+ margin:0!important;
+ padding:0!important;
+ width:100%!important;
+ height:100%!important;
+ min-width:0!important;
+ min-height:0!important;
+ max-height:none!important;
+ overflow:hidden!important;
+ border:0!important;
+ background:transparent!important;
+ grid-column:auto!important;
+ grid-row:auto!important;
+}
+
+/* Align all four ranking panels to the top. */
+.map-workspace.hp-analyze-layout
+.hp-analyze-body .hp-analyze-card,
+.map-workspace.hp-analyze-layout
+#hp-source-rankings>.hp-analyze-card{
+ position:absolute!important;
+ inset:0!important;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:stretch!important;
+ justify-content:flex-start!important;
+ box-sizing:border-box!important;
+ margin:0!important;
+ width:100%!important;
+ height:100%!important;
+ min-width:0!important;
+ min-height:0!important;
+ max-height:none!important;
+ overflow:hidden!important;
+ grid-column:auto!important;
+ grid-row:auto!important;
+ align-self:stretch!important;
+}
+
+/* Keep inactive tabs fully hidden. */
+.map-workspace.hp-analyze-layout
+.hp-analyze-body>#hp-source-rankings.hp-analyze-hidden,
+.map-workspace.hp-analyze-layout
+.hp-analyze-body>.map-ranking-pair.hp-analyze-hidden,
+.map-workspace.hp-analyze-layout
+#hp-source-rankings>.hp-analyze-card[hidden],
+.map-workspace.hp-analyze-layout
+.map-ranking-pair>.hp-analyze-card[hidden]{
+ display:none!important;
+}
+
+/* Expand the table into the available panel height. */
+.map-workspace.hp-analyze-layout
+.hp-analyze-card .hp-analyze-path{
+ display:flex!important;
+ flex-direction:column!important;
+ flex:1 1 auto!important;
+ width:100%!important;
+ height:auto!important;
+ min-height:0!important;
+ max-height:none!important;
+ overflow:hidden!important;
+}
+
+.map-workspace.hp-analyze-layout
+.hp-analyze-card .hp-analyze-scroll,
+.map-workspace.hp-analyze-layout
+.hp-analyze-card .hp-source-tablewrap{
+ flex:1 1 auto!important;
+ box-sizing:border-box!important;
+ width:100%!important;
+ height:auto!important;
+ min-height:0!important;
+ max-height:none!important;
+ overflow-y:auto!important;
+ overflow-x:auto!important;
+ overscroll-behavior:contain;
+}
+
+.map-workspace.hp-analyze-layout
+.hp-analyze-card .hp-analyze-scroll table{
+ width:100%!important;
+}
+
+.map-workspace.hp-analyze-layout
+.hp-analyze-card table thead th{
+ position:sticky;
+ top:0;
+ z-index:2;
+ background:#141f31;
+}
+
+/* Remove Expand and its now-unused toolbar. */
+.map-workspace.hp-analyze-layout
+#hp-source-rankings .hp-ip-ranking-expand,
+.map-workspace.hp-analyze-layout
+#hp-source-rankings .hp-ip-ranking-controls{
+ display:none!important;
+}
+
+/* Five-column Source IP layout on desktop. */
+@media(min-width:1280px){
+
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 table{
+   width:100%!important;
+   min-width:0!important;
+   table-layout:fixed!important;
+ }
+
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 th:nth-child(1),
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 td:nth-child(1){
+   width:20%!important;
+ }
+
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 th:nth-child(2),
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 td:nth-child(2){
+   width:10%!important;
+ }
+
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 th:nth-child(3),
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 td:nth-child(3){
+   width:17%!important;
+ }
+
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 th:nth-child(4),
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 td:nth-child(4){
+   width:27%!important;
+ }
+
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 th:nth-child(5),
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 td:nth-child(5){
+   width:26%!important;
+ }
+
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 td:nth-child(4),
+ .map-workspace.hp-analyze-layout
+ #hp-source-rankings>.hp-ip-ranking-v2 td:nth-child(5){
+   white-space:normal!important;
+   overflow-wrap:anywhere!important;
+   text-overflow:clip!important;
+   line-height:1.35;
+ }
+}

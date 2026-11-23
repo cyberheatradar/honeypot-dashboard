@@ -36,6 +36,27 @@ try {
     !cards.ip.classList.contains('hp-ip-ranking-v2'))
    throw Error('STOP=CARD_COLLISION');
 
+ // HP_ANALYZE_TABS_V2_FIX
+ // Remove the obsolete Expand control.
+ const expand=cards.ip.querySelector('.hp-ip-ranking-expand');
+ if(expand) expand.remove();
+ cards.ip.classList.remove('hp-ip-ranking-expanded');
+ document.body.classList.remove('hp-ip-ranking-open');
+
+ // Identify the existing table scroll containers.
+ for(const [name,card] of Object.entries(cards)){
+   const table=card.querySelector('table');
+   if(!table) throw Error('STOP=ANALYZE_TABLE_'+name);
+   let el=table.parentElement;
+   while(el && el!==card){
+     el.classList.add(
+       el===table.parentElement ? 'hp-analyze-scroll' : 'hp-analyze-path'
+     );
+     el=el.parentElement;
+   }
+   if(el!==card) throw Error('STOP=ANALYZE_TABLE_PARENT_'+name);
+ }
+
  const left=document.createElement('div');
  left.className='hp-analyze-left';
 
@@ -129,7 +150,7 @@ try {
    if(innerWidth>=1280){
      const h=Math.max(
        300,
-       Math.floor(innerHeight-w.getBoundingClientRect().top-14)
+       Math.floor(innerHeight-w.getBoundingClientRect().top-26)
      );
      w.style.setProperty('--hp-analyze-height',h+'px');
    }else{

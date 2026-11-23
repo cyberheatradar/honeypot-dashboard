@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "total_matching_requests": 10186,
+  "total_matching_requests": 10188,
   "signal_totals": {
-    "common_probe_path": 10012,
+    "common_probe_path": 10014,
     "path_traversal": 147,
     "sensitive_file_probe": 27
   },
