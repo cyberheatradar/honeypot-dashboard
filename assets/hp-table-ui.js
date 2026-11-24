@@ -205,6 +205,108 @@ function bind(id,table,callback,defaultColumn,defaultDir=-1){
   });
 }
 
+// HP_IP_LOOKUP_LINKS_V2
+
+function lookupLinks(cell,ip){
+  if(!ipKey(ip))return;
+  if(cell.querySelector('.hp-ip-lookups'))return;
+
+  const encoded=encodeURIComponent(ip);
+
+  const host=ip.includes(':')
+    ?'['+ip+']':ip;
+
+  const services=[
+    [
+      'Abuse','AbuseIPDB',
+      'https://www.abuseipdb.com/check/'+encoded
+    ],
+    [
+      'VT','VirusTotal',
+      'https://www.virustotal.com/gui/ip-address/'+encoded
+    ],
+    [
+      'GN','GreyNoise',
+      'https://viz.greynoise.io/ips/'+encoded
+    ],
+    [
+      'OTX','AlienVault OTX',
+      'https://otx.alienvault.com/indicator/ip/'+encoded
+    ],
+    [
+      'ISC','SANS ISC / DShield',
+      'https://isc.sans.edu/ipinfo/'+encoded
+    ],
+    [
+      'CIP','Criminal IP',
+      'https://search.criminalip.io/ja/asset/report/'+encoded
+    ],
+    [
+      'Shodan','Shodan',
+      'https://www.shodan.io/host/'+encoded
+    ],
+    [
+      'WHOIS','ViewDNS WHOIS',
+      'https://viewdns.info/whois/?domain='+encoded
+    ],
+    [
+      'RDAP','RDAP IP registration',
+      'https://rdap.org/ip/'+encoded
+    ],
+    [
+      'rDNS','ViewDNS Reverse DNS / PTR',
+      'https://viewdns.info/reversedns/?ip='+encoded
+    ],
+    [
+      'pDNS','mnemonic Passive DNS',
+      'https://api.mnemonic.no/pdns/v3/'+encoded
+    ],
+    [
+      'Robtex','Robtex Passive DNS',
+      'https://freeapi.robtex.com/pdns/reverse/'+encoded
+    ],
+    [
+      'Archive','Wayback Machine',
+      'https://web.archive.org/web/*/http://'+host+'/*'
+    ],
+    [
+      'URLScan','urlscan.io existing results',
+      'https://urlscan.io/search/#ip:'+encoded
+    ]
+  ];
+
+  const wrap=document.createElement('span');
+  wrap.className='hp-ip-lookups';
+
+  for(const [short,name,url] of services){
+    const link=document.createElement('a');
+
+    link.className='hp-ip-lookup';
+    link.dataset.label=short;
+    link.href=url;
+    link.target='_blank';
+    link.rel='noopener noreferrer';
+    link.referrerPolicy='no-referrer';
+    link.title=name+' — '+ip;
+
+    link.setAttribute(
+      'aria-label',
+      'Look up '+ip+' in '+name+' (new tab)'
+    );
+
+    link.addEventListener('click',event=>{
+      event.stopPropagation();
+    });
+
+    wrap.append(link);
+  }
+
+  // No text nodes are added to the IP cell.
+  // Existing IP parsers continue to work.
+
+  cell.append(wrap);
+}
+
 function copyButton(cell,ip){
   if(!ipKey(ip)||
      cell.querySelector('.hp-copy-ip'))return;
@@ -258,6 +360,7 @@ function copyButton(cell,ip){
   line.append(...Array.from(cell.childNodes),btn);
   cell.classList.add('hp-ip-copy-cell');
   cell.append(line);
+  lookupLinks(cell,ip);
 }
 
 function updateListedButton(){

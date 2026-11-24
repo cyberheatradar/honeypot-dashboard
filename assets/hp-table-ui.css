@@ -209,3 +209,65 @@ th[aria-sort="descending"]{
     white-space:normal;
   }
 }
+
+/* HP_IP_LOOKUP_LINKS_V2 */
+
+.hp-ip-lookups{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:3px!important;
+  margin-top:5px!important;
+  max-width:100%;
+  min-width:0;
+  white-space:normal!important;
+}
+
+.hp-ip-lookups>.hp-ip-lookup{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  padding:2px 4px!important;
+  color:#a8cde2!important;
+  background:#172a3d!important;
+  border:1px solid #38546c!important;
+  border-radius:3px!important;
+  font-size:9px!important;
+  font-weight:500!important;
+  line-height:1.2!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  cursor:pointer!important;
+}
+
+.hp-ip-lookups>.hp-ip-lookup::before{
+  content:attr(data-label);
+}
+
+.hp-ip-lookups>.hp-ip-lookup:hover{
+  color:#e0f6ff!important;
+  background:#27576a!important;
+  border-color:#73b6cf!important;
+}
+
+.hp-ip-lookups>.hp-ip-lookup:focus-visible{
+  outline:2px solid #80d8ff!important;
+  outline-offset:2px!important;
+}
+
+.hp-ip-lookup[data-label="WHOIS"],
+.hp-ip-lookup[data-label="RDAP"],
+.hp-ip-lookup[data-label="rDNS"],
+.hp-ip-lookup[data-label="pDNS"],
+.hp-ip-lookup[data-label="Robtex"],
+.hp-ip-lookup[data-label="Archive"]{
+  color:#c4cdd9!important;
+  background:#202b3a!important;
+  border-color:#465364!important;
+}
