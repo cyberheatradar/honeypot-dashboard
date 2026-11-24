@@ -27,10 +27,10 @@
   // Existing preview's Status column is repurposed.
   header.cells[2].textContent = 'IP Reputation';
   header.cells[2].title =
-    'IPsum / FireHOL / ThreatFox; not yet connected';
+    'IPsum / FireHOL snapshot; ThreatFox not checked';
 
   for (const [title,description] of [
-    ['Attack Detection','Suricata / HTTP rule matches'],
+    ['Attack Detection','HTTP URI indicators; not confirmed exploitation'],
     ['AI/Tool Fingerprint','Observed tool fingerprint; AI use is not proven']
   ]) {
     const th = document.createElement('th');
@@ -86,6 +86,13 @@
   let agentSnapshot='';
 
   function agentLabels(ip,day){
+    const country=
+      document.getElementById('f-country')?.value||'';
+
+    const selectedAsn=
+      window.HP_SOURCE_ASN||
+      document.getElementById('f-asn')?.value||'';
+
     const port=document.getElementById('f-port')?.value||'';
     const hp=document.getElementById('f-honeypot')?.value||'all';
     const kind=window.HP_KIND||'TCP_SYN';
@@ -95,6 +102,8 @@
       const [d,,cc,asn,dport,sensor,label,n,proto]=row;
 
       if(day&&d!==day)continue;
+      if(country&&cc!==country)continue;
+      if(selectedAsn&&asn!==selectedAsn)continue;
       if(port&&dport!==Number(port))continue;
       if(hp!=='all'&&sensor!==hp)continue;
 
@@ -105,6 +114,63 @@
     }
 
     return [...labels].sort();
+  }
+
+  // HP_RANKING_CONSISTENCY_V1
+
+  let httpReady=false;
+  const httpIndex=new Map();
+  const httpDays=new Set();
+
+  function httpMatches(ip,day,key){
+    if(!httpReady||window.HP_KIND==='UDP')return [];
+
+    const country=
+      document.getElementById('f-country')?.value||'';
+
+    const port=
+      document.getElementById('f-port')?.value||'';
+
+    const asn=
+      window.HP_SOURCE_ASN||
+      document.getElementById('f-asn')?.value||'';
+
+    const hp=
+      document.getElementById('f-honeypot')?.value||'all';
+
+    const counts=new Map();
+
+    for(const row of httpIndex.get(ip)?.[key]||[]){
+      const [d,,cc,asnId,dport,sensor,label,n]=row;
+
+      if(day&&d!==day)continue;
+      if(country&&cc!==country)continue;
+      if(port&&dport!==Number(port))continue;
+      if(asn&&asnId!==asn)continue;
+      if(hp!=='all'&&sensor!==hp)continue;
+
+      counts.set(label,(counts.get(label)||0)+n);
+    }
+
+    return [...counts].sort(
+      (a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])
+    );
+  }
+
+  function httpEmpty(day){
+    if(window.HP_KIND==='UDP'){
+      return 'HTTP analysis not applicable to UDP';
+    }
+
+    if(!httpReady){
+      return 'HTTP indicator data unavailable or loading';
+    }
+
+    if(day&&!httpDays.has(day)){
+      return 'Outside published HTTP indicator coverage';
+    }
+
+    return 'No matching HTTP indicator; not a benign verdict';
   }
 
   function decorate() {
@@ -126,13 +192,12 @@
       const ip = tr.cells[0].textContent.trim();
       const day = document.getElementById('f-day')?.value || '';
       const global = intel.ips[ip] || {};
-      const detail = day
-        ? (intel.daily?.[day]?.[ip] || {})
-        : global;
+      // HTTP classifications are read from the
+      // same dataset used by Attack & Tools.
 
       const sources = Array.isArray(global.r) ? global.r : [];
       const reputation = tr.cells[2];
-      const label = sources.length ? 'suspicious' : '—';
+      const label = sources.length ? 'Listed' : '—';
 
       if (reputation.textContent !== label) {
         reputation.textContent = label;
@@ -149,7 +214,7 @@
 
       reputation.title = sources.length
         ? 'Listed: ' + sources.join(', ') +
-          '; ThreatFox not checked'
+          '; snapshot listing is not a malicious verdict; ThreatFox not checked'
         : 'No match in fetched feeds; ThreatFox not checked';
 
       for (const [idx,key,empty] of [
@@ -163,9 +228,7 @@
           tr.append(td);
         }
 
-        const matches = Array.isArray(detail[key])
-          ? detail[key]
-          : [];
+        const matches=httpMatches(ip,day,key);
 
         const additional = idx===4
           ? agentLabels(ip,day) : [];
@@ -192,7 +255,9 @@
                 ' · Not confirmed tool attribution'
               )
             ].join('; ')
-          : empty;
+          : httpEmpty(day)+(idx===4
+            ?'; no displayed agent/tool match'
+            :'');
 
         td.classList.toggle(
           'hp-ip-unanalysed',
@@ -211,11 +276,24 @@
   });
 
 
-  const dateFilter = document.getElementById('f-day');
-
-  if (dateFilter) {
-    dateFilter.addEventListener('change', decorate);
+  for(const id of [
+    'f-day','f-country','f-port',
+    'f-asn','f-source-ip','f-honeypot'
+  ]){
+    document.getElementById(id)?.addEventListener(
+      'change',()=>queueMicrotask(decorate)
+    );
   }
+
+  document.addEventListener(
+    'hp-source-facets-rows',
+    ()=>queueMicrotask(decorate)
+  );
+
+  document.addEventListener(
+    'hp-http-group-change',
+    ()=>queueMicrotask(decorate)
+  );
 
   fetch('data/source-ip-intel/preview.json', {
     cache: 'no-store'
@@ -274,6 +352,58 @@
     })
     .catch(error=>{
       console.error('HP_AGENTIC_RANKING',error);
+    });
+
+  fetch('data/analyze/attack-tools.json',{
+    cache:'no-store'
+  })
+    .then(response=>{
+      if(!response.ok){
+        throw Error('HTTP_RANKING_'+response.status);
+      }
+      return response.json();
+    })
+    .then(data=>{
+      if(data.schema!=='hp-analyze-attack-tools-v1'||
+         !Array.isArray(data.patterns)||
+         !Array.isArray(data.user_agents)||
+         !Array.isArray(data.coverage_days)){
+        throw Error('HTTP_RANKING_SCHEMA');
+      }
+
+      for(const day of data.coverage_days){
+        httpDays.add(day);
+      }
+
+      for(const [key,rows] of [
+        ['a',data.patterns],
+        ['t',data.user_agents]
+      ]){
+        for(const row of rows){
+          if(!Array.isArray(row)||row.length!==8||
+             !Number.isSafeInteger(row[7])||row[7]<=0){
+            throw Error('HTTP_RANKING_ROW');
+          }
+
+          const ip=row[1];
+
+          if(!httpIndex.has(ip)){
+            httpIndex.set(ip,{a:[],t:[]});
+          }
+
+          httpIndex.get(ip)[key].push(row);
+        }
+      }
+
+      httpReady=true;
+      decorate();
+
+      console.info('HP_RANKING_CONSISTENCY_V1=PASS');
+    })
+    .catch(error=>{
+      httpReady=false;
+      console.error('HP_RANKING_CONSISTENCY',error);
+      decorate();
     });
 
   console.info('HP_IP_RANKING_V2=PASS');

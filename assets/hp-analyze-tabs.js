@@ -319,7 +319,11 @@ try {
    syncHttpGroup();
    const groups=new Map();
 
+   // HP_AGENTIC_HEADING_V1
    const agentMode=attackMode==='agentic';
+
+   attack.querySelector('h2').textContent=
+     agentMode?'AI Agent Indicators':'HTTP indicators';
 
    attack.querySelector('thead th:nth-child(2)').textContent=
      agentMode?'Observations':'Requests';
@@ -377,7 +381,9 @@ try {
          btn.type='button';
          btn.className='hp-drill-link';
          btn.textContent=value;
-         btn.title='Filter MAP to IPs associated with this HTTP indicator';
+         btn.title=agentMode
+           ?'Filter MAP to source IPs associated with this agent indicator'
+           :'Filter MAP to IPs associated with this HTTP indicator';
 
          btn.setAttribute('aria-pressed',String(
            !!httpGroup&&
