@@ -273,7 +273,7 @@ function lookupLinks(cell,ip){
     ],
     [
       'URLScan','urlscan.io existing results',
-      'https://urlscan.io/search/#ip:'+encoded
+      'https://urlscan.io/search/#'+encoded
     ]
   ];
 
