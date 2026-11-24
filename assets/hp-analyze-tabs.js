@@ -883,6 +883,134 @@ try {
    });
  }
 
+ // HP_CLEAR_ALL_FILTERS_V1
+
+ function installClearFilters(){
+   const grid=m.querySelector('.map-view-head .filters');
+
+   if(!grid){
+     console.error('HP_CLEAR_FILTER_GRID_MISSING');
+     return;
+   }
+
+   const ids=[
+     'f-day','f-country','f-port',
+     'f-asn','f-source-ip'
+   ];
+
+   const controls=ids.map(
+     id=>document.getElementById(id)
+   );
+
+   if(controls.some(el=>!el)){
+     console.error('HP_CLEAR_FILTER_CONTROL_MISSING');
+     return;
+   }
+
+   const hp=document.getElementById('f-honeypot')||
+     [...m.querySelectorAll('select')].find(el=>
+       [...el.options].some(o=>
+         o.textContent.trim().toLowerCase()==='all honeypots'
+       )
+     );
+
+   const hpDefault=hp
+     ?[...hp.options].find(o=>
+       o.textContent.trim().toLowerCase()==='all honeypots'
+     )?.value??''
+     :'';
+
+   const searchInputs=[
+     'day','country','port','asn'
+   ].map(k=>document.getElementById('hp-search-'+k))
+    .filter(Boolean);
+
+   const clear=document.createElement('button');
+   clear.type='button';
+   clear.id='hp-clear-all-filters';
+   clear.textContent='Clear All Filters';
+   clear.title='Clear MAP and Analyze filters; keep traffic category and map view';
+
+   const wrap=document.createElement('div');
+   wrap.className='hp-clear-filters-wrap';
+   wrap.append(clear);
+
+   let hpItem=hp?.closest('label');
+
+   while(hpItem&&hpItem.parentElement!==grid){
+     hpItem=hpItem.parentElement;
+   }
+
+   if(hpItem&&hpItem.parentElement===grid){
+     hpItem.after(wrap);
+   }else{
+     grid.append(wrap);
+   }
+
+   function refresh(){
+     const active=
+       controls.some(el=>el.value.trim()!=='')||
+       searchInputs.some(el=>el.value.trim()!=='')||
+       Boolean(hp&&hp.value!==hpDefault)||
+       Boolean(httpGroup);
+
+     clear.disabled=!active;
+   }
+
+   clear.addEventListener('click',()=>{
+     httpGroup=null;
+
+     for(const input of searchInputs){
+       input.value='';
+       input.removeAttribute('aria-invalid');
+       input.title='';
+     }
+
+     for(const el of controls){
+       el.value='';
+     }
+
+     if(hp)hp.value=hpDefault;
+
+     syncHttpGroup();
+
+     // Native change handlers also synchronize search inputs
+     // and cancel pending search timers.
+     for(const el of controls){
+       el.dispatchEvent(
+         new Event('change',{bubbles:true})
+       );
+     }
+
+     if(hp){
+       hp.dispatchEvent(
+         new Event('change',{bubbles:true})
+       );
+     }
+
+     renderAttack();
+
+     if(scanDocs)scanRender();
+
+     refresh();
+   });
+
+   document.addEventListener('input',refresh);
+   document.addEventListener('change',refresh);
+   document.addEventListener(
+     'hp-http-group-change',refresh
+   );
+   document.addEventListener(
+     'hp-source-facets-rows',refresh
+   );
+
+   refresh();
+
+   console.info('HP_CLEAR_ALL_FILTERS_V1=PASS');
+ }
+
+ installClearFilters();
+
  const fit=()=>{
    if(innerWidth>=1280){
      const h=Math.max(

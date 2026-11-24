@@ -672,3 +672,57 @@
   outline-offset:3px;
   border-radius:2px;
 }
+
+/* HP_CLEAR_ALL_FILTERS_V1 */
+
+.map-workspace.hp-analyze-layout
+.hp-clear-filters-wrap{
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-start;
+  min-width:0;
+}
+
+.map-workspace.hp-analyze-layout
+#hp-clear-all-filters{
+  appearance:none;
+  width:100%;
+  min-width:0;
+  min-height:32px;
+  box-sizing:border-box;
+  background:#20384d;
+  color:#c3e7ff;
+  border:1px solid #54758e;
+  border-radius:7px;
+  padding:7px 5px;
+  font:inherit;
+  font-size:.72rem;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.map-workspace.hp-analyze-layout
+#hp-clear-all-filters:hover:not(:disabled){
+  background:#2b5068;
+  border-color:#86b6cc;
+  color:#fff;
+}
+
+.map-workspace.hp-analyze-layout
+#hp-clear-all-filters:disabled{
+  opacity:.42;
+  cursor:default;
+}
+
+.map-workspace.hp-analyze-layout
+#hp-clear-all-filters:focus-visible{
+  outline:2px solid #80d8ff;
+  outline-offset:2px;
+}
+
+@media(max-width:480px){
+  .map-workspace.hp-analyze-layout
+  #hp-clear-all-filters{
+    white-space:normal;
+  }
+}
