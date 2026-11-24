@@ -206,6 +206,7 @@ function bind(id,table,callback,defaultColumn,defaultDir=-1){
 }
 
 // HP_IP_LOOKUP_LINKS_V2
+// HP_IP_LOOKUP_LINKS_V3
 
 function lookupLinks(cell,ip){
   if(!ipKey(ip))return;
@@ -213,8 +214,6 @@ function lookupLinks(cell,ip){
 
   const encoded=encodeURIComponent(ip);
 
-  const host=ip.includes(':')
-    ?'['+ip+']':ip;
 
   const services=[
     [
@@ -251,23 +250,26 @@ function lookupLinks(cell,ip){
     ],
     [
       'RDAP','RDAP IP registration',
-      'https://rdap.org/ip/'+encoded
+      'https://client.rdap.org/?type=ip&object='+encoded
     ],
     [
       'rDNS','ViewDNS Reverse DNS / PTR',
       'https://viewdns.info/reversedns/?ip='+encoded
     ],
     [
-      'pDNS','mnemonic Passive DNS',
-      'https://api.mnemonic.no/pdns/v3/'+encoded
+      'pDNS','VirusTotal Passive DNS / Relations',
+      'https://www.virustotal.com/gui/ip-address/'+encoded+'/relations'
     ],
     [
-      'Robtex','Robtex Passive DNS',
-      'https://freeapi.robtex.com/pdns/reverse/'+encoded
+      'Robtex','Robtex IP Lookup / DNS history',
+      ip.includes(':')
+        ?'https://robtex.com/en/ip-lookup'
+        :'https://robtex.com/en/ip-lookup/'+ip.split('.').join('/')
     ],
     [
       'Archive','Wayback Machine',
-      'https://web.archive.org/web/*/http://'+host+'/*'
+      'https://web.archive.org/web/'+
+      new Date().getUTCFullYear()+'0000000000*/'+encoded
     ],
     [
       'URLScan','urlscan.io existing results',
