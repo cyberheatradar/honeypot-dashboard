@@ -60,7 +60,23 @@
     return cache.get(d);
   }
 
+  const lastRecords=new Map();
+
   function table(target,records,asnMode){
+    const id=asnMode?'asn':'ip';
+
+    lastRecords.set(id,records);
+
+    records=window.HP_TABLE_UI.sort(id,records,item=>{
+      if(asnMode)return [item.asn,item.count];
+
+      return [
+        window.HP_TABLE_UI.ipKey(item.ip),
+        item.count,
+        ...(window.HP_RANK_SORT_VALUES?.(item.ip)||
+          [null,null,null])
+      ];
+    });
     target.replaceChildren();
 
     const scroller=target.closest('.hp-source-tablewrap');
@@ -155,6 +171,7 @@
             if(window.HP_SOURCE_ASN&&(asn===null?'?':String(asn))!==window.HP_SOURCE_ASN)continue;
             if(window.HP_SOURCE_IP&&ip!==window.HP_SOURCE_IP)continue;
             if(window.HP_HTTP_GROUP_IP_SET&&!window.HP_HTTP_GROUP_IP_SET.has(ip))continue;
+            if(!window.HP_TABLE_UI.allows(ip))continue;
             total+=n;
             const ipKey=ip||'';
             ipCounts.set(ipKey,(ipCounts.get(ipKey)||0)+n);
@@ -190,6 +207,23 @@
   if(summary&&typeof MutationObserver==='function'){
     new MutationObserver(render).observe(summary,{childList:true,characterData:true,subtree:true});
   }
+  window.addEventListener('load',()=>{
+    for(const [id,target,asnMode] of [
+      ['ip',ips,false],
+      ['asn',asns,true]
+    ]){
+      const repaint=()=>{
+        if(lastRecords.has(id)){
+          table(target,lastRecords.get(id),asnMode);
+        }
+      };
+
+      window.HP_TABLE_UI.bind(
+        id,target.closest('table'),repaint,1,-1
+      );
+    }
+  },{once:true});
+
   document.addEventListener('hp-source-facets-rows',render);
   render();
 })();
@@ -197,3 +231,5 @@
 // HP_FACET_SOURCE_RANK_V2
 
 // HP_HTTP_GROUP_SOURCE_STATS_V1
+
+// HP_TABLE_CONTROLS_V1

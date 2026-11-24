@@ -1,0 +1,128 @@
+/* HP_TABLE_CONTROLS_V1 */
+
+.hp-sort-header{
+  appearance:none!important;
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:inherit;
+  gap:4px;
+  max-width:100%;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  color:inherit!important;
+  font:inherit!important;
+  text-align:inherit;
+  cursor:pointer;
+}
+
+.hp-sort-header::after{
+  content:"↕";
+  opacity:.48;
+  flex:0 0 auto;
+  font-size:.72em;
+}
+
+.hp-sort-header[data-direction="asc"]::after{
+  content:"↑";
+  opacity:1;
+  color:#80d8ff;
+}
+
+.hp-sort-header[data-direction="desc"]::after{
+  content:"↓";
+  opacity:1;
+  color:#80d8ff;
+}
+
+.hp-sort-header:hover{
+  color:#80d8ff!important;
+}
+
+.hp-copy-ip{
+  position:relative;
+  display:inline-block!important;
+  vertical-align:middle;
+  width:17px!important;
+  height:17px!important;
+  min-width:17px!important;
+  margin:0 0 0 5px!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  color:#8faec4!important;
+  cursor:pointer;
+}
+
+.hp-copy-ip::before,
+.hp-copy-ip::after{
+  position:absolute;
+  content:"";
+  width:7px;
+  height:9px;
+  border:1px solid currentColor;
+  border-radius:1.5px;
+}
+
+.hp-copy-ip::before{
+  left:3px;
+  top:2px;
+}
+
+.hp-copy-ip::after{
+  left:6px;
+  top:5px;
+  background:#141f31;
+}
+
+.hp-copy-ip:hover{
+  color:#80d8ff!important;
+}
+
+.hp-copy-ip[data-copied="yes"]{
+  color:#64dfaa!important;
+}
+
+.hp-copy-ip[data-copied="yes"]::before{
+  content:"✓";
+  width:15px;
+  border:0;
+  font-size:14px;
+}
+
+.hp-copy-ip[data-copied="yes"]::after{
+  display:none;
+}
+
+#hp-listed-only{
+  appearance:none;
+  width:100%;
+  min-width:0;
+  min-height:32px;
+  background:#20384d;
+  border:1px solid #54758e;
+  border-radius:7px;
+  color:#c3e7ff;
+  padding:7px 5px;
+  font:inherit;
+  font-size:.72rem;
+  cursor:pointer;
+}
+
+#hp-listed-only[aria-pressed="true"]{
+  color:#fff;
+  background:#79394a;
+  border-color:#e58496;
+}
+
+#hp-listed-only:disabled{
+  opacity:.42;
+  cursor:default;
+}
+
+.hp-sort-header:focus-visible,
+.hp-copy-ip:focus-visible,
+#hp-listed-only:focus-visible{
+  outline:2px solid #80d8ff;
+  outline-offset:2px;
+}

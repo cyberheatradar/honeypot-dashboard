@@ -68,7 +68,7 @@
     window.HP_SOURCE_ASN=selectedAsn;
     window.HP_SOURCE_IP=selectedIp;
 
-    if(!selectedAsn&&!selectedIp&&!group){
+    if(!selectedAsn&&!selectedIp&&!group&&!window.HP_TABLE_UI.listedActive){
       document.dispatchEvent(new CustomEvent(
         'hp-source-facets-rows',
         {detail:{rows:original}}
@@ -90,6 +90,7 @@
         if(selectedAsn&&keyAsn!==selectedAsn)continue;
         if(selectedIp&&address!==selectedIp)continue;
         if(group&&!group.has(address))continue;
+        if(!window.HP_TABLE_UI.allows(address))continue;
 
         const key=JSON.stringify([
           data.day,cc||'UNKNOWN',protocol,dport
@@ -215,7 +216,7 @@
 
     asn.disabled=false;
     ip.disabled=false;
-    if(window.HP_HTTP_GROUP_IP_SET)apply();
+    if(window.HP_HTTP_GROUP_IP_SET||window.HP_TABLE_UI.listedActive)apply();
   }
 
   asn.addEventListener('change',apply);
@@ -243,3 +244,5 @@
 // HP_SOURCE_IP_SEARCH_V4
 
 // HP_HTTP_GROUP_APPLY_V1
+
+// HP_TABLE_CONTROLS_V1

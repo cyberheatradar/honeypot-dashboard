@@ -265,6 +265,7 @@ try {
        if(ip&&src!==ip)continue;
        if(hp!=='all'&&hpId!==hp)continue;
 
+       if(!window.HP_TABLE_UI.allows(src))continue;
        next.add(src);
      }
    }
@@ -339,6 +340,7 @@ try {
        if(port&&dport!==Number(port))continue;
        if(asn&&asnId!==asn)continue;
        if(ip&&src!==ip)continue;
+       if(!window.HP_TABLE_UI.allows(src))continue;
        if(window.HP_HTTP_GROUP_IP_SET&&
           !window.HP_HTTP_GROUP_IP_SET.has(src))continue;
        if(honeypot!=='all'&&hp!==honeypot)continue;
@@ -353,8 +355,27 @@ try {
      }
    }
 
-   const ranked=[...groups].sort(
+   const baseRank=[...groups].sort(
      (a,b)=>b[1].count-a[1].count||a[0].localeCompare(b[0])
+   );
+
+   const ranked=window.HP_TABLE_UI.sort(
+     'attack-'+attackMode,
+     baseRank,
+     ([label,g])=>[
+       label,
+       g.count,
+       g.ips.size,
+       100*[...g.ips.values()].reduce(
+         (a,b)=>Math.max(a,b),0
+       )/g.count
+     ]
+   );
+
+   window.HP_TABLE_UI.bind(
+     'attack-'+attackMode,
+     attackRows.closest('table'),
+     renderAttack,1,-1
    );
 
    attackRows.replaceChildren();
@@ -567,6 +588,40 @@ try {
    }
    scanHead.append(header);
 
+   const id='scan-'+scanMode;
+
+   const defaultColumn=
+     scanMode==='behavior'?2:
+     scanMode==='daily'?0:4;
+
+   rows=window.HP_TABLE_UI.sort(id,rows,values=>{
+     const key=[...values];
+
+     if(scanMode==='behavior'){
+       key[0]=window.HP_TABLE_UI.ipKey(key[0]);
+
+       const order={
+         'Single port':1,
+         'Multi-port':2,
+         'Broad sweep':3,
+         'Wide sweep':4
+       };
+
+       key[4]=order[key[4]]||0;
+     }
+
+     return key;
+   });
+
+   if(scanMode!=='daily'){
+     rows=rows.slice(0,100);
+   }
+
+   window.HP_TABLE_UI.bind(
+     id,scanHead.closest('table'),
+     scanRender,defaultColumn,-1
+   );
+
    if(!rows.length){
      const tr=document.createElement('tr');
      const td=document.createElement('td');
@@ -616,6 +671,10 @@ try {
          });
 
          td.append(button);
+
+         if(kind==='ip'){
+           window.HP_TABLE_UI.copyButton(td,String(value));
+         }
        }else td.textContent=String(value);
 
        tr.append(td);
@@ -662,6 +721,7 @@ try {
        if(q.country&&cc!==q.country)continue;
        if(q.asn&&q.asn!==asnId)continue;
        if(q.ip&&ip!==q.ip)continue;
+       if(!window.HP_TABLE_UI.allows(ip))continue;
        if(window.HP_HTTP_GROUP_IP_SET&&
           !window.HP_HTTP_GROUP_IP_SET.has(ip))continue;
        if(!Number.isSafeInteger(n)||n<=0)continue;
@@ -722,7 +782,7 @@ try {
          a.ip.localeCompare(b.ip)
        );
 
-     const data=rank.slice(0,100).map(v=>[
+     const data=rank.map(v=>[
        v.ip,
        scanFmt(v.packets),
        scanFmt(v.ports.size),
@@ -793,7 +853,7 @@ try {
        a[1]-b[1]
      );
 
-     const data=spikes.slice(0,100).map(v=>[
+     const data=spikes.map(v=>[
        v[0],
        v[1]+(q.protocol==='UDP'?'/udp':'/tcp'),
        scanFmt(v[2]),
@@ -1013,12 +1073,16 @@ try {
        controls.some(el=>el.value.trim()!=='')||
        searchInputs.some(el=>el.value.trim()!=='')||
        Boolean(hp&&hp.value!==hpDefault)||
-       Boolean(httpGroup);
+       Boolean(httpGroup)||
+       window.HP_TABLE_UI.listedActive;
 
      clear.disabled=!active;
    }
 
+   window.HP_TABLE_UI.installListed(wrap);
+
    clear.addEventListener('click',()=>{
+     window.HP_TABLE_UI.setListed(false,false);
      httpGroup=null;
 
      for(const input of searchInputs){
@@ -1098,3 +1162,5 @@ try {
 }
 },{once:true});
 })();
+
+// HP_TABLE_CONTROLS_V1

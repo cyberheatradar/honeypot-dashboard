@@ -173,6 +173,26 @@
     return 'No matching HTTP indicator; not a benign verdict';
   }
 
+  window.HP_RANK_SORT_VALUES=ip=>{
+    const day=document.getElementById('f-day')?.value||'';
+
+    const sources=intel.ips[ip]?.r||[];
+
+    const attacks=httpMatches(ip,day,'a')
+      .map(x=>x[0]).join(', ');
+
+    const tools=[...new Set([
+      ...httpMatches(ip,day,'t').map(x=>x[0]),
+      ...agentLabels(ip,day)
+    ])].join(', ');
+
+    return [
+      sources.length?1:0,
+      attacks||null,
+      tools||null
+    ];
+  };
+
   function decorate() {
     for (const tr of tbody.rows) {
       if (tr.cells.length === 1 &&
@@ -313,6 +333,8 @@
       }
 
       intel = data;
+      window.HP_TABLE_UI.setListedData(data.ips);
+      window.HP_TABLE_UI.refresh('ip');
 
       note.textContent =
         'Preview · IPsum / FireHOL · ThreatFox pending';
@@ -349,6 +371,7 @@
       }
 
       decorate();
+      window.HP_TABLE_UI.refresh('ip');
     })
     .catch(error=>{
       console.error('HP_AGENTIC_RANKING',error);
@@ -397,6 +420,7 @@
 
       httpReady=true;
       decorate();
+      window.HP_TABLE_UI.refresh('ip');
 
       console.info('HP_RANKING_CONSISTENCY_V1=PASS');
     })
@@ -408,3 +432,5 @@
 
   console.info('HP_IP_RANKING_V2=PASS');
 })();
+
+// HP_TABLE_CONTROLS_V1

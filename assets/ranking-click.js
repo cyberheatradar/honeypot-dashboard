@@ -191,6 +191,10 @@
 
     label.append(button);
 
+    if(kind==='ip'){
+      window.HP_TABLE_UI.copyButton(label,value);
+    }
+
     const active=selected(kind,value);
 
     button.setAttribute(
@@ -260,3 +264,5 @@
     updateSelected
   );
 })();
+
+// HP_TABLE_CONTROLS_V1

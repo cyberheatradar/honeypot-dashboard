@@ -26,16 +26,31 @@ function renderPortBreakdown(active,total){
  if(!mapPortRows)throw Error("MAP_PORT_TABLE_MISSING");
 
  const counts=new Map();
+ const countrySets=new Map();
 
  for(const row of active){
   const port=String(row.port);
   counts.set(
    port,(counts.get(port)||0)+Number(row.count)
   );
+
+  if(/^[A-Z]{2}$/.test(row.country)){
+   if(!countrySets.has(port))countrySets.set(port,new Set());
+   countrySets.get(port).add(row.country);
+  }
  }
 
- const sorted=[...counts].sort(
+ const baseRank=[...counts].sort(
   (a,b)=>b[1]-a[1]||Number(a[0])-Number(b[0])
+ );
+
+ const sorted=window.HP_TABLE_UI.sort(
+  'port',baseRank,([port,count])=>[
+   Number(port),
+   count,
+   total?100*count/total:0,
+   countrySets.get(port)?.size||0
+  ]
  );
 
  mapPortRows.replaceChildren();
@@ -83,10 +98,17 @@ function render(){
  const active=rows.filter(r=>dims.every(k=>
   !selects[k].value || String(r[k])===selects[k].value));
  const countryCounts=new Map();
+ const countryPorts=new Map();
  let total=0;
  for(const r of active){
   const country=r.country;
   countryCounts.set(country,(countryCounts.get(country)||0)+r.count);
+
+  if(!countryPorts.has(country)){
+   countryPorts.set(country,new Set());
+  }
+
+  countryPorts.get(country).add(String(r.port));
   total+=r.count;
  }
  const maximum=Math.max(1,...countryCounts.values());
@@ -108,12 +130,22 @@ function render(){
  summary.textContent=`${format(total)} observations matching filters · `+
   `${countryCounts.size} source-country categories`;
  tbody.replaceChildren();
- const sorted=[...countryCounts.entries()].sort((a,b)=>
+ const baseRank=[...countryCounts.entries()].sort((a,b)=>
   b[1]-a[1]||a[0].localeCompare(b[0]));
+
+ const sorted=window.HP_TABLE_UI.sort(
+  'country',baseRank,([country,n])=>[
+   countryLabel(country),
+   n,
+   countryPorts.get(country)?.size||0
+  ]
+ );
+
  for(const [country,n] of sorted){
   const tr=document.createElement("tr");
   const td1=document.createElement("td");
   const td2=document.createElement("td");
+  tr.dataset.countryCode=country;
   td1.textContent=countryLabel(country);
   td2.textContent=format(n);
   td2.className="number";
@@ -142,6 +174,15 @@ for(const node of paths){
   if(e.key==="Enter"||e.key===" "){e.preventDefault();select();}
  });
 }
+window.addEventListener('load',()=>{
+ window.HP_TABLE_UI.bind(
+  'port',mapPortRows.closest('table'),render,1,-1
+ );
+ window.HP_TABLE_UI.bind(
+  'country',tbody.closest('table'),render,1,-1
+ );
+},{once:true});
+
 render();
 
 ;(() => {
@@ -918,3 +959,5 @@ render();
 // HP_FACET_MAP_V2
 
 // HP_COUNTRY_CLICK_CHANGE_V1
+
+// HP_TABLE_CONTROLS_V1

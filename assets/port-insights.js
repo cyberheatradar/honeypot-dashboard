@@ -240,9 +240,15 @@
         throw Error("COUNTRY_RANKING_COLUMNS_INVALID");
       }
 
-      const country = ranking[i][0];
+      const country = tr.dataset.countryCode;
 
-      tr.cells[1].textContent = fmt(ranking[i][1]);
+      if(!observationsByCountry.has(country)){
+        throw Error("COUNTRY_METRIC_KEY_MISSING");
+      }
+
+      tr.cells[1].textContent = fmt(
+        observationsByCountry.get(country)
+      );
       tr.cells[2].textContent = fmt(
         portsByCountry.get(country)?.size || 0
       );
@@ -280,3 +286,5 @@
 })();
 
 // HP_FACET_INSIGHTS_V2
+
+// HP_TABLE_CONTROLS_V1
