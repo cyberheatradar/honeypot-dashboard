@@ -474,3 +474,36 @@
   z-index:2;
   background:#141f31;
 }
+
+/* HP_ATTACK_TOOLS_VISIBILITY_V2 */
+
+.map-workspace.hp-analyze-layout
+.hp-analyze-body>.hp-attack-panel[hidden],
+.map-workspace.hp-analyze-layout
+.hp-analyze-body>.hp-attack-panel.hp-analyze-hidden{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+.map-workspace.hp-analyze-layout
+.hp-attack-panel:not([hidden]):not(.hp-analyze-hidden){
+  display:flex!important;
+}
+
+.map-workspace.hp-analyze-layout
+.hp-attack-modes button{
+  appearance:none!important;
+  background:#15263b!important;
+  color:#d5e5f4!important;
+  border:1px solid #4d6b85!important;
+  border-radius:6px!important;
+  padding:6px 10px!important;
+}
+
+.map-workspace.hp-analyze-layout
+.hp-attack-modes button[aria-pressed="true"]{
+  background:#27576a!important;
+  border-color:#66a5ba!important;
+  color:#fff!important;
+}
