@@ -507,3 +507,99 @@
   border-color:#66a5ba!important;
   color:#fff!important;
 }
+
+/* HP_SCAN_TRENDS_V1 */
+
+.map-workspace.hp-analyze-layout
+.hp-analyze-body>.hp-scan-panel[hidden],
+.map-workspace.hp-analyze-layout
+.hp-analyze-body>.hp-scan-panel.hp-analyze-hidden{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+.map-workspace.hp-analyze-layout
+.hp-analyze-body>.hp-scan-panel:not([hidden]):not(.hp-analyze-hidden){
+  display:flex!important;
+}
+
+.map-workspace.hp-analyze-layout .hp-scan-panel{
+  padding:8px!important;
+  gap:10px!important;
+  color:#e6f1fa;
+}
+
+.map-workspace.hp-analyze-layout .hp-scan-panel h2{
+  margin:0!important;
+  font-size:1rem!important;
+}
+
+.map-workspace.hp-analyze-layout .hp-scan-note{
+  margin:0!important;
+  color:#aebfd2;
+  font-size:.75rem;
+  line-height:1.5;
+}
+
+.map-workspace.hp-analyze-layout .hp-scan-modes{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.map-workspace.hp-analyze-layout .hp-scan-modes button{
+  appearance:none!important;
+  background:#15263b!important;
+  color:#d5e5f4!important;
+  border:1px solid #4d6b85!important;
+  border-radius:6px!important;
+  padding:6px 10px!important;
+  cursor:pointer;
+  font:inherit;
+  font-size:.75rem;
+}
+
+.map-workspace.hp-analyze-layout
+.hp-scan-modes button[aria-pressed="true"]{
+  background:#27576a!important;
+  border-color:#66a5ba!important;
+  color:#fff!important;
+}
+
+.map-workspace.hp-analyze-layout .hp-scan-scroll{
+  flex:1 1 auto;
+  min-height:0;
+  width:100%;
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+
+.map-workspace.hp-analyze-layout .hp-scan-scroll table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  font-size:.76rem;
+}
+
+.map-workspace.hp-analyze-layout .hp-scan-scroll th,
+.map-workspace.hp-analyze-layout .hp-scan-scroll td{
+  padding:9px 7px;
+  text-align:left;
+  overflow-wrap:anywhere;
+  border-bottom:1px solid #30465c;
+}
+
+.map-workspace.hp-analyze-layout
+.hp-scan-scroll th:not(:first-child),
+.map-workspace.hp-analyze-layout
+.hp-scan-scroll td:not(:first-child){
+  text-align:right;
+}
+
+.map-workspace.hp-analyze-layout .hp-scan-scroll th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:#141f31;
+}

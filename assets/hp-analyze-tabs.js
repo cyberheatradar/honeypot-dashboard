@@ -79,6 +79,36 @@ try {
    </div>`;
  cards.attack=attack;
 
+ // HP_SCAN_TRENDS_PANEL_V1
+ const scan=document.createElement('section');
+ scan.className='hp-analyze-card hp-scan-panel';
+ scan.id='hp-analyze-panel-scan';
+
+ scan.innerHTML=`
+   <h2>Scan & Trends</h2>
+   <p class="hp-scan-note" id="hp-scan-status">
+     Load when tab opens
+   </p>
+   <div class="hp-scan-modes">
+     <button type="button" data-scan-mode="behavior">
+       Scan Behavior
+     </button>
+     <button type="button" data-scan-mode="daily">
+       Daily Trends
+     </button>
+     <button type="button" data-scan-mode="spikes">
+       Port Spikes
+     </button>
+   </div>
+   <div class="hp-scan-scroll">
+     <table>
+       <thead id="hp-scan-head"></thead>
+       <tbody id="hp-scan-rows"></tbody>
+     </table>
+   </div>`;
+
+ cards.scan=scan;
+
  const left=document.createElement('div');
  left.className='hp-analyze-left';
 
@@ -102,7 +132,8 @@ try {
    ['asn','Source ASN'],
    ['port','Destination port'],
    ['country','Source country'],
-   ['attack','Attack & Tools']
+   ['attack','Attack & Tools'],
+   ['scan','Scan & Trends']
  ];
 
  const buttons={};
@@ -140,7 +171,7 @@ try {
    cards[key].setAttribute('role','tabpanel');
    cards[key].setAttribute('aria-labelledby',b.id);
 
-   b.onclick=()=>select(key);
+   b.onclick=()=>{select(key);if(key==='scan')initScan();};
 
    b.onkeydown=e=>{
      if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))
@@ -153,6 +184,7 @@ try {
        (i+(e.key==='ArrowRight'?1:choices.length-1))%choices.length;
 
      select(choices[j][0]);
+     if(choices[j][0]==='scan')initScan();
      buttons[choices[j][0]].focus();
    };
 
@@ -162,7 +194,7 @@ try {
  });
 
  left.append(f,m);
- body.append(r,p,attack);
+ body.append(r,p,attack,scan);
  right.append(title,tabs,body);
  w.append(left,right);
 
@@ -323,6 +355,390 @@ try {
        'HTTP indicator data unavailable (not zero matches)';
      console.error('HP_ATTACK_TOOLS',err);
    });
+
+ // HP_SCAN_TRENDS_V1
+ let scanDocs=null;
+ const scanFirstSeen={TCP_SYN:new Map(),UDP:new Map()};
+ let scanPromise=null;
+ let scanMode='behavior';
+ let scanTimer=null;
+ const scanStatus=scan.querySelector('#hp-scan-status');
+ const scanHead=scan.querySelector('#hp-scan-head');
+ const scanRows=scan.querySelector('#hp-scan-rows');
+ const scanButtons=[...scan.querySelectorAll('[data-scan-mode]')];
+ const scanFmt=n=>Number(n).toLocaleString('en-US');
+
+ const scanDayMinusOne=day=>{
+   const d=new Date(day+'T00:00:00Z');
+   d.setUTCDate(d.getUTCDate()-1);
+   return d.toISOString().slice(0,10);
+ };
+
+ function scanState(){
+   return {
+     day:document.getElementById('f-day')?.value||'',
+     country:document.getElementById('f-country')?.value||'',
+     port:document.getElementById('f-port')?.value||'',
+     asn:window.HP_SOURCE_ASN||
+       document.getElementById('f-asn')?.value||'',
+     ip:window.HP_SOURCE_IP||'',
+     honeypot:document.getElementById('f-honeypot')?.value||'all',
+     protocol:window.HP_KIND||'TCP_SYN'
+   };
+ }
+
+ function scanSetTable(columns,rows,empty){
+   scanHead.replaceChildren();
+   scanRows.replaceChildren();
+
+   const header=document.createElement('tr');
+   for(const name of columns){
+     const th=document.createElement('th');
+     th.scope='col';
+     th.textContent=name;
+     header.append(th);
+   }
+   scanHead.append(header);
+
+   if(!rows.length){
+     const tr=document.createElement('tr');
+     const td=document.createElement('td');
+     td.colSpan=columns.length;
+     td.textContent=empty;
+     tr.append(td);
+     scanRows.append(tr);
+     return;
+   }
+
+   const frag=document.createDocumentFragment();
+   for(const cells of rows){
+     const tr=document.createElement('tr');
+     for(const value of cells){
+       const td=document.createElement('td');
+       td.textContent=String(value);
+       tr.append(td);
+     }
+     frag.append(tr);
+   }
+   scanRows.append(frag);
+ }
+
+ function scanRender(){
+   if(!scanDocs)return;
+
+   const q=scanState();
+   const allDays=scanDocs.map(x=>x.day);
+   const allDaySet=new Set(allDays);
+   const firstSeen=scanFirstSeen[q.protocol]||new Map();
+   const byIp=new Map();
+   const byDay=new Map();
+   const byDayPort=new Map();
+   let total=0;
+
+   if(q.honeypot!=='all'&&q.honeypot!=='hp01'){
+     scanStatus.textContent=
+       'Source stats for this honeypot are not published';
+     scanSetTable(['Status'],[],
+       'No source-level data for this honeypot (not zero activity)');
+     return;
+   }
+
+   for(const doc of scanDocs){
+     if(q.day&&q.day!==doc.day&&scanMode!=='spikes')continue;
+
+     for(const [p,dport,index,n] of doc.rows){
+       if(p!==(q.protocol==='UDP'?1:0))continue;
+       if(q.port&&dport!==Number(q.port))continue;
+
+       const record=doc.sources[index];
+       if(!record)continue;
+
+       const [ip,asn,,country]=record;
+       const cc=country||'UNKNOWN';
+       const asnId=asn===null?'?':String(asn);
+
+       if(q.country&&cc!==q.country)continue;
+       if(q.asn&&q.asn!==asnId)continue;
+       if(q.ip&&ip!==q.ip)continue;
+       if(!Number.isSafeInteger(n)||n<=0)continue;
+
+       total+=n;
+
+       if(!byIp.has(ip)){
+         byIp.set(ip,{
+           packets:0,
+           ports:new Set(),
+           days:new Set()
+         });
+       }
+
+       const item=byIp.get(ip);
+       item.packets+=n;
+       item.ports.add(dport);
+       item.days.add(doc.day);
+
+       if(!byDay.has(doc.day)){
+         byDay.set(doc.day,{
+           packets:0,
+           ips:new Set(),
+           newIps:new Set(),
+           ports:new Set()
+         });
+       }
+
+       const daily=byDay.get(doc.day);
+       daily.packets+=n;
+       daily.ips.add(ip);
+       daily.ports.add(dport);
+
+       if(firstSeen.get(ip)===doc.day){
+         daily.newIps.add(ip);
+       }
+
+       const key=doc.day+'|'+dport;
+       byDayPort.set(key,(byDayPort.get(key)||0)+n);
+     }
+   }
+
+   scanButtons.forEach(b=>b.setAttribute(
+     'aria-pressed',
+     String(b.dataset.scanMode===scanMode)
+   ));
+
+   const coverage=allDays[0]+' – '+allDays[allDays.length-1];
+   const note=q.port
+     ?' · Port filter limits observed port breadth'
+     :'';
+
+   if(scanMode==='behavior'){
+     const rank=[...byIp].map(([ip,v])=>({ip,...v}))
+       .sort((a,b)=>
+         b.ports.size-a.ports.size||
+         b.packets-a.packets||
+         a.ip.localeCompare(b.ip)
+       );
+
+     const data=rank.slice(0,100).map(v=>[
+       v.ip,
+       scanFmt(v.packets),
+       scanFmt(v.ports.size),
+       scanFmt(v.days.size),
+       v.ports.size>=200?'Wide sweep':
+       v.ports.size>=20?'Broad sweep':
+       v.ports.size>=2?'Multi-port':'Single port'
+     ]);
+
+     scanStatus.textContent=
+       'Source IP scanning breadth · '+coverage+
+       ' · '+scanFmt(byIp.size)+' IPs'+
+       ' · '+scanFmt(total)+' packets'+note+
+       ' · Sweep labels describe port breadth, not malicious intent';
+
+     scanSetTable(
+       ['Source IP','Packets','Unique ports','Days','Pattern'],
+       data,
+       'No matching observations'
+     );
+
+   }else if(scanMode==='daily'){
+     const data=[...byDay]
+       .sort((a,b)=>b[0].localeCompare(a[0]))
+       .map(([day,v])=>[
+         day,
+         scanFmt(v.packets),
+         scanFmt(v.ips.size),
+         scanFmt(v.newIps.size),
+         scanFmt(v.ports.size)
+       ]);
+
+     scanStatus.textContent=
+       'Daily TCP SYN / UDP observations · '+coverage+
+       ' · New IPs = first observed within this published period'+note;
+
+     scanSetTable(
+       ['Day (UTC)','Packets','Source IPs',
+        'First-seen IPs','Unique ports'],
+       data,
+       'No matching observations'
+     );
+
+   }else{
+     const spikes=[];
+
+     for(const [key,now] of byDayPort){
+       const divider=key.indexOf('|');
+       const day=key.slice(0,divider);
+
+       if(q.day&&day!==q.day)continue;
+
+       const port=key.slice(divider+1);
+       const prev=scanDayMinusOne(day);
+
+       if(!allDaySet.has(prev))continue;
+
+       const before=byDayPort.get(prev+'|'+port)||0;
+       const change=now-before;
+
+       if(change<=0)continue;
+       spikes.push([day,Number(port),now,before,change]);
+     }
+
+     spikes.sort((a,b)=>
+       b[4]-a[4]||
+       b[0].localeCompare(a[0])||
+       a[1]-b[1]
+     );
+
+     const data=spikes.slice(0,100).map(v=>[
+       v[0],
+       v[1]+(q.protocol==='UDP'?'/udp':'/tcp'),
+       scanFmt(v[2]),
+       scanFmt(v[3]),
+       '+'+scanFmt(v[4])
+     ]);
+
+     scanStatus.textContent=
+       'Destination port increases vs preceding UTC day · '+
+       coverage+
+       ' · Only consecutive published days compared'+note;
+
+     scanSetTable(
+       ['Day','Destination port','Packets',
+        'Previous day','Increase'],
+       data,
+       'No positive day-over-day changes (or no previous day)'
+     );
+   }
+ }
+
+ function scanSchedule(){
+   if(!scanDocs)return;
+   clearTimeout(scanTimer);
+   scanTimer=setTimeout(scanRender,400);
+ }
+
+ function initScan(){
+   if(scanPromise)return;
+
+   scanStatus.textContent=
+     'Loading published source observations...';
+
+   scanPromise=fetch(
+     'data/source-stats/manifest.json',
+     {cache:'no-store'}
+   )
+     .then(res=>{
+       if(!res.ok){
+         throw Error('SCAN_MANIFEST_HTTP_'+res.status);
+       }
+       return res.json();
+     })
+     .then(async m=>{
+       if(
+         m.schema!=='hp-source-manifest-v1'||
+         !Array.isArray(m.days)||
+         !m.days.length
+       ){
+         throw Error('SCAN_MANIFEST_SCHEMA');
+       }
+
+       const docs=[];
+
+       for(let i=0;i<m.days.length;i+=4){
+         const part=await Promise.all(
+           m.days.slice(i,i+4).map(async day=>{
+             const res=await fetch(
+               'data/source-stats/'+day+'.json'
+             );
+
+             if(!res.ok){
+               throw Error('SCAN_DAY_HTTP_'+day);
+             }
+
+             const d=await res.json();
+
+             if(
+               d.schema!=='hp-source-day-v1'||
+               d.day!==day||
+               !Array.isArray(d.rows)||
+               !Array.isArray(d.sources)
+             ){
+               throw Error('SCAN_DAY_SCHEMA_'+day);
+             }
+
+             return d;
+           })
+         );
+         docs.push(...part);
+       }
+
+       docs.sort((a,b)=>a.day.localeCompare(b.day));
+
+       const all=docs.reduce((sum,d)=>
+         sum+d.rows.reduce((v,r)=>v+Number(r[3]),0),0
+       );
+
+       if(all!==m.total_packets){
+         throw Error('SCAN_SOURCE_TOTAL_MISMATCH');
+       }
+
+       for(const doc of docs){
+         for(const [p,,src] of doc.rows){
+           const protocol=p===1?'UDP':'TCP_SYN';
+           const ip=doc.sources[src]?.[0];
+
+           if(
+             ip&&
+             !scanFirstSeen[protocol].has(ip)
+           ){
+             scanFirstSeen[protocol].set(ip,doc.day);
+           }
+         }
+       }
+
+       scanDocs=docs;
+       scanRender();
+     })
+     .catch(error=>{
+       scanStatus.textContent=
+         'Scan statistics unavailable (not zero observations)';
+       scanSetTable(['Status'],[],String(error.message));
+       console.error('HP_SCAN_TRENDS',error);
+     });
+ }
+
+ for(const b of scanButtons){
+   b.addEventListener('click',()=>{
+     scanMode=b.dataset.scanMode;
+     if(scanDocs)scanRender();
+   });
+ }
+
+ for(const id of [
+   'f-day','f-country','f-port','f-asn','f-honeypot'
+ ]){
+   document.getElementById(id)?.addEventListener(
+     'change',scanSchedule
+   );
+ }
+
+ document.getElementById('f-source-ip')
+   ?.addEventListener('input',scanSchedule);
+
+ document.getElementById('f-source-ip')
+   ?.addEventListener('change',scanSchedule);
+
+ document.addEventListener(
+   'hp-source-facets-rows',scanSchedule
+ );
+
+ if(sum){
+   new MutationObserver(scanSchedule).observe(sum,{
+     childList:true,
+     characterData:true,
+     subtree:true
+   });
+ }
 
  const fit=()=>{
    if(innerWidth>=1280){
