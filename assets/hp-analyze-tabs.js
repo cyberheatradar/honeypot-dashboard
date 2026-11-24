@@ -109,6 +109,37 @@ try {
 
  cards.scan=scan;
 
+ // HP_INTELLIGENCE_PANEL_V1
+ const intelPanel=document.createElement('section');
+ intelPanel.className='hp-analyze-card hp-intel-panel';
+ intelPanel.id='hp-analyze-panel-intel';
+
+ intelPanel.innerHTML=`
+   <h2>Threat Intelligence</h2>
+   <p class="hp-intel-note" id="hp-intel-status">
+     Load when tab opens
+   </p>
+   <div class="hp-intel-modes">
+     <button type="button" data-intel-mode="feeds">
+       Feed Coverage
+     </button>
+     <button type="button" data-intel-mode="overlap">
+       Feed Overlap
+     </button>
+     <button type="button" data-intel-mode="sources">
+       Listed Sources
+     </button>
+   </div>
+   <div class="hp-intel-scroll">
+     <table>
+       <thead id="hp-intel-head"></thead>
+       <tbody id="hp-intel-rows"></tbody>
+     </table>
+   </div>`;
+
+ cards.intel=intelPanel;
+
+
  const left=document.createElement('div');
  left.className='hp-analyze-left';
 
@@ -133,7 +164,8 @@ try {
    ['port','Destination port'],
    ['country','Source country'],
    ['attack','Attack & Tools'],
-   ['scan','Scan & Trends']
+   ['scan','Scan & Trends'],
+   ['intel','Intelligence']
  ];
 
  const buttons={};
@@ -171,7 +203,7 @@ try {
    cards[key].setAttribute('role','tabpanel');
    cards[key].setAttribute('aria-labelledby',b.id);
 
-   b.onclick=()=>{select(key);if(key==='scan')initScan();};
+   b.onclick=()=>{select(key);if(key==='scan')initScan();if(key==='intel')initIntel();};
 
    b.onkeydown=e=>{
      if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))
@@ -185,6 +217,7 @@ try {
 
      select(choices[j][0]);
      if(choices[j][0]==='scan')initScan();
+     if(choices[j][0]==='intel')initIntel();
      buttons[choices[j][0]].focus();
    };
 
@@ -194,7 +227,7 @@ try {
  });
 
  left.append(f,m);
- body.append(r,p,attack,scan);
+ body.append(r,p,attack,scan,intelPanel);
  right.append(title,tabs,body);
  w.append(left,right);
 
@@ -734,6 +767,399 @@ try {
 
  if(sum){
    new MutationObserver(scanSchedule).observe(sum,{
+     childList:true,
+     characterData:true,
+     subtree:true
+   });
+ }
+
+ // HP_INTELLIGENCE_TAB_V1
+ let intelSnapshot=null;
+ let intelPromise=null;
+ let intelMode='feeds';
+ let intelTimer=0;
+
+ const intelStatus=intelPanel.querySelector('#hp-intel-status');
+ const intelHead=intelPanel.querySelector('#hp-intel-head');
+ const intelRows=intelPanel.querySelector('#hp-intel-rows');
+ const intelButtons=[...intelPanel.querySelectorAll('[data-intel-mode]')];
+ const intelFmt=n=>Number(n).toLocaleString('en-US');
+
+ function intelTable(headers,records,empty){
+   intelHead.replaceChildren();
+   intelRows.replaceChildren();
+
+   const header=document.createElement('tr');
+   for(const name of headers){
+     const th=document.createElement('th');
+     th.textContent=name;
+     th.scope='col';
+     header.append(th);
+   }
+   intelHead.append(header);
+
+   if(!records.length){
+     const tr=document.createElement('tr');
+     const td=document.createElement('td');
+     td.colSpan=headers.length;
+     td.textContent=empty;
+     tr.append(td);
+     intelRows.append(tr);
+     return;
+   }
+
+   const fragment=document.createDocumentFragment();
+
+   for(const values of records){
+     const tr=document.createElement('tr');
+
+     values.forEach((value,index)=>{
+       const td=document.createElement('td');
+
+       if(intelMode==='sources'&&index===0){
+         const button=document.createElement('button');
+         button.type='button';
+         button.className='hp-intel-ip-link';
+         button.textContent=String(value);
+         button.title='Filter MAP and Analyze by this IP';
+
+         button.addEventListener('click',()=>{
+           const input=document.getElementById('f-source-ip');
+           if(!input||input.disabled)return;
+
+           input.value=String(value);
+           input.dispatchEvent(
+             new Event('change',{bubbles:true})
+           );
+         });
+
+         td.append(button);
+       }else{
+         td.textContent=String(value);
+       }
+
+       tr.append(td);
+     });
+
+     fragment.append(tr);
+   }
+
+   intelRows.append(fragment);
+ }
+
+ function intelTags(ip){
+   const raw=intelSnapshot.ips[ip]?.r;
+   const names=new Set();
+
+   if(!Array.isArray(raw))return names;
+
+   for(const item of raw){
+     if(typeof item!=='string')continue;
+
+     if(item.startsWith('IPsum (')){
+       names.add('IPsum');
+     }else if(item==='FireHOL L2'){
+       names.add('FireHOL L2');
+     }else if(item==='FireHOL L3'){
+       names.add('FireHOL L3');
+     }else{
+       names.add('Other listing');
+     }
+   }
+
+   return names;
+ }
+
+ function renderIntel(){
+   if(!intelSnapshot||!scanDocs)return;
+
+   const q=scanState();
+   const ips=new Map();
+   let packets=0;
+   let ignored=0;
+
+   const noHp=
+     q.honeypot!=='all'&&q.honeypot!=='hp01';
+
+   const note='IPsum / FireHOL snapshot '+
+     intelSnapshot.generated_utc.slice(0,10)+
+     ' · ThreatFox not checked'+
+     ' · Listing is not proof of malicious activity';
+
+   intelButtons.forEach(b=>b.setAttribute(
+     'aria-pressed',
+     String(b.dataset.intelMode===intelMode)
+   ));
+
+   if(noHp){
+     intelStatus.textContent=
+       'Source-level data unavailable for this honeypot';
+
+     intelTable(
+       ['Status'],[],
+       'No published source-level data (not zero traffic)'
+     );
+     return;
+   }
+
+   for(const doc of scanDocs){
+     if(q.day&&q.day!==doc.day)continue;
+
+     for(const [proto,dport,index,count] of doc.rows){
+       if(proto!==(q.protocol==='UDP'?1:0))continue;
+       if(q.port&&dport!==Number(q.port))continue;
+       if(!Number.isSafeInteger(count)||count<=0)continue;
+
+       const source=doc.sources[index];
+
+       if(!source){
+         ignored+=count;
+         continue;
+       }
+
+       const [ip,asn,,country]=source;
+
+       if(!ip){
+         ignored+=count;
+         continue;
+       }
+
+       const cc=country||'UNKNOWN';
+       const asnId=asn===null?'?':String(asn);
+
+       if(q.country&&q.country!==cc)continue;
+       if(q.asn&&q.asn!==asnId)continue;
+       if(q.ip&&q.ip!==ip)continue;
+
+       let v=ips.get(ip);
+
+       if(!v){
+         v={
+           packets:0,
+           ports:new Set(),
+           days:new Set(),
+           tags:intelTags(ip)
+         };
+         ips.set(ip,v);
+       }
+
+       v.packets+=count;
+       v.ports.add(dport);
+       v.days.add(doc.day);
+       packets+=count;
+     }
+   }
+
+   const pct=(a,b)=>
+     b?(100*a/b).toFixed(1)+'%':'—';
+
+   const makeEntry=()=>({ips:0,packets:0});
+   const feedMap=new Map();
+   const overlapMap=new Map();
+
+   const feedNames=[
+     'IPsum','FireHOL L2',
+     'FireHOL L3','Other listing'
+   ];
+
+   for(const [ip,record] of ips){
+     const tags=record.tags;
+
+     const groups=[...tags];
+
+     if(tags.size){
+       groups.push('Any checked feed');
+     }else{
+       groups.push('No match in checked feeds');
+     }
+
+     for(const name of groups){
+       if(!feedMap.has(name)){
+         feedMap.set(name,makeEntry());
+       }
+
+       const item=feedMap.get(name);
+       item.ips++;
+       item.packets+=record.packets;
+     }
+
+     const combo=tags.size
+       ?[...tags].sort().join(' + ')
+       :'No match in checked feeds';
+
+     if(!overlapMap.has(combo)){
+       overlapMap.set(combo,makeEntry());
+     }
+
+     overlapMap.get(combo).ips++;
+     overlapMap.get(combo).packets+=record.packets;
+   }
+
+   const makeRows=entries=>entries.map(([name,x])=>[
+     name,
+     intelFmt(x.ips),
+     intelFmt(x.packets),
+     pct(x.ips,ips.size),
+     pct(x.packets,packets)
+   ]);
+
+   if(intelMode==='feeds'){
+     const names=[
+       'Any checked feed',
+       ...feedNames,
+       'No match in checked feeds'
+     ];
+
+     intelTable(
+       [
+         'Source feed','Source IPs',
+         'Packets','IP share','Packet share'
+       ],
+       makeRows(
+         names
+           .filter(name=>feedMap.has(name))
+           .map(name=>[name,feedMap.get(name)])
+       ),
+       'No matching observed sources'
+     );
+
+   }else if(intelMode==='overlap'){
+     const groups=[...overlapMap].sort(
+       (a,b)=>b[1].packets-a[1].packets||
+       a[0].localeCompare(b[0])
+     );
+
+     intelTable(
+       [
+         'Feed combination','Source IPs',
+         'Packets','IP share','Packet share'
+       ],
+       makeRows(groups),
+       'No matching observed sources'
+     );
+
+   }else{
+     const entries=[...ips]
+       .filter(([,v])=>v.tags.size>0)
+       .sort(
+         (a,b)=>b[1].packets-a[1].packets||
+         a[0].localeCompare(b[0])
+       )
+       .slice(0,100);
+
+     intelTable(
+       [
+         'Source IP','Packets','Days',
+         'Unique ports','Feed matches'
+       ],
+       entries.map(([ip,v])=>[
+         ip,
+         intelFmt(v.packets),
+         intelFmt(v.days.size),
+         intelFmt(v.ports.size),
+         [...v.tags].sort().join(', ')
+       ]),
+       'No matching feed-listed sources'
+     );
+   }
+
+   intelStatus.textContent=
+     note+
+     ' · '+intelFmt(ips.size)+' observed IPs'+
+     ' · '+intelFmt(packets)+' packets'+
+     (ignored
+       ?' · '+intelFmt(ignored)+' invalid rows skipped'
+       :'')+
+     (intelMode==='sources'
+       ?' · Click an IP to filter the MAP'
+       :'')+
+     ' · No match does not mean benign';
+ }
+
+ function scheduleIntel(){
+   if(!intelSnapshot||!scanDocs)return;
+   clearTimeout(intelTimer);
+   intelTimer=setTimeout(renderIntel,360);
+ }
+
+ function initIntel(){
+   if(intelPromise)return;
+
+   intelStatus.textContent=
+     'Loading published source and reputation data...';
+
+   // Share the existing Scan & Trends source data.
+   initScan();
+
+   intelPromise=Promise.all([
+     scanPromise,
+     fetch(
+       'data/source-ip-intel/preview.json',
+       {cache:'no-store'}
+     ).then(res=>{
+       if(!res.ok){
+         throw Error('INTEL_HTTP_'+res.status);
+       }
+       return res.json();
+     })
+   ])
+   .then(([,data])=>{
+     if(!scanDocs){
+       throw Error('SOURCE_STATS_UNAVAILABLE');
+     }
+
+     if(
+       data.schema!=='hp-source-intel-preview-v1'||
+       !data.ips||
+       typeof data.ips!=='object'||
+       typeof data.generated_utc!=='string'
+     ){
+       throw Error('INTEL_SCHEMA');
+     }
+
+     intelSnapshot=data;
+     renderIntel();
+   })
+   .catch(error=>{
+     intelStatus.textContent=
+       'Intelligence data unavailable (not zero matches)';
+
+     intelTable(
+       ['Status'],[],
+       String(error.message)
+     );
+
+     console.error('HP_INTELLIGENCE',error);
+   });
+ }
+
+ for(const button of intelButtons){
+   button.addEventListener('click',()=>{
+     intelMode=button.dataset.intelMode;
+     renderIntel();
+   });
+ }
+
+ for(const id of [
+   'f-day','f-country','f-port',
+   'f-asn','f-honeypot'
+ ]){
+   document.getElementById(id)?.addEventListener(
+     'change',scheduleIntel
+   );
+ }
+
+ for(const event of ['input','change']){
+   document.getElementById('f-source-ip')
+     ?.addEventListener(event,scheduleIntel);
+ }
+
+ document.addEventListener(
+   'hp-source-facets-rows',scheduleIntel
+ );
+
+ if(sum){
+   new MutationObserver(scheduleIntel).observe(sum,{
      childList:true,
      characterData:true,
      subtree:true
