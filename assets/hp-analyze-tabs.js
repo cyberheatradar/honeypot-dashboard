@@ -67,6 +67,7 @@ try {
    <div class="hp-attack-modes">
      <button type="button" data-mode="patterns">Attack patterns</button>
      <button type="button" data-mode="user_agents">User-Agent fingerprints</button>
+     <button type="button" data-mode="agentic">AI Agent Indicators</button>
    </div>
    <div class="hp-attack-scroll">
      <table>
@@ -216,7 +217,15 @@ try {
  select('ip');
 
  // HTTP analysis under the shared MAP filter selections.
+ // HP_AGENTIC_INDICATORS_V1
  let attackData=null;
+ let agentInfo=null;
+
+ function agentProtocol(proto){
+   const kind=window.HP_KIND||'TCP_SYN';
+   return proto===kind||
+     (proto==='HTTP'&&kind==='TCP_SYN');
+ }
  let attackMode='patterns';
  const attackStatus=attack.querySelector('#hp-attack-status');
  const attackRows=attack.querySelector('#hp-attack-rows');
@@ -243,10 +252,12 @@ try {
 
      const hp=document.getElementById('f-honeypot')?.value||'all';
 
-     for(const [d,src,cc,asnId,dport,hpId,label]
+     for(const [d,src,cc,asnId,dport,hpId,label,,proto]
        of attackData[httpGroup.mode]){
 
        if(label!==httpGroup.label)continue;
+       if(httpGroup.mode==='agentic'&&
+          !agentProtocol(proto))continue;
        if(day&&d!==day)continue;
        if(country&&cc!==country)continue;
        if(port&&dport!==Number(port))continue;
@@ -308,9 +319,16 @@ try {
    syncHttpGroup();
    const groups=new Map();
 
-   if(!udp){
+   const agentMode=attackMode==='agentic';
+
+   attack.querySelector('thead th:nth-child(2)').textContent=
+     agentMode?'Observations':'Requests';
+
+   if(!udp||agentMode){
      for(const row of attackData[attackMode]){
-       const [d,src,cc,asnId,dport,hp,label,n]=row;
+       const [d,src,cc,asnId,dport,hp,label,n,proto]=row;
+
+       if(agentMode&&!agentProtocol(proto))continue;
 
        if(day&&d!==day)continue;
        if(country&&cc!==country)continue;
@@ -344,7 +362,10 @@ try {
      );
 
      const values=[
-       label,fmt(g.count),fmt(g.ips.size),
+       label,
+       fmt(g.count)+(agentMode?
+         (label.endsWith(' (Signature)')?' requests':' packets'):''),
+       fmt(g.ips.size),
        (100*largest/g.count).toFixed(1)+'%'
      ];
 
@@ -385,11 +406,28 @@ try {
      const tr=document.createElement('tr');
      const td=document.createElement('td');
      td.colSpan=4;
-     td.textContent=udp
-       ?'HTTP analysis is not applicable to UDP observations'
-       :'No matching HTTP indicators (not a benign verdict)';
+     td.textContent=agentMode
+       ?(!agentInfo||agentInfo.status==='unavailable'
+         ?'Agent intelligence unavailable'
+         :'No matching agent indicators (not a benign verdict)')
+       :udp
+         ?'HTTP analysis is not applicable to UDP observations'
+         :'No matching HTTP indicators (not a benign verdict)';
      tr.append(td);
      attackRows.append(tr);
+   }
+
+   if(agentMode){
+     attackStatus.textContent=
+       !agentInfo||agentInfo.status==='unavailable'
+       ?'ThreatDefence data unavailable (not zero matches)'
+       :'ThreatDefence · '+agentInfo.status+
+         ' · snapshot '+agentInfo.snapshot_utc.slice(0,10)+
+         ' · Exposure is not attack attribution'+
+         ' · IOC is a reported address match'+
+         ' · Signature = HTTP indicator'+
+         ' · Counts may overlap';
+     return;
    }
 
    const days=attackData.coverage_days;
@@ -439,12 +477,23 @@ try {
    );
  }
 
- fetch('data/analyze/attack-tools.json',{cache:'no-store'})
-   .then(res=>{
-     if(!res.ok)throw Error('ATTACK_DATA_HTTP_'+res.status);
-     return res.json();
-   })
-   .then(data=>{
+ Promise.all([
+   fetch('data/analyze/attack-tools.json',{cache:'no-store'})
+     .then(res=>{
+       if(!res.ok)throw Error('ATTACK_DATA_HTTP_'+res.status);
+       return res.json();
+     }),
+   fetch('data/analyze/agentic.json',{cache:'no-store'})
+     .then(res=>{
+       if(!res.ok)throw Error('AGENTIC_HTTP_'+res.status);
+       return res.json();
+     })
+     .catch(error=>{
+       console.error('HP_AGENTIC_INTEL',error);
+       return null;
+     })
+ ])
+   .then(([data,agent])=>{
      if(
        data.schema!=='hp-analyze-attack-tools-v1'||
        !Array.isArray(data.patterns)||
@@ -453,6 +502,12 @@ try {
        !data.coverage_days.length
      )throw Error('ATTACK_DATA_SCHEMA');
 
+     agentInfo=agent&&
+       agent.schema==='hp-agentic-intel-v1'&&
+       Array.isArray(agent.rows)
+       ?agent:null;
+
+     data.agentic=agentInfo?.rows||[];
      attackData=data;
      renderAttack();
    })

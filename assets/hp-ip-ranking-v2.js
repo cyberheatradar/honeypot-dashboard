@@ -80,6 +80,33 @@
   });
 
   // Re-rendered ranking rows must also receive five columns.
+  // HP_AGENTIC_IP_RANKING_V1
+
+  const agentIndex=new Map();
+  let agentSnapshot='';
+
+  function agentLabels(ip,day){
+    const port=document.getElementById('f-port')?.value||'';
+    const hp=document.getElementById('f-honeypot')?.value||'all';
+    const kind=window.HP_KIND||'TCP_SYN';
+    const labels=new Set();
+
+    for(const row of agentIndex.get(ip)||[]){
+      const [d,,cc,asn,dport,sensor,label,n,proto]=row;
+
+      if(day&&d!==day)continue;
+      if(port&&dport!==Number(port))continue;
+      if(hp!=='all'&&sensor!==hp)continue;
+
+      if(proto!==kind&&
+         !(proto==='HTTP'&&kind==='TCP_SYN'))continue;
+
+      labels.add(label);
+    }
+
+    return [...labels].sort();
+  }
+
   function decorate() {
     for (const tr of tbody.rows) {
       if (tr.cells.length === 1 &&
@@ -140,21 +167,36 @@
           ? detail[key]
           : [];
 
-        const value = matches.length
-          ? matches.map(x => x[0]).join(', ')
-          : '—';
+        const additional = idx===4
+          ? agentLabels(ip,day) : [];
+
+        const labels = [
+          ...new Set([
+            ...matches.map(x=>x[0]),
+            ...additional
+          ])
+        ];
+
+        const value = labels.length
+          ? labels.join(', ') : '—';
 
         if (td.textContent !== value) {
           td.textContent = value;
         }
 
-        td.title = matches.length
-          ? matches.map(x => x[0] + ' (' + x[1] + ')').join('; ')
+        td.title = labels.length
+          ? [
+              ...matches.map(x=>x[0]+' ('+x[1]+')'),
+              ...additional.map(label=>
+                label+' · ThreatDefence · '+agentSnapshot+
+                ' · Not confirmed tool attribution'
+              )
+            ].join('; ')
           : empty;
 
         td.classList.toggle(
           'hp-ip-unanalysed',
-          matches.length === 0
+          labels.length === 0
         );
       }
 
@@ -202,6 +244,36 @@
     })
     .catch(error => {
       console.error('SOURCE_INTEL_PREVIEW', error);
+    });
+
+  fetch('data/analyze/agentic.json',{cache:'no-store'})
+    .then(res=>{
+      if(!res.ok)throw Error('AGENTIC_HTTP_'+res.status);
+      return res.json();
+    })
+    .then(data=>{
+      if(data.schema!=='hp-agentic-intel-v1'||
+         !Array.isArray(data.rows)){
+        throw Error('AGENTIC_SCHEMA');
+      }
+
+      agentSnapshot=(data.snapshot_utc||'')+
+        ' ('+data.status+')';
+
+      for(const row of data.rows){
+        const ip=row[1];
+
+        if(!agentIndex.has(ip)){
+          agentIndex.set(ip,[]);
+        }
+
+        agentIndex.get(ip).push(row);
+      }
+
+      decorate();
+    })
+    .catch(error=>{
+      console.error('HP_AGENTIC_RANKING',error);
     });
 
   console.info('HP_IP_RANKING_V2=PASS');
