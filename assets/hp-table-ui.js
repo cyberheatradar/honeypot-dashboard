@@ -243,7 +243,21 @@ function copyButton(cell,ip){
   });
 
   // No text node: IP parsers continue to see only the IP.
-  cell.append(btn);
+  // HP_TABLE_PRESENTATION_V2
+  const line=document.createElement('span');
+  line.className='hp-ip-copy-line';
+
+  const link=cell.querySelector(
+    'button.hp-ranking-filter,button.hp-drill-link'
+  );
+
+  if(link){
+    link.title=ip+' · '+link.title;
+  }
+
+  line.append(...Array.from(cell.childNodes),btn);
+  cell.classList.add('hp-ip-copy-cell');
+  cell.append(line);
 }
 
 function updateListedButton(){
@@ -285,9 +299,9 @@ function installListed(after){
   listedButton=document.createElement('button');
   listedButton.type='button';
   listedButton.id='hp-listed-only';
-  listedButton.textContent='Listed Only';
+  listedButton.textContent='Suspicious Only';
   listedButton.title=
-    'Filter to IPsum / FireHOL listed IPs; not a malicious verdict';
+    'Filter to IPsum / FireHOL matches; not proof of malicious activity';
 
   listedButton.addEventListener('click',()=>{
     setListed(!listedActive);

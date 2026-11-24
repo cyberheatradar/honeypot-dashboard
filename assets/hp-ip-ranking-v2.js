@@ -217,7 +217,7 @@
 
       const sources = Array.isArray(global.r) ? global.r : [];
       const reputation = tr.cells[2];
-      const label = sources.length ? 'Listed' : '—';
+      const label = sources.length ? 'Suspicious' : '—';
 
       if (reputation.textContent !== label) {
         reputation.textContent = label;
@@ -233,8 +233,8 @@
       );
 
       reputation.title = sources.length
-        ? 'Listed: ' + sources.join(', ') +
-          '; snapshot listing is not a malicious verdict; ThreatFox not checked'
+        ? sources.join(', ') +
+          '; external reputation match; not proof of malicious activity; ThreatFox not checked'
         : 'No match in fetched feeds; ThreatFox not checked';
 
       for (const [idx,key,empty] of [
@@ -434,3 +434,5 @@
 })();
 
 // HP_TABLE_CONTROLS_V1
+
+// HP_TABLE_PRESENTATION_V2
