@@ -63,11 +63,12 @@
 
     const selectedAsn=asn.value;
     const selectedIp=ip.value.trim();
+    const group=window.HP_HTTP_GROUP_IP_SET;
 
     window.HP_SOURCE_ASN=selectedAsn;
     window.HP_SOURCE_IP=selectedIp;
 
-    if(!selectedAsn&&!selectedIp){
+    if(!selectedAsn&&!selectedIp&&!group){
       document.dispatchEvent(new CustomEvent(
         'hp-source-facets-rows',
         {detail:{rows:original}}
@@ -88,6 +89,7 @@
 
         if(selectedAsn&&keyAsn!==selectedAsn)continue;
         if(selectedIp&&address!==selectedIp)continue;
+        if(group&&!group.has(address))continue;
 
         const key=JSON.stringify([
           data.day,cc||'UNKNOWN',protocol,dport
@@ -213,6 +215,7 @@
 
     asn.disabled=false;
     ip.disabled=false;
+    if(window.HP_HTTP_GROUP_IP_SET)apply();
   }
 
   asn.addEventListener('change',apply);
@@ -225,6 +228,7 @@
     apply();
   });
 
+  document.addEventListener('hp-http-group-change',apply);
   initialize().catch(err=>{
     asn.replaceChildren(new Option('Data unavailable',''));
     asn.disabled=true;
@@ -237,3 +241,5 @@
 // HP_SOURCE_IP_SELECT_V3
 
 // HP_SOURCE_IP_SEARCH_V4
+
+// HP_HTTP_GROUP_APPLY_V1

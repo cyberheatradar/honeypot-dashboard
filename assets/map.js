@@ -134,7 +134,7 @@ for(const node of paths){
   if(!code || ![...selects.country.options].some(o=>o.value===code))
    return;
   selects.country.value=selects.country.value===code ? "" : code;
-  render();
+  selects.country.dispatchEvent(new Event("change",{bubbles:true}));
  };
  node.setAttribute("tabindex","0");
  node.addEventListener("click",select);
@@ -916,3 +916,5 @@ render();
 })();
 
 // HP_FACET_MAP_V2
+
+// HP_COUNTRY_CLICK_CHANGE_V1

@@ -154,6 +154,7 @@
             if(fCountry!==''&&cc!==fCountry)continue;
             if(window.HP_SOURCE_ASN&&(asn===null?'?':String(asn))!==window.HP_SOURCE_ASN)continue;
             if(window.HP_SOURCE_IP&&ip!==window.HP_SOURCE_IP)continue;
+            if(window.HP_HTTP_GROUP_IP_SET&&!window.HP_HTTP_GROUP_IP_SET.has(ip))continue;
             total+=n;
             const ipKey=ip||'';
             ipCounts.set(ipKey,(ipCounts.get(ipKey)||0)+n);
@@ -194,3 +195,5 @@
 })();
 
 // HP_FACET_SOURCE_RANK_V2
+
+// HP_HTTP_GROUP_SOURCE_STATS_V1
