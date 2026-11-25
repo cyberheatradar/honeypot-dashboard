@@ -342,6 +342,96 @@
    {capture:true,passive:false}
   );
 
+
+  // HP_TOUCH_MAP_ZOOM_V1
+  stage.style.touchAction="none";
+
+  let pinch=null;
+  let multiTouch=false;
+  let savedRotate=true;
+
+  const globeTouches=e=>Array.from(e.touches)
+   .filter(t=>stage.contains(t.target));
+
+  const pinchDistance=t=>Math.max(1,Math.hypot(
+   t[0].clientX-t[1].clientX,
+   t[0].clientY-t[1].clientY
+  ));
+
+  function beginPinch(t){
+   pinch={
+    distance:pinchDistance(t),
+    altitude:globe.pointOfView().altitude
+   };
+  }
+
+  stage.addEventListener("touchstart",e=>{
+   const t=globeTouches(e);
+
+   if(t.length>=2){
+    if(!multiTouch){
+     savedRotate=controls.enableRotate;
+     multiTouch=true;
+     controls.enableRotate=false;
+    }
+
+    if(e.cancelable)e.preventDefault();
+
+    if(t.length===2)beginPinch(t);
+    else pinch=null;
+   }
+  },{capture:true,passive:false});
+
+  stage.addEventListener("touchmove",e=>{
+   const t=globeTouches(e);
+
+   if(!multiTouch)return;
+   if(e.cancelable)e.preventDefault();
+
+   if(t.length!==2)return;
+
+   if(!pinch){
+    beginPinch(t);
+    return;
+   }
+
+   zoomTo(
+    pinch.altitude*
+    pinch.distance/pinchDistance(t)
+   );
+  },{capture:true,passive:false});
+
+  function finishPinch(e){
+   if(!multiTouch)return;
+
+   if(e.cancelable)e.preventDefault();
+
+   const t=globeTouches(e);
+
+   pinch=null;
+
+   if(t.length===2)beginPinch(t);
+
+   if(!t.length){
+    multiTouch=false;
+    controls.enableRotate=savedRotate;
+   }
+  }
+
+  stage.addEventListener("touchend",finishPinch,{
+   capture:true,passive:false
+  });
+
+  stage.addEventListener("touchcancel",finishPinch,{
+   capture:true,passive:false
+  });
+
+  window.addEventListener("blur",()=>{
+   pinch=null;
+   if(multiTouch)controls.enableRotate=savedRotate;
+   multiTouch=false;
+  });
+
   let drag=null;
 
   stage.addEventListener(
@@ -619,9 +709,14 @@
   twoStatus.hidden=next==="3d";
   status.hidden=next!=="3d";
 
-  sharedHint.textContent=next==="3d" ?
-   'Drag to rotate · Ctrl + drag ↑↓ / Ctrl + wheel to zoom':
-   twoHint;
+  sharedHint.textContent=
+   window.matchMedia('(pointer:coarse), (max-width:767px)').matches
+    ? (next==="3d"
+       ? "Drag to rotate · Pinch to zoom"
+       : "Drag to pan · Pinch to zoom")
+    : (next==="3d"
+       ? 'Drag to rotate · Ctrl + drag ↑↓ / Ctrl + wheel to zoom'
+       : twoHint);
 
   if(next==="2d"){
    globeZoomLevel.textContent=twoZoomText;

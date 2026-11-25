@@ -920,6 +920,136 @@ render();
     event.stopImmediatePropagation();
   },true);
 
+
+  // HP_TOUCH_MAP_ZOOM_V1
+  svg.style.touchAction="none";
+
+  let touchState=null;
+  let touchMoved=false;
+  let touchTicket=0;
+
+  const mapTouches=e=>Array.from(e.touches)
+   .filter(t=>svg.contains(t.target));
+
+  function touchGeometry(t){
+    if(t.length===1){
+      return {
+        x:t[0].clientX,
+        y:t[0].clientY,
+        distance:1
+      };
+    }
+
+    if(t.length!==2)return null;
+
+    return {
+      x:(t[0].clientX+t[1].clientX)/2,
+      y:(t[0].clientY+t[1].clientY)/2,
+      distance:Math.max(1,Math.hypot(
+        t[0].clientX-t[1].clientX,
+        t[0].clientY-t[1].clientY
+      ))
+    };
+  }
+
+  function startTouch(t){
+    const g=touchGeometry(t);
+    if(!g){
+      touchState=null;
+      return;
+    }
+
+    const f=focus(g.x,g.y);
+
+    touchState=f?{
+      fingers:t.length,
+      x:g.x,
+      y:g.y,
+      distance:g.distance,
+      start:scale,
+      anchor:f.p
+    }:null;
+  }
+
+  svg.addEventListener("touchstart",e=>{
+    const t=mapTouches(e);
+
+    if(t.length===1){
+      touchMoved=false;
+      ignoreClick=false;
+      touchTicket++;
+    }
+
+    if(t.length>=2){
+      touchMoved=true;
+      if(e.cancelable)e.preventDefault();
+    }
+
+    startTouch(t);
+
+  },{passive:false});
+
+  svg.addEventListener("touchmove",e=>{
+    const t=mapTouches(e);
+    const g=touchGeometry(t);
+
+    if(!g)return;
+
+    if(!touchState||touchState.fingers!==t.length){
+      startTouch(t);
+      return;
+    }
+
+    const s=touchState;
+
+    if(!touchMoved&&t.length===1&&
+       Math.hypot(g.x-s.x,g.y-s.y)<5)return;
+
+    touchMoved=true;
+
+    if(e.cancelable)e.preventDefault();
+
+    const f=focus(g.x,g.y);
+    if(!f)return;
+
+    const next=t.length===2
+      ? s.start*g.distance/s.distance
+      : s.start;
+
+    apply(next,s.anchor,f.rx,f.ry);
+
+  },{passive:false});
+
+  function finishTouch(e){
+    const t=mapTouches(e);
+
+    if(touchMoved){
+      if(e.cancelable)e.preventDefault();
+
+      ignoreClick=true;
+      const ticket=++touchTicket;
+
+      setTimeout(()=>{
+        if(ticket===touchTicket)ignoreClick=false;
+      },350);
+    }
+
+    if(t.length){
+      startTouch(t);
+    }else{
+      touchState=null;
+      touchMoved=false;
+    }
+  }
+
+  svg.addEventListener("touchend",finishTouch,{passive:false});
+  svg.addEventListener("touchcancel",finishTouch,{passive:false});
+
+  window.addEventListener("blur",()=>{
+    touchState=null;
+    touchMoved=false;
+  });
+
   reset.addEventListener("click",() => {
     apply(
       1,
