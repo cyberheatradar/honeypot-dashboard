@@ -237,8 +237,8 @@ function lookupLinks(cell,ip){
       'https://isc.sans.edu/ipinfo/'+encoded
     ],
     [
-      'CIP','Criminal IP',
-      'https://search.criminalip.io/ja/asset/report/'+encoded
+      'Scamalytics','Scamalytics IP Fraud Risk',
+      'https://scamalytics.com/ip/'+encoded
     ],
     [
       'Shodan','Shodan',
