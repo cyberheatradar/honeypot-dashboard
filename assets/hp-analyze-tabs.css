@@ -726,3 +726,9 @@
     white-space:normal;
   }
 }
+
+/* HP_HIDE_OBSERVATION_SUMMARY_V1 */
+
+section.hp-port-summary{
+  display:none!important;
+}
