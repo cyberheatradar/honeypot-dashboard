@@ -28,7 +28,9 @@
  );
 
  let rows=source.rows;
- const positions=meta.country_positions;
+ // HP_COUNTRY_COORDINATES_V1
+ const fallbackPositions={"SG":{"lat":1.359364,"lng":103.81482},"SC":{"lat":-9.402058,"lng":46.441629},"AD":{"lat":42.536813,"lng":1.547698},"HK":{"lat":22.437012,"lng":114.107922},"MU":{"lat":-20.302275,"lng":57.58566},"MO":{"lat":22.15425,"lng":113.549639},"BH":{"lat":26.069443,"lng":50.553638},"GP":{"lat":16.179995,"lng":-61.666024},"MQ":{"lat":14.684816,"lng":-61.029687},"MT":{"lat":35.882081,"lng":14.438179},"KN":{"lat":17.147172,"lng":-62.578066}};
+ const positions={...fallbackPositions,...meta.country_positions};
  const destination=meta.destination;
  const names=meta.country_names;
 

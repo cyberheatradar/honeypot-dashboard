@@ -437,11 +437,66 @@ render();
   }
  }
 
+
+ // HP_COUNTRY_COORDINATES_V1
+ const fallbackPositions={"SG":{"lat":1.359364,"lng":103.81482},"SC":{"lat":-9.402058,"lng":46.441629},"AD":{"lat":42.536813,"lng":1.547698},"HK":{"lat":22.437012,"lng":114.107922},"MU":{"lat":-20.302275,"lng":57.58566},"MO":{"lat":22.15425,"lng":113.549639},"BH":{"lat":26.069443,"lng":50.553638},"GP":{"lat":16.179995,"lng":-61.666024},"MQ":{"lat":14.684816,"lng":-61.029687},"MT":{"lat":35.882081,"lng":14.438179},"KN":{"lat":17.147172,"lng":-62.578066}};
+ const fallbackCodes=new Set();
+
+ // Existing 960 x 480 equirectangular projection.
+ const projectFallback=(lat,lng)=>({
+  x:(lng+180)*960/360,
+  y:(90-lat)*480/180
+ });
+
+ // Confirm projection against known land positions.
+ const checks=[
+  ["AU",-25,134],
+  ["BR",-10,-52],
+  ["US",39,-100],
+  ["CN",35,105]
+ ];
+
+ const projectionMatches=checks.filter(([code,lat,lng])=>{
+  try{
+   const path=countryPaths.find(p=>p.dataset.code===code);
+   if(!path)return false;
+   const p=projectFallback(lat,lng);
+   const probe=svg.createSVGPoint();
+   probe.x=p.x;
+   probe.y=p.y;
+   return path.isPointInFill(probe);
+  }catch(_error){
+   return false;
+  }
+ }).length;
+
+ if(projectionMatches>=3){
+  for(const [code,p] of Object.entries(fallbackPositions)){
+   if(locations.has(code))continue;
+   const point=projectFallback(p.lat,p.lng);
+   point.x=centeredX(point.x);
+   locations.set(code,point);
+   fallbackCodes.add(code);
+  }
+  console.info(
+   "HP_COUNTRY_COORDINATES_2D=PASS",
+   fallbackCodes.size
+  );
+ }else{
+  console.warn("HP_COUNTRY_COORDINATES_2D=PROJECTION_CHECK_FAILED");
+ }
+
+ const fallbackLayer=make("g");
+ fallbackLayer.setAttribute("id","hp-small-country-markers");
+ fallbackLayer.setAttribute("pointer-events","none");
+ fallbackLayer.setAttribute("aria-hidden","true");
+
  const layer=make("g");
  layer.setAttribute("id","country-beam-layer");
  layer.setAttribute("pointer-events","none");
  layer.setAttribute("aria-hidden","true");
  svg.appendChild(layer);
+ svg.appendChild(fallbackLayer);
 
  function matches(row){
   return keys.every(k=>
@@ -463,6 +518,7 @@ render();
   }
 
   layer.replaceChildren();
+  fallbackLayer.replaceChildren();
 
   const peak=Math.max(1,...counts.values());
   let drawn=0;
@@ -513,6 +569,22 @@ render();
    beam.style.opacity=(0.5+0.45*strength).toFixed(2);
 
    layer.append(glow,beam);
+
+   if(fallbackCodes.has(code)){
+    const dot=make("circle");
+    dot.setAttribute("cx",from.x);
+    dot.setAttribute("cy",from.y);
+    dot.setAttribute("r","2.5");
+    dot.setAttribute("data-country-code",code);
+    dot.setAttribute(
+     "fill",
+     window.HP_TABLE_UI?.listedActive
+      ? "#f34b52" : "#63e8ef"
+    );
+    dot.setAttribute("stroke","#142536");
+    dot.setAttribute("stroke-width",".7");
+    fallbackLayer.appendChild(dot);
+   }
    drawn++;
   }
 
