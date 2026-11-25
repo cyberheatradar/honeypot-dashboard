@@ -506,6 +506,7 @@ render();
    const beam=make("path");
    beam.setAttribute("d",d);
    beam.setAttribute("class","beam-flow");
+   beam.style.animationDuration=(Math.round(5000-800*Math.min(5,Math.log10(1+Math.max(0,Number(count)||0)))))+"ms";
    if(window.HP_TABLE_UI?.listedActive)
     beam.style.stroke="#ff927d";
    beam.style.strokeWidth=(0.7+2.1*strength).toFixed(2);
@@ -971,3 +972,5 @@ render();
 // HP_TABLE_CONTROLS_V1
 
 // HP_SUSPICIOUS_PALETTE_V1
+
+// HP_BEAM_SPEED_V1

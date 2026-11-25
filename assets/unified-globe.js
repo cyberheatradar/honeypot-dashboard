@@ -531,7 +531,7 @@
     .arcAltitudeAutoScale(.42)
     .arcDashLength(.07)
     .arcDashGap(.10)
-    .arcDashAnimateTime(2800)
+    .arcDashAnimateTime(d=>window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:Math.round(5000-800*Math.min(5,Math.log10(1+Math.max(0,Number(d.count)||0)))))
     .arcLabel(
      d=>safe(d.name)+": "+
       fmt(d.count)+" observations"
@@ -680,3 +680,5 @@
 // HP_SHARED_MAP_CONTROLS_V4
 
 // HP_SUSPICIOUS_PALETTE_V1
+
+// HP_BEAM_SPEED_V1
