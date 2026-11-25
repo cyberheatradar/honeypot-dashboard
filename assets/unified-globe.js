@@ -181,6 +181,7 @@
 
  function updateGlobe(){
   if(!globe)return;
+  const listed=Boolean(window.HP_TABLE_UI?.listedActive);
 
   const counts=new Map();
   let total=0;
@@ -239,6 +240,7 @@
     name:countryName(code),
     count,
     strength,
+    listed,
     startLat:p.lat,
     startLng:p.lng,
     endLat:destination.lat,
@@ -251,6 +253,7 @@
     count,
     lat:p.lat,
     lng:p.lng,
+    listed,
     destination:false
    });
   }
@@ -265,6 +268,10 @@
 
    const level=
     Math.log1p(count)/Math.log1p(peak);
+
+   if(listed){
+    return `rgb(${Math.round(100+120*level)},${Math.round(38+35*level)},${Math.round(48+35*level)})`;
+   }
 
    return `rgb(20,${Math.round(113+100*level)},`+
     `${Math.round(142+65*level)})`;
@@ -513,7 +520,10 @@
     .arcStartLng(d=>d.startLng)
     .arcEndLat(d=>d.endLat)
     .arcEndLng(d=>d.endLng)
-    .arcColor(d=>[
+    .arcColor(d=>d.listed ? [
+     `rgba(243,75,82,${.35+.35*d.strength})`,
+     `rgba(255,146,125,${.65+.35*d.strength})`
+    ] : [
      `rgba(54,220,233,${.35+.35*d.strength})`,
      `rgba(119,244,228,${.65+.35*d.strength})`
     ])
@@ -535,7 +545,7 @@
     .pointAltitude(.014)
     .pointColor(
      d=>d.destination?
-      "#ffdc73":"#63e8ef"
+      "#ffdc73":(d.listed?"#ff927d":"#63e8ef")
     )
     .pointLabel(
      d=>safe(d.name)+": "+
@@ -668,3 +678,5 @@
 // HP_GLOBE_FOOTER_MATCH_2D_V1
 
 // HP_SHARED_MAP_CONTROLS_V4
+
+// HP_SUSPICIOUS_PALETTE_V1

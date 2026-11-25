@@ -117,7 +117,11 @@ function render(){
   const ratio=n ? Math.log1p(n)/Math.log1p(maximum) : 0;
   const green=Math.round(100+105*ratio);
   const blue=Math.round(110+70*ratio);
-  node.style.fill=n ? `rgb(26,${green},${blue})` : "#25364a";
+  node.style.fill=n
+    ? (window.HP_TABLE_UI?.listedActive
+       ? `rgb(${Math.round(100+120*ratio)},${Math.round(38+35*ratio)},${Math.round(48+35*ratio)})`
+       : `rgb(26,${green},${blue})`)
+    : "#25364a";
   node.classList.toggle("selected",
    node.dataset.code!=="" && node.dataset.code===selects.country.value);
   const title=node.querySelector("title");
@@ -494,12 +498,16 @@ render();
    const glow=make("path");
    glow.setAttribute("d",d);
    glow.setAttribute("class","beam-glow");
+   if(window.HP_TABLE_UI?.listedActive)
+    glow.style.stroke="#f34b52";
    glow.style.strokeWidth=(3+4*strength).toFixed(2);
    glow.style.opacity=(0.12+0.16*strength).toFixed(2);
 
    const beam=make("path");
    beam.setAttribute("d",d);
    beam.setAttribute("class","beam-flow");
+   if(window.HP_TABLE_UI?.listedActive)
+    beam.style.stroke="#ff927d";
    beam.style.strokeWidth=(0.7+2.1*strength).toFixed(2);
    beam.style.opacity=(0.5+0.45*strength).toFixed(2);
 
@@ -961,3 +969,5 @@ render();
 // HP_COUNTRY_CLICK_CHANGE_V1
 
 // HP_TABLE_CONTROLS_V1
+
+// HP_SUSPICIOUS_PALETTE_V1
