@@ -732,3 +732,134 @@
 section.hp-port-summary{
   display:none!important;
 }
+
+/* HP_MOBILE_ANALYZE_VIEWPORT_V1 */
+
+@media (max-width:767px){
+
+  .map-workspace.hp-analyze-layout>.hp-analyze-right{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    align-self:start!important;
+  }
+
+  .map-workspace.hp-analyze-layout .hp-analyze-body,
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-body>#hp-source-rankings,
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-body>.map-ranking-pair{
+    position:relative!important;
+    inset:auto!important;
+    flex:0 0 auto!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    min-width:0!important;
+    overflow:visible!important;
+  }
+
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-body .hp-analyze-card,
+  .map-workspace.hp-analyze-layout
+  #hp-source-rankings>.hp-analyze-card{
+    position:relative!important;
+    inset:auto!important;
+    flex:0 0 auto!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    min-width:0!important;
+    overflow:visible!important;
+  }
+
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-body .hp-analyze-hidden,
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-body [hidden]{
+    display:none!important;
+  }
+
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-card .hp-analyze-path{
+    flex:0 0 auto!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-card .hp-analyze-scroll,
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-card .hp-source-tablewrap,
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-card .hp-attack-scroll,
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-card .hp-scan-scroll{
+    flex:0 0 auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:480px!important;
+    max-height:clamp(480px,65dvh,640px)!important;
+    overflow:auto!important;
+    overscroll-behavior:auto!important;
+    box-sizing:border-box!important;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-card table{
+    width:100%!important;
+    min-width:540px!important;
+    table-layout:auto!important;
+  }
+
+  .map-workspace.hp-analyze-layout
+  #hp-source-rankings>.hp-ip-ranking-v2 table{
+    min-width:760px!important;
+    table-layout:fixed!important;
+  }
+
+  .map-workspace.hp-analyze-layout
+  .hp-scan-scroll table{
+    min-width:620px!important;
+  }
+
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-card table th{
+    white-space:nowrap!important;
+    overflow-wrap:normal!important;
+    word-break:normal!important;
+  }
+
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-card table td.hp-ip-copy-cell{
+    min-width:175px!important;
+    white-space:nowrap!important;
+    overflow-wrap:normal!important;
+  }
+
+  .map-workspace.hp-analyze-layout
+  .hp-ip-copy-line{
+    max-width:none!important;
+  }
+
+  .map-workspace.hp-analyze-layout
+  .hp-analyze-card .hp-ip-copy-line>button:not(.hp-copy-ip){
+    flex:0 0 auto!important;
+    max-width:none!important;
+    text-overflow:clip!important;
+    white-space:nowrap!important;
+  }
+
+  .map-workspace.hp-analyze-layout
+  .hp-scan-panel:has(
+    [data-scan-mode="behavior"][aria-pressed="true"]
+  ) .hp-scan-scroll th:first-child{
+    min-width:180px!important;
+  }
+
+}
