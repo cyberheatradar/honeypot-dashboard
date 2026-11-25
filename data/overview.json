@@ -1,17 +1,12 @@
 {
-  "generated_utc": "2026-11-24 23:28 UTC",
+  "generated_utc": "2026-11-25 23:20 UTC",
   "metrics": {
-    "http_requests": 16642,
-    "unique_source_ips": 2918,
+    "http_requests": 17934,
+    "unique_source_ips": 3624,
     "destination_ports": 42,
-    "https_requests": 5147
+    "https_requests": 4972
   },
   "daily_utc": [
-    {
-      "date": "2026-11-17",
-      "requests": 3320,
-      "unique_sources": 751
-    },
     {
       "date": "2026-11-18",
       "requests": 3062,
@@ -34,114 +29,119 @@
     },
     {
       "date": "2026-11-22",
-      "requests": 2742,
-      "unique_sources": 309
+      "requests": 3835,
+      "unique_sources": 758
+    },
+    {
+      "date": "2026-11-23",
+      "requests": 1709,
+      "unique_sources": 793
+    },
+    {
+      "date": "2026-11-24",
+      "requests": 1810,
+      "unique_sources": 783
     }
   ],
   "ports": [
     {
       "port": 80,
-      "requests": 1455
+      "requests": 1541
     },
     {
       "port": 443,
-      "requests": 1384
-    },
-    {
-      "port": 10250,
-      "requests": 797
+      "requests": 1374
     },
     {
       "port": 8080,
-      "requests": 754
-    },
-    {
-      "port": 8001,
-      "requests": 610
+      "requests": 989
     },
     {
       "port": 5000,
-      "requests": 581
+      "requests": 675
     },
     {
-      "port": 8443,
-      "requests": 521
-    },
-    {
-      "port": 8500,
-      "requests": 513
-    },
-    {
-      "port": 5001,
-      "requests": 508
+      "port": 8000,
+      "requests": 612
     },
     {
       "port": 9200,
-      "requests": 471
+      "requests": 575
+    },
+    {
+      "port": 10250,
+      "requests": 575
+    },
+    {
+      "port": 8081,
+      "requests": 522
+    },
+    {
+      "port": 8443,
+      "requests": 506
+    },
+    {
+      "port": 9000,
+      "requests": 496
     }
   ],
   "countries": [
     {
+      "country": "United States",
+      "requests": 4264
+    },
+    {
       "country": "Japan",
-      "requests": 3664
+      "requests": 3744
     },
     {
       "country": "Germany",
-      "requests": 3653
-    },
-    {
-      "country": "United States",
-      "requests": 3233
+      "requests": 2377
     },
     {
       "country": "United Kingdom",
-      "requests": 1295
+      "requests": 1759
     },
     {
       "country": "Netherlands",
-      "requests": 1057
+      "requests": 1617
     },
     {
       "country": "Belgium",
-      "requests": 1005
+      "requests": 1114
     },
     {
       "country": "Singapore",
-      "requests": 622
+      "requests": 698
     },
     {
       "country": "Sweden",
-      "requests": 426
-    },
-    {
-      "country": "Switzerland",
-      "requests": 266
+      "requests": 468
     },
     {
       "country": "Hong Kong",
-      "requests": 206
+      "requests": 259
+    },
+    {
+      "country": "France",
+      "requests": 232
     }
   ],
   "asns": [
     {
       "asn": 63949,
       "organization": "Akamai Technologies, Inc.",
-      "requests": 4103
-    },
-    {
-      "asn": 208137,
-      "organization": "Feo Prest SRL",
-      "requests": 2048
+      "requests": 4246
     },
     {
       "asn": 43515,
       "organization": "Google Ireland Limited",
-      "requests": 1364
+      "requests": 1700
     },
     {
       "asn": 25369,
       "organization": "Hydra Communications Ltd",
-      "requests": 1264
+      "requests": 1693
     },
     {
       "asn": 213790,
@@ -149,48 +149,53 @@
       "requests": 1049
     },
     {
-      "asn": 8075,
-      "organization": "Microsoft Corporation",
-      "requests": 579
-    },
-    {
       "asn": 398324,
       "organization": "Censys, Inc.",
-      "requests": 485
+      "requests": 687
     },
     {
-      "asn": 20473,
-      "organization": "The Constant Company, LLC",
-      "requests": 455
+      "asn": 8075,
+      "organization": "Microsoft Corporation",
+      "requests": 652
     },
     {
       "asn": 396982,
       "organization": "Google LLC",
-      "requests": 449
+      "requests": 617
+    },
+    {
+      "asn": 208137,
+      "organization": "Feo Prest SRL",
+      "requests": 592
     },
     {
       "asn": 14061,
       "organization": "DigitalOcean, LLC",
-      "requests": 432
+      "requests": 523
+    },
+    {
+      "asn": 20473,
+      "organization": "The Constant Company, LLC",
+      "requests": 470
     }
   ],
   "signals": [
     {
       "type": "common_probe_path",
-      "requests": 1639
-    },
-    {
-      "type": "path_traversal",
-      "requests": 18
+      "requests": 1046
     },
     {
       "type": "sensitive_file_probe",
-      "requests": 16
+      "requests": 17
+    },
+    {
+      "type": "path_traversal",
+      "requests": 8
     }
   ],
   "attribution": "IP geolocation by DB-IP Lite (CC BY 4.0)",
   "period_key": "7days",
-  "period_start_utc": "2026-11-17 00:00 UTC",
-  "period_end_exclusive_utc": "2026-11-24 00:00 UTC",
+  "period_start_utc": "2026-11-18 00:00 UTC",
+  "period_end_exclusive_utc": "2026-11-25 00:00 UTC",
   "partial_initial_coverage": false
 }
