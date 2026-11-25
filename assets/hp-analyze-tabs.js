@@ -47,6 +47,26 @@ try {
  for(const [name,card] of Object.entries(cards)){
    const table=card.querySelector('table');
    if(!table) throw Error('STOP=ANALYZE_TABLE_'+name);
+   // HP_MOBILE_SCROLL_FIX_V3
+   if(table.parentElement===card){
+     const mq=window.matchMedia('(max-width:767px)');
+     const scroll=document.createElement('div');
+     scroll.className='hp-analyze-scroll';
+
+     const sync=()=>{
+       if(mq.matches&&table.parentElement===card){
+         table.before(scroll);
+         scroll.append(table);
+       }else if(!mq.matches&&table.parentElement===scroll){
+         scroll.before(table);
+         scroll.remove();
+       }
+     };
+
+     sync();
+     mq.addEventListener('change',sync);
+     continue;
+   }
    let el=table.parentElement;
    while(el && el!==card){
      el.classList.add(
