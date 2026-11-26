@@ -230,7 +230,10 @@ try {
 
  left.append(f,m);
  body.append(r,p,attack,scan);
- right.append(title,tabs,groupStrip,body);
+ const focusNote=document.createElement('p');
+ focusNote.className='hp-focus-note';
+ focusNote.textContent='Ranking totals before drill-down · Highlighted rows match filters';
+ right.append(title,tabs,focusNote,groupStrip,body);
  w.append(left,right);
 
  w.classList.add('hp-analyze-layout');
@@ -339,6 +342,8 @@ try {
 
    syncHttpGroup();
    const groups=new Map();
+   const matched=new Set();
+   const focused=Boolean(country||port||asn||ip||httpGroup);
 
    // HP_AGENTIC_HEADING_V1
    const agentMode=attackMode==='agentic';
@@ -356,14 +361,18 @@ try {
        if(agentMode&&!agentProtocol(proto))continue;
 
        if(day&&d!==day)continue;
-       if(country&&cc!==country)continue;
-       if(port&&dport!==Number(port))continue;
-       if(asn&&asnId!==asn)continue;
-       if(ip&&src!==ip)continue;
        if(!window.HP_TABLE_UI.allows(src))continue;
-       if(window.HP_HTTP_GROUP_IP_SET&&
-          !window.HP_HTTP_GROUP_IP_SET.has(src))continue;
        if(honeypot!=='all'&&hp!==honeypot)continue;
+
+       if((!country||cc===country)&&
+          (!port||dport===Number(port))&&
+          (!asn||asnId===asn)&&(!ip||src===ip)&&
+          (!window.HP_HTTP_GROUP_IP_SET||
+             window.HP_HTTP_GROUP_IP_SET.has(src))&&
+          (!httpGroup||httpGroup.mode!==attackMode||
+             httpGroup.label===label)){
+         matched.add(label);
+       }
 
        if(!groups.has(label)){
          groups.set(label,{count:0,ips:new Map()});
@@ -398,6 +407,7 @@ try {
      renderAttack,1,-1
    );
 
+   const saved=window.HP_ROW_FOCUS.save(attackRows);
    attackRows.replaceChildren();
 
    for(const [label,g] of ranked){
@@ -446,8 +456,11 @@ try {
 
        tr.append(td);
      });
+     window.HP_ROW_FOCUS.paint(tr,focused?matched.has(label):null);
      attackRows.append(tr);
    }
+
+   window.HP_ROW_FOCUS.restore(saved);
 
    if(!ranked.length){
      const tr=document.createElement('tr');
@@ -595,7 +608,10 @@ try {
    };
  }
 
+ let scanFocus={active:false,keys:new Set()};
+
  function scanSetTable(columns,rows,empty){
+   const saved=window.HP_ROW_FOCUS.save(scanRows);
    scanHead.replaceChildren();
    scanRows.replaceChildren();
 
@@ -699,9 +715,18 @@ try {
 
        tr.append(td);
      });
+     const key=scanMode==='spikes'
+       ?String(cells[0])+'|'+String(cells[1]).split('/')[0]
+       :String(cells[0]);
+
+     window.HP_ROW_FOCUS.paint(
+       tr,scanFocus.active?scanFocus.keys.has(key):null
+     );
+
      frag.append(tr);
    }
    scanRows.append(frag);
+   window.HP_ROW_FOCUS.restore(saved);
  }
 
  function scanRender(){
@@ -711,10 +736,7 @@ try {
    const allDays=scanDocs.map(x=>x.day);
    const allDaySet=new Set(allDays);
    const firstSeen=scanFirstSeen[q.protocol]||new Map();
-   const byIp=new Map();
-   const byDay=new Map();
-   const byDayPort=new Map();
-   let total=0;
+   scanFocus={active:false,keys:new Set()};
 
    if(q.honeypot!=='all'&&q.honeypot!=='hp01'){
      scanStatus.textContent=
@@ -723,6 +745,12 @@ try {
        'No source-level data for this honeypot (not zero activity)');
      return;
    }
+
+   function collect(q,group){
+   const byIp=new Map();
+   const byDay=new Map();
+   const byDayPort=new Map();
+   let total=0;
 
    for(const doc of scanDocs){
      if(q.day&&q.day!==doc.day&&scanMode!=='spikes')continue;
@@ -742,8 +770,7 @@ try {
        if(q.asn&&q.asn!==asnId)continue;
        if(q.ip&&ip!==q.ip)continue;
        if(!window.HP_TABLE_UI.allows(ip))continue;
-       if(window.HP_HTTP_GROUP_IP_SET&&
-          !window.HP_HTTP_GROUP_IP_SET.has(ip))continue;
+       if(group&&!group.has(ip))continue;
        if(!Number.isSafeInteger(n)||n<=0)continue;
 
        total+=n;
@@ -784,14 +811,45 @@ try {
      }
    }
 
+   return {byIp,byDay,byDayPort,total};
+   }
+
+   const baseline={
+     ...q,country:'',port:'',asn:'',ip:'',
+     day:scanMode==='behavior'?q.day:''
+   };
+
+   const {byIp,byDay,byDayPort,total}=collect(baseline,null);
+   const match=collect(q,window.HP_HTTP_GROUP_IP_SET);
+
+   const focused=Boolean(
+     q.country||q.port||q.asn||q.ip||
+     window.HP_HTTP_GROUP_IP_SET||
+     (scanMode!=='behavior'&&q.day)
+   );
+
+   const keys=new Set();
+
+   if(scanMode==='behavior'){
+     for(const key of match.byIp.keys())keys.add(key);
+   }else if(scanMode==='daily'){
+     for(const key of match.byDay.keys())keys.add(key);
+   }else{
+     for(const key of match.byDayPort.keys()){
+       if(!q.day||key.startsWith(q.day+'|'))keys.add(key);
+     }
+   }
+
+   scanFocus={active:focused,keys};
+
    scanButtons.forEach(b=>b.setAttribute(
      'aria-pressed',
      String(b.dataset.scanMode===scanMode)
    ));
 
    const coverage=allDays[0]+' – '+allDays[allDays.length-1];
-   const note=q.port
-     ?' · Port filter limits observed port breadth'
+   const note=scanFocus.active
+     ?' · Highlighted rows match drill-down filters'
      :'';
 
    if(scanMode==='behavior'){
@@ -853,7 +911,6 @@ try {
        const divider=key.indexOf('|');
        const day=key.slice(0,divider);
 
-       if(q.day&&day!==q.day)continue;
 
        const port=key.slice(divider+1);
        const prev=scanDayMinusOne(day);
@@ -1184,3 +1241,5 @@ try {
 })();
 
 // HP_TABLE_CONTROLS_V1
+
+// HP_ANALYZE_ROW_FOCUS_V1

@@ -71,13 +71,14 @@
     if(!selectedAsn&&!selectedIp&&!group&&!window.HP_TABLE_UI.listedActive){
       document.dispatchEvent(new CustomEvent(
         'hp-source-facets-rows',
-        {detail:{rows:original}}
+        {detail:{rows:original,rankingRows:original}}
       ));
       return;
     }
 
     const chosenProto=window.HP_KIND||proto.value;
     const counts=new Map();
+    const rankCounts=new Map();
 
     for(const data of documents){
       for(const [p,dport,index,count] of data.rows){
@@ -87,14 +88,18 @@
         const [address,number,,cc]=data.sources[index];
         const keyAsn=number===null?'?':String(number);
 
-        if(selectedAsn&&keyAsn!==selectedAsn)continue;
-        if(selectedIp&&address!==selectedIp)continue;
-        if(group&&!group.has(address))continue;
         if(!window.HP_TABLE_UI.allows(address))continue;
 
         const key=JSON.stringify([
           data.day,cc||'UNKNOWN',protocol,dport
         ]);
+
+        rankCounts.set(key,(rankCounts.get(key)||0)+count);
+
+        if(selectedAsn&&keyAsn!==selectedAsn)continue;
+        if(selectedIp&&address!==selectedIp)continue;
+        if(group&&!group.has(address))continue;
+
         counts.set(key,(counts.get(key)||0)+count);
       }
     }
@@ -115,7 +120,11 @@
 
     document.dispatchEvent(new CustomEvent(
       'hp-source-facets-rows',
-      {detail:{rows}}
+              {detail:{rows,rankingRows:[...rankCounts].map(([key,count])=>{
+          const [day,country,transport,port]=JSON.parse(key);
+          return {day,country,transport,port:String(port),
+            method:'-',signal:'-',count};
+        })}}
     ));
   }
 
@@ -246,3 +255,5 @@
 // HP_HTTP_GROUP_APPLY_V1
 
 // HP_TABLE_CONTROLS_V1
+
+// HP_ANALYZE_ROW_FOCUS_V1

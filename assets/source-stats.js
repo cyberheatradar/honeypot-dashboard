@@ -77,6 +77,8 @@
           [null,null,null])
       ];
     });
+    const saved=window.HP_ROW_FOCUS.save(target);
+    const previousLength=target.rows.length;
     target.replaceChildren();
 
     const scroller=target.closest('.hp-source-tablewrap');
@@ -84,7 +86,7 @@
       throw Error('SOURCE_SCROLLER_MISSING');
 
     scroller.onscroll=null;
-    scroller.scrollTop=0;
+    // Preserve the existing scroll position.
 
     if(records.length===0){
       const tr=document.createElement('tr');
@@ -131,6 +133,7 @@
         }
 
         tr.append(label,count);
+        window.HP_ROW_FOCUS.paint(tr,item.matched);
         fragment.append(tr);
       }
 
@@ -138,6 +141,11 @@
     }
 
     appendBatch();
+    while(offset<Math.min(previousLength,records.length)){
+      appendBatch();
+    }
+
+    window.HP_ROW_FOCUS.restore(saved);
 
     scroller.onscroll=()=>{
       const nearBottom=
@@ -152,6 +160,11 @@
     const ticket=++seq;
     status.textContent='Loading source statistics...';
     const fDay=day.value,fCountry=country.value,fPort=port.value;
+    const fAsn=window.HP_SOURCE_ASN||'';
+    const fIp=window.HP_SOURCE_IP||'';
+    const group=window.HP_HTTP_GROUP_IP_SET;
+    const focused=Boolean(fCountry||fPort||fAsn||fIp||group);
+    const matchIps=new Set(),matchAsns=new Set();
     const kind=window.HP_KIND||'TCP_SYN';
     try{
       const manifest=await manifestPromise;
@@ -165,13 +178,19 @@
           for(const row of data.rows){
             const [p,pNum,src,n]=row;
             if(kind!=='all' && p!==(kind==='UDP'?1:0))continue;
-            if(fPort!==''&&pNum!==Number(fPort))continue;
             const [ip,asn,org,cc]=data.sources[src];
-            if(fCountry!==''&&cc!==fCountry)continue;
-            if(window.HP_SOURCE_ASN&&(asn===null?'?':String(asn))!==window.HP_SOURCE_ASN)continue;
-            if(window.HP_SOURCE_IP&&ip!==window.HP_SOURCE_IP)continue;
-            if(window.HP_HTTP_GROUP_IP_SET&&!window.HP_HTTP_GROUP_IP_SET.has(ip))continue;
             if(!window.HP_TABLE_UI.allows(ip))continue;
+
+            const keyAsn=asn===null?'?':String(asn);
+
+            if((!fPort||pNum===Number(fPort))&&
+               (!fCountry||(cc||'UNKNOWN')===fCountry)&&
+               (!fAsn||keyAsn===fAsn)&&
+               (!fIp||ip===fIp)&&
+               (!group||group.has(ip))){
+              matchIps.add(ip||'');
+              matchAsns.add(keyAsn);
+            }
             total+=n;
             const ipKey=ip||'';
             ipCounts.set(ipKey,(ipCounts.get(ipKey)||0)+n);
@@ -183,7 +202,7 @@
         }
       }
       if(ticket!==seq)return;
-      const ipsRank=[...ipCounts].map(([ip,count])=>({ip,count}))
+      const ipsRank=[...ipCounts].map(([ip,count])=>({ip,count,matched:focused?matchIps.has(ip):null}))
         .sort((a,b)=>b.count-a.count||a.ip.localeCompare(b.ip));
       const bestOrg=new Map();
       for(const [key,n] of orgCounts){
@@ -192,10 +211,10 @@
         if(!old||n>old.count)bestOrg.set(asn,{org,count:n});
       }
       const asnsRank=[...asnCounts].map(([k,count])=>({
-        asn:k==='?'?null:Number(k),org:bestOrg.get(k)?.org||'',count
+        asn:k==='?'?null:Number(k),org:bestOrg.get(k)?.org||'',count,matched:focused?matchAsns.has(k):null
       })).sort((a,b)=>b.count-a.count||String(a.asn).localeCompare(String(b.asn)));
       table(ips,ipsRank,false);table(asns,asnsRank,true);
-      status.textContent='Filtered TCP SYN / UDP packet counts · '+fmt(ipCounts.size)+' source IPs · '+fmt(asnCounts.size)+' ASNs';
+      status.textContent='Ranking-scope TCP SYN / UDP packet counts · '+fmt(ipCounts.size)+' source IPs · '+fmt(asnCounts.size)+' ASNs';
     }catch(e){
       if(ticket!==seq)return;
       status.textContent='Source statistics unavailable (not zero observations)';
@@ -233,3 +252,5 @@
 // HP_HTTP_GROUP_SOURCE_STATS_V1
 
 // HP_TABLE_CONTROLS_V1
+
+// HP_ANALYZE_ROW_FOCUS_V1

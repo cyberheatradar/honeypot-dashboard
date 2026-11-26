@@ -102,9 +102,6 @@
       const [d,,cc,asn,dport,sensor,label,n,proto]=row;
 
       if(day&&d!==day)continue;
-      if(country&&cc!==country)continue;
-      if(selectedAsn&&asn!==selectedAsn)continue;
-      if(port&&dport!==Number(port))continue;
       if(hp!=='all'&&sensor!==hp)continue;
 
       if(proto!==kind&&
@@ -144,9 +141,6 @@
       const [d,,cc,asnId,dport,sensor,label,n]=row;
 
       if(day&&d!==day)continue;
-      if(country&&cc!==country)continue;
-      if(port&&dport!==Number(port))continue;
-      if(asn&&asnId!==asn)continue;
       if(hp!=='all'&&sensor!==hp)continue;
 
       counts.set(label,(counts.get(label)||0)+n);
@@ -436,3 +430,5 @@
 // HP_TABLE_CONTROLS_V1
 
 // HP_TABLE_PRESENTATION_V2
+
+// HP_ANALYZE_ROW_FOCUS_V1

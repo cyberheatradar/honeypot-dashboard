@@ -428,3 +428,76 @@ window.HP_TABLE_UI={
 };
 
 })();
+
+
+window.HP_ROW_FOCUS=(()=>{
+  const style=document.createElement('style');
+  style.textContent=`
+    .hp-analyze-layout tr.hp-focus-muted>td{
+      opacity:.38;
+    }
+    .hp-analyze-layout tr.hp-focus-hit>td{
+      background:#224657!important;
+    }
+    .hp-analyze-layout tr.hp-focus-hit>td:first-child{
+      box-shadow:inset 3px 0 #6bd3e6;
+    }
+    .hp-analyze-layout tr.hp-focus-muted:hover>td{
+      opacity:.8;
+    }
+    .hp-analyze-layout .hp-focus-note{
+      font-size:11px;
+      color:#a8bdcf;
+      margin:0 0 6px;
+    }
+  `;
+  document.head.append(style);
+
+  function paint(tr,match){
+    tr.classList.toggle('hp-focus-hit',match===true);
+    tr.classList.toggle('hp-focus-muted',match===false);
+  }
+
+  function save(body){
+    const result=[];
+    let el=body.closest('table')?.parentElement;
+    while(el && el!==document.body){
+      const css=getComputedStyle(el);
+      if(/auto|scroll/.test(css.overflowY+' '+css.overflowX)){
+        result.push([el,el.scrollTop,el.scrollLeft]);
+      }
+      if(el.classList.contains('hp-analyze-right'))break;
+      el=el.parentElement;
+    }
+    return result;
+  }
+
+  function restore(result){
+    for(const [el,y,x] of result){
+      el.scrollTop=y;
+      el.scrollLeft=x;
+    }
+  }
+
+  // The entire row is clickable when its action is unambiguous.
+  // Copy buttons and external investigation links are unaffected.
+  document.addEventListener('click',event=>{
+    if(event.target.closest?.('a,button,input,select,label'))return;
+    const tr=event.target.closest?.('.hp-analyze-layout tbody tr');
+    if(!tr)return;
+
+    let buttons=[...tr.querySelectorAll(
+      'button.hp-ranking-filter,button.hp-drill-link'
+    )];
+
+    if(tr.parentElement.id==='map-port-rows'){
+      buttons=[...tr.cells[0].querySelectorAll('button')];
+    }
+
+    if(buttons.length===1)buttons[0].click();
+  });
+
+  return {paint,save,restore};
+})();
+
+// HP_ANALYZE_ROW_FOCUS_V1

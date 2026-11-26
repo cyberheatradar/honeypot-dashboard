@@ -109,11 +109,7 @@
     for (const row of packetRows) {
       if (
         row.transport !== kind ||
-        (selectedDay && row.day !== selectedDay) ||
-        (selectedCountry &&
-         row.country !== selectedCountry) ||
-        (selectedPort &&
-         String(row.port) !== selectedPort)
+        (selectedDay && row.day !== selectedDay)
       ) {
         continue;
       }
@@ -279,7 +275,7 @@
   );
 
   document.addEventListener("hp-source-facets-rows",event=>{
-    packetRows=event.detail.rows;
+    packetRows=event.detail.rankingRows||event.detail.rows;
     schedule();
   });
   schedule();
@@ -288,3 +284,5 @@
 // HP_FACET_INSIGHTS_V2
 
 // HP_TABLE_CONTROLS_V1
+
+// HP_ANALYZE_ROW_FOCUS_V1
