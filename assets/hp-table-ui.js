@@ -451,7 +451,86 @@ window.HP_ROW_FOCUS=(()=>{
       margin:0 0 6px;
     }
   `;
+  style.textContent+=`
+    .hp-analyze-layout table.hp-port-four-columns{
+      border-collapse:separate!important;
+      border-spacing:0!important;
+    }
+
+    .hp-analyze-layout #map-port-rows td{
+      border-bottom:1px solid #30465c!important;
+      background-clip:padding-box!important;
+    }
+
+    .hp-analyze-layout #map-port-rows tr.hp-focus-hit{
+      background:#224657!important;
+    }
+
+    .hp-analyze-layout #map-port-rows tr.hp-focus-hit>td{
+      background:transparent!important;
+    }
+
+    .hp-analyze-layout
+    .hp-analyze-right.hp-focus-only tr.hp-focus-muted{
+      display:none!important;
+    }
+
+    .hp-analyze-title-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:10px;
+      flex:0 0 auto;
+    }
+
+    .hp-analyze-title-row .hp-analyze-title{
+      margin:0!important;
+    }
+
+    #hp-highlighted-only{
+      appearance:none;
+      background:#192c40;
+      color:#bed5ea;
+      border:1px solid #49657f;
+      border-radius:7px;
+      padding:6px 10px;
+      font:inherit;
+      font-size:.72rem;
+      white-space:nowrap;
+      cursor:pointer;
+    }
+
+    #hp-highlighted-only[aria-pressed="true"]{
+      background:#27576a;
+      color:#fff;
+      border-color:#6bc3d9;
+    }
+
+    #hp-highlighted-only:focus-visible{
+      outline:2px solid #77c7e4;
+      outline-offset:2px;
+    }
+  `;
+
   document.head.append(style);
+
+  let only=false;
+
+  function setOnly(value){
+    only=Boolean(value);
+
+    document.querySelector('.hp-analyze-right')
+      ?.classList.toggle('hp-focus-only',only);
+
+    document.getElementById('hp-highlighted-only')
+      ?.setAttribute('aria-pressed',String(only));
+
+    document.dispatchEvent(
+      new CustomEvent('hp-row-focus-only')
+    );
+  }
+
 
   function paint(tr,match){
     tr.classList.toggle('hp-focus-hit',match===true);
@@ -497,7 +576,12 @@ window.HP_ROW_FOCUS=(()=>{
     if(buttons.length===1)buttons[0].click();
   });
 
-  return {paint,save,restore};
+  return {
+    paint,save,restore,setOnly,
+    get only(){return only;}
+  };
 })();
 
 // HP_ANALYZE_ROW_FOCUS_V1
+
+// HP_HIGHLIGHTED_ONLY_V1

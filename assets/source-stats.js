@@ -77,6 +77,11 @@
           [null,null,null])
       ];
     });
+    if(window.HP_ROW_FOCUS.only &&
+       records.some(item=>typeof item.matched==='boolean')){
+      records=records.filter(item=>item.matched===true);
+    }
+
     const saved=window.HP_ROW_FOCUS.save(target);
     const previousLength=target.rows.length;
     target.replaceChildren();
@@ -155,6 +160,17 @@
       if(nearBottom)appendBatch();
     };
   }
+
+  document.addEventListener('hp-row-focus-only',()=>{
+    for(const [id,target,asnMode] of [
+      ['ip',ips,false],
+      ['asn',asns,true]
+    ]){
+      if(lastRecords.has(id)){
+        table(target,lastRecords.get(id),asnMode);
+      }
+    }
+  });
 
   async function render(){
     const ticket=++seq;
@@ -254,3 +270,5 @@
 // HP_TABLE_CONTROLS_V1
 
 // HP_ANALYZE_ROW_FOCUS_V1
+
+// HP_HIGHLIGHTED_ONLY_V1

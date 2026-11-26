@@ -233,7 +233,23 @@ try {
  const focusNote=document.createElement('p');
  focusNote.className='hp-focus-note';
  focusNote.textContent='Ranking totals before drill-down · Highlighted rows match filters';
- right.append(title,tabs,focusNote,groupStrip,body);
+ const titleRow=document.createElement('div');
+ titleRow.className='hp-analyze-title-row';
+
+ const onlyButton=document.createElement('button');
+ onlyButton.id='hp-highlighted-only';
+ onlyButton.type='button';
+ onlyButton.textContent='Highlighted Only';
+ onlyButton.setAttribute('aria-pressed','false');
+ onlyButton.title='Show only rows matching current filters';
+
+ onlyButton.addEventListener('click',()=>{
+   const focus=window.HP_ROW_FOCUS;
+   focus.setOnly(!focus.only);
+ });
+
+ titleRow.append(title,onlyButton);
+ right.append(titleRow,tabs,focusNote,groupStrip,body);
  w.append(left,right);
 
  w.classList.add('hp-analyze-layout');
@@ -1243,3 +1259,5 @@ try {
 // HP_TABLE_CONTROLS_V1
 
 // HP_ANALYZE_ROW_FOCUS_V1
+
+// HP_HIGHLIGHTED_ONLY_V1
