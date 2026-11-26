@@ -23,7 +23,10 @@ const summary=document.getElementById("summary");
 const format=n=>n.toLocaleString("en-US");
 const mapPortRows=document.getElementById("map-port-rows");
 
+let hpPortRankingArgs=null;
+
 function renderPortBreakdown(active,total,matched,focused){
+ hpPortRankingArgs=[active,total,matched,focused];
  if(!mapPortRows)throw Error("MAP_PORT_TABLE_MISSING");
 
  const counts=new Map();
@@ -54,10 +57,14 @@ function renderPortBreakdown(active,total,matched,focused){
   ]
  );
 
- const saved=window.HP_ROW_FOCUS.save(mapPortRows);
- mapPortRows.replaceChildren();
+ const focus=window.HP_ROW_FOCUS;
+ const saved=focus.save(mapPortRows);
 
- for(const [port,count] of sorted.slice(0,200)){
+ const visible=focus.only&&focused
+  ?sorted.filter(([port])=>matched.has(port))
+  :sorted;
+
+ const makeRow=([port,count])=>{
   const tr=document.createElement("tr");
   const tdPort=document.createElement("td");
   const tdCount=document.createElement("td");
@@ -84,20 +91,21 @@ function renderPortBreakdown(active,total,matched,focused){
    :"0%";
 
   tr.append(tdPort,tdCount,tdShare);
-  window.HP_ROW_FOCUS.paint(tr,focused?matched.has(port):null);
-  mapPortRows.append(tr);
- }
+  focus.paint(tr,focused?matched.has(port):null);
+  return tr;
+ };
 
- if(!sorted.length){
-  const tr=document.createElement("tr");
-  const td=document.createElement("td");
-  td.colSpan=3;
-  td.textContent="No matching observations";
-  tr.append(td);
-  mapPortRows.append(tr);
- }
- window.HP_ROW_FOCUS.restore(saved);
+ focus.page(
+  mapPortRows,visible,makeRow,
+  "No matching observations",4,saved,"port"
+ );
 }
+
+document.addEventListener('hp-row-focus-only',()=>{
+ if(hpPortRankingArgs){
+  renderPortBreakdown(...hpPortRankingArgs);
+ }
+});
 function render(){
  const active=rows.filter(r=>dims.every(k=>
   !selects[k].value || String(r[k])===selects[k].value));
@@ -1212,3 +1220,5 @@ render();
 // HP_BEAM_SPEED_V1
 
 // HP_ANALYZE_ROW_FOCUS_V1
+
+// HP_UNLIMITED_RANKINGS_V1

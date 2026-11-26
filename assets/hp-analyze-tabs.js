@@ -629,7 +629,6 @@ try {
  function scanSetTable(columns,rows,empty){
    const saved=window.HP_ROW_FOCUS.save(scanRows);
    scanHead.replaceChildren();
-   scanRows.replaceChildren();
 
    const header=document.createElement('tr');
    for(const name of columns){
@@ -665,8 +664,14 @@ try {
      return key;
    });
 
-   if(scanMode!=='daily'){
-     rows=rows.slice(0,100);
+   const rowKey=cells=>scanMode==='spikes'
+     ?String(cells[0])+'|'+String(cells[1]).split('/')[0]
+     :String(cells[0]);
+
+   if(window.HP_ROW_FOCUS.only&&scanFocus.active){
+     rows=rows.filter(cells=>
+       scanFocus.keys.has(rowKey(cells))
+     );
    }
 
    window.HP_TABLE_UI.bind(
@@ -674,18 +679,7 @@ try {
      scanRender,defaultColumn,-1
    );
 
-   if(!rows.length){
-     const tr=document.createElement('tr');
-     const td=document.createElement('td');
-     td.colSpan=columns.length;
-     td.textContent=empty;
-     tr.append(td);
-     scanRows.append(tr);
-     return;
-   }
-
-   const frag=document.createDocumentFragment();
-   for(const cells of rows){
+   const makeRow=cells=>{
      const tr=document.createElement('tr');
      cells.forEach((value,index)=>{
        const td=document.createElement('td');
@@ -739,11 +733,18 @@ try {
        tr,scanFocus.active?scanFocus.keys.has(key):null
      );
 
-     frag.append(tr);
-   }
-   scanRows.append(frag);
-   window.HP_ROW_FOCUS.restore(saved);
+     return tr;
+   };
+
+   window.HP_ROW_FOCUS.page(
+     scanRows,rows,makeRow,empty,
+     columns.length,saved,id
+   );
  }
+
+ document.addEventListener('hp-row-focus-only',()=>{
+   if(scanDocs)scanRender();
+ });
 
  function scanRender(){
    if(!scanDocs)return;
@@ -1261,3 +1262,5 @@ try {
 // HP_ANALYZE_ROW_FOCUS_V1
 
 // HP_HIGHLIGHTED_ONLY_V1
+
+// HP_UNLIMITED_RANKINGS_V1

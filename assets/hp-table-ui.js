@@ -576,8 +576,82 @@ window.HP_ROW_FOCUS=(()=>{
     if(buttons.length===1)buttons[0].click();
   });
 
+  const pages=new Map();
+  const batchSize=150;
+
+  function appendPage(state,size=batchSize){
+    if(state.offset>=state.records.length)return;
+
+    const end=Math.min(
+      state.offset+size,state.records.length
+    );
+
+    const fragment=document.createDocumentFragment();
+
+    while(state.offset<end){
+      fragment.append(
+        state.makeRow(state.records[state.offset])
+      );
+      state.offset++;
+    }
+
+    state.body.append(fragment);
+    state.body.dataset.hpLoaded=String(state.offset);
+  }
+
+  function page(body,records,makeRow,empty,columns,saved,id){
+    const previous=pages.get(body);
+
+    const initial=previous&&previous.id===id
+      ?Math.max(batchSize,previous.offset)
+      :batchSize;
+
+    body.replaceChildren();
+
+    const state={
+      body,records,makeRow,id,offset:0
+    };
+
+    pages.set(body,state);
+
+    body.dataset.hpTotal=String(records.length);
+    body.dataset.hpLoaded='0';
+
+    if(!records.length){
+      const tr=document.createElement('tr');
+      const td=document.createElement('td');
+      td.colSpan=columns;
+      td.textContent=empty;
+      tr.append(td);
+      body.append(tr);
+    }else{
+      appendPage(state,initial);
+    }
+
+    restore(saved);
+  }
+
+  document.addEventListener('scroll',event=>{
+    const el=event.target;
+
+    if(!(el instanceof Element))return;
+    if(!el.clientHeight)return;
+
+    for(const state of pages.values()){
+      if(!el.contains(state.body))continue;
+      if(!state.body.getClientRects().length)continue;
+      if(state.offset>=state.records.length)continue;
+
+      const nearBottom=
+        el.scrollTop+el.clientHeight>=
+        el.scrollHeight-200;
+
+      if(nearBottom)appendPage(state);
+    }
+  },true);
+
   return {
-    paint,save,restore,setOnly,
+    paint,save,restore,setOnly,page,
     get only(){return only;}
   };
 })();
@@ -585,3 +659,5 @@ window.HP_ROW_FOCUS=(()=>{
 // HP_ANALYZE_ROW_FOCUS_V1
 
 // HP_HIGHLIGHTED_ONLY_V1
+
+// HP_UNLIMITED_RANKINGS_V1
