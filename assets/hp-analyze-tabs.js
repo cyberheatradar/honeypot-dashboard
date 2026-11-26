@@ -447,6 +447,9 @@ try {
    sigmaType,sigmaSource,sigmaState,sigmaLevel
  ])el.addEventListener('change',renderAttack);
 
+ // HP_SIGMA_COLLAPSIBLE_V4
+ const sigmaExpanded=new Set();
+
  function renderSigma(){
    attack.querySelector('h2').textContent='Sigma Indicators';
 
@@ -625,6 +628,26 @@ try {
      const tr=document.createElement('tr');
      const first=document.createElement('td');
 
+
+     const titleLine=document.createElement('div');
+     titleLine.style.cssText=
+       'display:flex;align-items:flex-start;gap:6px;'+
+       'min-width:0;overflow-wrap:anywhere';
+
+     const toggle=document.createElement('button');
+     toggle.type='button';
+     toggle.textContent='▼';
+     toggle.style.cssText=
+       'flex:0 0 19px;padding:2px 0;'+
+       'background:transparent;border:0;'+
+       'color:#9fbcd2;font-size:11px;cursor:pointer';
+
+     toggle.setAttribute('aria-label','Expand rule details');
+     toggle.setAttribute('aria-expanded','false');
+
+     titleLine.append(toggle);
+     first.append(titleLine);
+
      if(available&&g.count){
        const btn=document.createElement('button');
        btn.type='button';
@@ -645,18 +668,35 @@ try {
          renderAttack();
        });
 
-       first.append(btn);
+       titleLine.append(btn);
      }else{
        const title=document.createElement('div');
        title.textContent=label;
-       first.append(title);
+       titleLine.append(title);
      }
+
+
+
+     let detailRow=null;
+
+     function openDetails(){
+       if(detailRow)return;
+
+       detailRow=document.createElement('tr');
+       detailRow.className='hp-sigma-detail-row';
+
+       const detail=document.createElement('td');
+       detail.colSpan=4;
+       detail.style.cssText=
+         'padding:8px 14px 12px 30px;'+
+         'text-align:left;background:#101a29;'+
+         'overflow-wrap:anywhere';
 
      if(meta.cves?.length){
-       small(first,meta.cves.join(' · '));
+       small(detail,meta.cves.join(' · '));
      }
 
-     const status=small(first,
+     const status=small(detail,
        state==='matched'?'Matched':
        state==='zero'?'No match':
        'Not evaluated'
@@ -673,7 +713,7 @@ try {
      }
 
      if(meta.validation){
-       small(first,meta.validation);
+       small(detail,meta.validation);
      }
 
      if(meta.scope==='partial'){
@@ -682,7 +722,7 @@ try {
        status.textContent+=' · Request keywords';
      }
 
-     const attribution=small(first,'');
+     const attribution=small(detail,'');
      if(meta.url){
        const link=document.createElement('a');
        link.href=meta.url;
@@ -696,28 +736,81 @@ try {
      }
 
      if(meta.license){
-       small(first,meta.license);
+       small(detail,meta.license);
      }
 
-     small(first,
+     small(detail,
        meta.status+' · '+meta.level+
        (meta.modified?' · '+meta.modified:'')
      );
 
      if(g.latest){
-       small(first,'Last seen: '+
+       small(detail,'Last seen: '+
          new Date(g.latest).toISOString()
            .replace('T',' ').slice(0,19)+' UTC'
        );
      }
 
      if(meta.reason){
-       small(first,meta.reason);
+       small(detail,meta.reason);
      }
 
      if(meta.normalization){
-       first.title=meta.normalization;
+       small(detail,'Normalization: '+meta.normalization);
      }
+
+
+
+       if(meta.source==='Custom'&&meta.yaml){
+         small(detail,'Sigma YAML');
+
+         const pre=document.createElement('pre');
+         pre.style.cssText=
+           'margin:6px 0 0;padding:10px;'+
+           'background:#0b1420;color:#bed5e8;'+
+           'border:1px solid #30465c;border-radius:5px;'+
+           'font-size:11px;line-height:1.5;'+
+           'white-space:pre-wrap;overflow-wrap:anywhere;'+
+           'max-height:280px;overflow:auto;'+
+           'box-sizing:border-box;text-align:left';
+
+         pre.textContent=meta.yaml;
+         detail.append(pre);
+       }
+
+       detailRow.append(detail);
+
+       window.HP_ROW_FOCUS.paint(
+         detailRow,focused?g.highlight:null
+       );
+
+       tr.after(detailRow);
+
+       toggle.textContent='▲';
+       toggle.setAttribute('aria-expanded','true');
+       toggle.setAttribute('aria-label','Collapse rule details');
+     }
+
+     function closeDetails(){
+       detailRow?.remove();
+       detailRow=null;
+
+       toggle.textContent='▼';
+       toggle.setAttribute('aria-expanded','false');
+       toggle.setAttribute('aria-label','Expand rule details');
+     }
+
+     toggle.addEventListener('click',event=>{
+       event.stopPropagation();
+
+       if(detailRow){
+         sigmaExpanded.delete(label);
+         closeDetails();
+       }else{
+         sigmaExpanded.add(label);
+         openDetails();
+       }
+     });
 
      tr.append(first);
 
@@ -736,6 +829,8 @@ try {
      );
 
      attackRows.append(tr);
+
+     if(sigmaExpanded.has(label))openDetails();
 
      if(!tr.hidden)shown++;
    }
