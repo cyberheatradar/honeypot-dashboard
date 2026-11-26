@@ -339,8 +339,427 @@ try {
    renderAttack();
  });
 
+
+ // HP_SIGMA_FULL_POC_V2
+ const sigmaControls=document.createElement('div');
+ sigmaControls.style.cssText=
+   'display:none;flex-wrap:wrap;gap:6px;'+
+   'align-items:center;flex-shrink:0;margin:2px 0 6px';
+
+ const sigmaSearch=document.createElement('input');
+ sigmaSearch.type='search';
+ sigmaSearch.placeholder='Search CVE / rule / author / tag';
+ sigmaSearch.setAttribute('aria-label','Search Sigma indicators');
+ sigmaSearch.style.cssText=
+   'min-width:160px;flex:1 1 100%;box-sizing:border-box';
+
+ function sigmaSelect(name,options){
+   const el=document.createElement('select');
+   el.setAttribute('aria-label',name);
+
+   for(const [value,label] of options){
+     const option=document.createElement('option');
+     option.value=value;
+     option.textContent=label;
+     el.append(option);
+   }
+
+   el.style.cssText='flex:1 1 100px;min-width:0';
+   return el;
+ }
+
+ const sigmaType=sigmaSelect('Rule type',[
+   ['all','All types'],
+   ['cve','CVE'],
+   ['noncve','Non-CVE']
+ ]);
+
+ const sigmaSource=sigmaSelect('Rule source',[
+   ['all','All sources'],
+   ['SigmaHQ','SigmaHQ'],
+   ['CISA','CISA']
+ ]);
+
+ const sigmaState=sigmaSelect('Detection status',[
+   ['all','All results'],
+   ['matched','Matched'],
+   ['zero','No match'],
+   ['unavailable','Not evaluated'],
+   ['partial','Partial evaluation']
+ ]);
+
+ const sigmaLevel=sigmaSelect('Rule level',[
+   ['all','All levels'],
+   ['critical','Critical'],
+   ['high','High'],
+   ['medium','Medium'],
+   ['low','Low'],
+   ['informational','Informational']
+ ]);
+
+ const sigmaSummary=document.createElement('div');
+ sigmaSummary.style.cssText=
+   'flex-basis:100%;font-size:11px;opacity:.85';
+
+ const sigmaClear=document.createElement('button');
+ sigmaClear.type='button';
+ sigmaClear.textContent='Reset';
+
+ sigmaClear.addEventListener('click',()=>{
+   sigmaSearch.value='';
+   for(const el of [
+     sigmaType,sigmaSource,sigmaState,sigmaLevel
+   ])el.value='all';
+
+   renderAttack();
+ });
+
+ sigmaControls.append(
+   sigmaSearch,sigmaType,sigmaSource,
+   sigmaState,sigmaLevel,sigmaClear,sigmaSummary
+ );
+
+ attack.querySelector('.hp-attack-modes').after(sigmaControls);
+
+ sigmaSearch.addEventListener('input',renderAttack);
+
+ for(const el of [
+   sigmaType,sigmaSource,sigmaState,sigmaLevel
+ ])el.addEventListener('change',renderAttack);
+
+ function renderSigma(){
+   attack.querySelector('h2').textContent='Sigma Indicators';
+
+   const headers=attack.querySelectorAll('thead th');
+   headers[0].textContent='Indicator / detection';
+   headers[1].textContent='Requests';
+   headers[2].textContent='Source IPs';
+   headers[3].textContent='Top IP share';
+
+   const saved=window.HP_ROW_FOCUS.save(attackRows);
+   attackRows.replaceChildren();
+
+   function empty(message){
+     const tr=document.createElement('tr');
+     const td=document.createElement('td');
+     td.colSpan=4;
+     td.textContent=message;
+     tr.append(td);
+     attackRows.append(tr);
+   }
+
+   if(!sigmaInfo){
+     attackStatus.textContent='Sigma data unavailable';
+     sigmaSummary.textContent='';
+     empty('Rule catalog unavailable');
+     return;
+   }
+
+   const day=document.getElementById('f-day')?.value||'';
+   const country=document.getElementById('f-country')?.value||'';
+   const port=document.getElementById('f-port')?.value||'';
+   const asn=String(window.HP_SOURCE_ASN||
+     document.getElementById('f-asn')?.value||'');
+   const ip=window.HP_SOURCE_IP||'';
+   const hp=document.getElementById('f-honeypot')?.value||'all';
+
+   const udp=window.HP_KIND==='UDP';
+
+   const covered=!udp&&
+     (!day||sigmaInfo.coverage_days.includes(day))&&
+     (hp==='all'||hp==='hp01');
+
+   syncHttpGroup();
+
+   const groups=new Map();
+   const focused=Boolean(country||port||asn||ip||httpGroup);
+
+   if(covered){
+     for(const row of sigmaInfo.rows){
+       const [d,src,cc,asnId,dport,hpId,label,n,,last]=row;
+
+       if(day&&d!==day)continue;
+       if(hp!=='all'&&hpId!==hp)continue;
+       if(!window.HP_TABLE_UI.allows(src))continue;
+
+       if(!groups.has(label)){
+         groups.set(label,{
+           count:0,ips:new Map(),
+           latest:null,highlight:false
+         });
+       }
+
+       const g=groups.get(label);
+
+       g.count+=n;
+       g.ips.set(src,(g.ips.get(src)||0)+n);
+
+       if(last&&(
+         !g.latest||Date.parse(last)>Date.parse(g.latest)
+       ))g.latest=last;
+
+       if(
+         (!country||cc===country)&&
+         (!port||dport===Number(port))&&
+         (!asn||String(asnId)===asn)&&
+         (!ip||src===ip)&&
+         (!window.HP_HTTP_GROUP_IP_SET||
+           window.HP_HTTP_GROUP_IP_SET.has(src))&&
+         (!httpGroup||httpGroup.mode!=='sigma'||
+           httpGroup.label===label)
+       )g.highlight=true;
+     }
+   }
+
+   const terms=sigmaSearch.value.toLowerCase()
+     .trim().split(/\s+/).filter(Boolean);
+
+   const catalog=Object.entries(sigmaInfo.rules);
+
+   const items=[];
+
+   for(const [label,meta] of catalog){
+     const available=covered&&meta.evaluated;
+
+     const g=groups.get(label)||{
+       count:0,ips:new Map(),
+       latest:null,highlight:false
+     };
+
+     const state=!available?'unavailable':
+       g.count?'matched':'zero';
+
+     const searchable=[
+       label,meta.title,meta.author,meta.id,
+       meta.source,...(meta.cves||[]),
+       ...(meta.tags||[])
+     ].join(' ').toLowerCase();
+
+     if(!terms.every(t=>searchable.includes(t)))continue;
+
+     if(sigmaType.value==='cve'&&!meta.cves.length)continue;
+     if(sigmaType.value==='noncve'&&meta.cves.length)continue;
+
+     if(sigmaSource.value!=='all'&&
+        sigmaSource.value!==meta.source)continue;
+
+     if(sigmaLevel.value!=='all'&&
+        sigmaLevel.value!==meta.level)continue;
+
+     if(sigmaState.value==='partial'){
+       if(meta.scope!=='partial'||!available)continue;
+     }else if(sigmaState.value!=='all'&&
+              sigmaState.value!==state)continue;
+
+     const largest=[...g.ips.values()].reduce(
+       (a,b)=>Math.max(a,b),0
+     );
+
+     items.push({
+       label,meta,g,state,available,
+       share:g.count?100*largest/g.count:0
+     });
+   }
+
+   items.sort((a,b)=>
+     (b.available?b.g.count:-1)-
+     (a.available?a.g.count:-1)||
+     a.label.localeCompare(b.label)
+   );
+
+   const ranked=window.HP_TABLE_UI.sort(
+     'attack-sigma',
+     items,
+     x=>[
+       x.label,
+       x.available?x.g.count:-1,
+       x.available?x.g.ips.size:-1,
+       x.available?x.share:-1
+     ]
+   );
+
+   window.HP_TABLE_UI.bind(
+     'attack-sigma',
+     attackRows.closest('table'),
+     renderAttack,1,-1
+   );
+
+   function small(parent,value){
+     const div=document.createElement('div');
+     div.style.cssText=
+       'font-size:10px;opacity:.85;'+
+       'margin-top:4px;overflow-wrap:anywhere';
+
+     div.textContent=value;
+     parent.append(div);
+     return div;
+   }
+
+   let shown=0;
+
+   for(const item of ranked){
+     const {label,meta,g,state,available,share}=item;
+
+     const tr=document.createElement('tr');
+     const first=document.createElement('td');
+
+     if(available&&g.count){
+       const btn=document.createElement('button');
+       btn.type='button';
+       btn.className='hp-drill-link';
+       btn.textContent=label;
+
+       btn.setAttribute('aria-pressed',String(
+         httpGroup?.mode==='sigma'&&
+         httpGroup.label===label
+       ));
+
+       btn.addEventListener('click',()=>{
+         httpGroup=
+           httpGroup?.mode==='sigma'&&
+           httpGroup.label===label
+           ?null:{mode:'sigma',label};
+
+         renderAttack();
+       });
+
+       first.append(btn);
+     }else{
+       const title=document.createElement('div');
+       title.textContent=label;
+       first.append(title);
+     }
+
+     if(meta.cves?.length){
+       small(first,meta.cves.join(' · '));
+     }
+
+     const status=small(first,
+       state==='matched'?'Matched':
+       state==='zero'?'No match':
+       'Not evaluated'
+     );
+
+     status.style.fontWeight='600';
+
+     status.style.color=
+       state==='matched'?'#f2a09a':
+       state==='zero'?'#9dc9bd':'#a6b3c2';
+
+     if(meta.scope==='partial'){
+       status.textContent+=' · Partial rule';
+     }else if(meta.scope==='request-keywords'){
+       status.textContent+=' · Request keywords';
+     }
+
+     const attribution=small(first,'');
+     const link=document.createElement('a');
+     link.href=meta.url;
+     link.target='_blank';
+     link.rel='noopener noreferrer';
+     link.textContent=meta.source+' / '+meta.author;
+     attribution.append(link);
+
+     small(first,
+       meta.status+' · '+meta.level+
+       (meta.modified?' · '+meta.modified:'')
+     );
+
+     if(g.latest){
+       small(first,'Last seen: '+
+         new Date(g.latest).toISOString()
+           .replace('T',' ').slice(0,19)+' UTC'
+       );
+     }
+
+     if(meta.reason){
+       small(first,meta.reason);
+     }
+
+     if(meta.normalization){
+       first.title=meta.normalization;
+     }
+
+     tr.append(first);
+
+     for(const value of [
+       available?fmt(g.count):'—',
+       available?fmt(g.ips.size):'—',
+       available&&g.count?share.toFixed(1)+'%':'—'
+     ]){
+       const td=document.createElement('td');
+       td.textContent=value;
+       tr.append(td);
+     }
+
+     window.HP_ROW_FOCUS.paint(
+       tr,focused?g.highlight:null
+     );
+
+     attackRows.append(tr);
+
+     if(!tr.hidden)shown++;
+   }
+
+   if(!ranked.length){
+     empty('No rules match the selected search and filters');
+   }
+
+   window.HP_ROW_FOCUS.restore(saved);
+
+   const days=sigmaInfo.coverage_days;
+
+   attackStatus.textContent=
+     'Manual PoC · '+sigmaInfo.catalog_rules+' rules'+
+     ' · '+sigmaInfo.evaluated_rules+' evaluated'+
+     ' · '+sigmaInfo.matched_rules+' matched'+
+     ' · '+sigmaInfo.not_evaluated_rules+' not evaluated'+
+     ' · '+days[0]+' – '+days[days.length-1]+' UTC';
+
+   if(!covered){
+     attackStatus.textContent+=
+       ' · Selected scope not evaluated';
+   }
+
+   const license=document.createElement('a');
+   license.href=sigmaInfo.license_url;
+   license.target='_blank';
+   license.rel='noopener noreferrer';
+   license.textContent=' · DRL 1.1';
+   attackStatus.append(license);
+
+   sigmaSummary.textContent=
+     ranked.length+' / '+catalog.length+
+     ' rules · Matches may overlap · '+
+     'Not confirmed exploitation';
+
+   if(focused){
+     sigmaSummary.textContent+=
+       ' · Ranking totals before drill-down';
+   }
+ }
+
+
  function renderAttack(){
    if(!attackData)return;
+
+   sigmaControls.style.display=
+     attackMode==='sigma'?'flex':'none';
+
+   if(attackMode==='sigma'){
+     attackBtns.forEach(b=>
+       b.setAttribute(
+         'aria-pressed',
+         String(b.dataset.mode===attackMode)
+       )
+     );
+
+     renderSigma();
+     return;
+   }
+
+   attack.querySelector('thead th:nth-child(1)')
+     .textContent='Indicator';
 
    attackBtns.forEach(b=>
      b.setAttribute(
