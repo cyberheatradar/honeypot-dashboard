@@ -457,8 +457,15 @@ window.HP_ROW_FOCUS=(()=>{
       border-spacing:0!important;
     }
 
-    .hp-analyze-layout #map-port-rows td{
-      border-bottom:1px solid #30465c!important;
+    /* HP_PORT_SINGLE_SEPARATOR_V2 */
+    .hp-analyze-layout #map-port-rows > tr{
+      border:0!important;
+      box-shadow:inset 0 -1px 0 #30465c!important;
+    }
+
+    .hp-analyze-layout #map-port-rows > tr > td{
+      border:0!important;
+      background-color:transparent!important;
       background-clip:padding-box!important;
     }
 
