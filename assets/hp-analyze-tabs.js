@@ -377,7 +377,12 @@ try {
  const sigmaSource=sigmaSelect('Rule source',[
    ['all','All sources'],
    ['SigmaHQ','SigmaHQ'],
-   ['CISA','CISA']
+   ['CISA','CISA'],
+   ['Wazuh-Sigma','Wazuh-Sigma'],
+   ['Hatchepsoute','Hatchepsoute'],
+   ['Iwatobi','Iwatobi'],
+   ['MetaMaaz','MetaMaaz'],
+   ['Custom','Custom']
  ]);
 
  const sigmaState=sigmaSelect('Detection status',[
@@ -385,7 +390,8 @@ try {
    ['matched','Matched'],
    ['zero','No match'],
    ['unavailable','Not evaluated'],
-   ['partial','Partial evaluation']
+   ['partial','Partial evaluation'],
+   ['provisional','Provisional']
  ]);
 
  const sigmaLevel=sigmaSelect('Rule level',[
@@ -413,6 +419,20 @@ try {
 
    renderAttack();
  });
+
+ // HP_SIGMA_EXTERNAL_CUSTOM_V3
+ for(const el of [
+   sigmaSearch,sigmaType,sigmaSource,
+   sigmaState,sigmaLevel,sigmaClear
+ ]){
+   el.style.colorScheme='dark';
+   el.style.background='#142333';
+   el.style.color='#dce9f4';
+   el.style.border='1px solid #40566e';
+   el.style.borderRadius='5px';
+   el.style.padding='5px 7px';
+   el.style.fontSize='12px';
+ }
 
  sigmaControls.append(
    sigmaSearch,sigmaType,sigmaSource,
@@ -546,7 +566,9 @@ try {
      if(sigmaLevel.value!=='all'&&
         sigmaLevel.value!==meta.level)continue;
 
-     if(sigmaState.value==='partial'){
+     if(sigmaState.value==='provisional'){
+       if(!available||!meta.provisional)continue;
+     }else if(sigmaState.value==='partial'){
        if(meta.scope!=='partial'||!available)continue;
      }else if(sigmaState.value!=='all'&&
               sigmaState.value!==state)continue;
@@ -646,6 +668,14 @@ try {
        state==='matched'?'#f2a09a':
        state==='zero'?'#9dc9bd':'#a6b3c2';
 
+     if(meta.provisional){
+       status.textContent+=' · Provisional';
+     }
+
+     if(meta.validation){
+       small(first,meta.validation);
+     }
+
      if(meta.scope==='partial'){
        status.textContent+=' · Partial rule';
      }else if(meta.scope==='request-keywords'){
@@ -653,12 +683,21 @@ try {
      }
 
      const attribution=small(first,'');
-     const link=document.createElement('a');
-     link.href=meta.url;
-     link.target='_blank';
-     link.rel='noopener noreferrer';
-     link.textContent=meta.source+' / '+meta.author;
-     attribution.append(link);
+     if(meta.url){
+       const link=document.createElement('a');
+       link.href=meta.url;
+       link.target='_blank';
+       link.rel='noopener noreferrer';
+       link.textContent=meta.source+' / '+meta.author;
+       attribution.append(link);
+     }else{
+       attribution.textContent=
+         meta.source+' / '+meta.author;
+     }
+
+     if(meta.license){
+       small(first,meta.license);
+     }
 
      small(first,
        meta.status+' · '+meta.level+
@@ -714,6 +753,7 @@ try {
      ' · '+sigmaInfo.evaluated_rules+' evaluated'+
      ' · '+sigmaInfo.matched_rules+' matched'+
      ' · '+sigmaInfo.not_evaluated_rules+' not evaluated'+
+     ' · '+(sigmaInfo.provisional_rules||0)+' provisional'+
      ' · '+days[0]+' – '+days[days.length-1]+' UTC';
 
    if(!covered){
