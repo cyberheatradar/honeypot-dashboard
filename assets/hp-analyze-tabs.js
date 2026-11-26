@@ -88,6 +88,7 @@ try {
      <button type="button" data-mode="patterns">Attack patterns</button>
      <button type="button" data-mode="user_agents">User-Agent fingerprints</button>
      <button type="button" data-mode="agentic">AI Agent Indicators</button>
+   <button type="button" data-mode="sigma">Sigma Indicators</button>
    </div>
    <div class="hp-attack-scroll">
      <table>
@@ -259,6 +260,7 @@ try {
  // HP_AGENTIC_INDICATORS_V1
  let attackData=null;
  let agentInfo=null;
+ let sigmaInfo=null;
 
  function agentProtocol(proto){
    const kind=window.HP_KIND||'TCP_SYN';
@@ -363,9 +365,10 @@ try {
 
    // HP_AGENTIC_HEADING_V1
    const agentMode=attackMode==='agentic';
+   const sigmaMode=attackMode==='sigma';
 
    attack.querySelector('h2').textContent=
-     agentMode?'AI Agent Indicators':'HTTP indicators';
+     sigmaMode?'Sigma Indicators':agentMode?'AI Agent Indicators':'HTTP indicators';
 
    attack.querySelector('thead th:nth-child(2)').textContent=
      agentMode?'Observations':'Requests';
@@ -468,6 +471,34 @@ try {
          });
 
          td.append(btn);
+
+         if(sigmaMode){
+           const meta=sigmaInfo?.rules?.[label];
+
+           if(meta){
+             const attribution=document.createElement('div');
+             attribution.style.fontSize='10px';
+             attribution.style.color='#9db2c6';
+             attribution.style.marginTop='4px';
+             attribution.style.overflowWrap='anywhere';
+
+             const link=document.createElement('a');
+             link.href=meta.url;
+             link.target='_blank';
+             link.rel='noopener noreferrer';
+             link.textContent='SigmaHQ / '+meta.author;
+             link.style.color='#9dc9df';
+
+             attribution.append(link);
+
+             const status=document.createElement('div');
+             status.textContent=
+               meta.status+' · '+meta.level;
+
+             attribution.append(status);
+             td.append(attribution);
+           }
+         }
        }else td.textContent=value;
 
        tr.append(td);
@@ -482,7 +513,13 @@ try {
      const tr=document.createElement('tr');
      const td=document.createElement('td');
      td.colSpan=4;
-     td.textContent=agentMode
+     td.textContent=sigmaMode
+       ?(!sigmaInfo
+         ?'Sigma PoC data unavailable'
+         :udp
+          ?'HTTP Sigma analysis is not applicable to UDP'
+          :'No matching Sigma indicators in this PoC')
+       :agentMode
        ?(!agentInfo||agentInfo.status==='unavailable'
          ?'Agent intelligence unavailable'
          :'No matching agent indicators (not a benign verdict)')
@@ -491,6 +528,35 @@ try {
          :'No matching HTTP indicators (not a benign verdict)';
      tr.append(td);
      attackRows.append(tr);
+   }
+
+   if(sigmaMode){
+     const days=sigmaInfo?.coverage_days||[];
+
+     attackStatus.textContent=
+       !sigmaInfo
+       ?'Sigma PoC unavailable (not zero matches)'
+       :'Manual PoC · SigmaHQ · '+
+         sigmaInfo.evaluated_rules+' evaluated rules'+
+         ' · '+days[0]+' – '+days[days.length-1]+
+         ' · '+fmt(ranked.reduce(
+           (s,x)=>s+x[1].count,0
+         ))+' rule matches'+
+         ' · Counts may overlap; not confirmed exploitation';
+
+     if(day&&!days.includes(day)){
+       attackStatus.textContent+=
+         ' · Selected day not analyzed in this PoC';
+     }
+
+     const license=document.createElement('a');
+     license.href='https://github.com/SigmaHQ/Detection-Rule-License';
+     license.target='_blank';
+     license.rel='noopener noreferrer';
+     license.textContent=' · DRL 1.1';
+     attackStatus.append(license);
+
+     return;
    }
 
    if(agentMode){
@@ -568,8 +634,20 @@ try {
        console.error('HP_AGENTIC_INTEL',error);
        return null;
      })
+
+   ,fetch('data/analyze/sigma-poc.json',{
+      cache:'no-store'
+    })
+      .then(res=>{
+        if(!res.ok)throw Error('SIGMA_HTTP_'+res.status);
+        return res.json();
+      })
+      .catch(error=>{
+        console.error('HP_SIGMA_POC',error);
+        return null;
+      })
  ])
-   .then(([data,agent])=>{
+   .then(([data,agent,sigma])=>{
      if(
        data.schema!=='hp-analyze-attack-tools-v1'||
        !Array.isArray(data.patterns)||
@@ -584,6 +662,15 @@ try {
        ?agent:null;
 
      data.agentic=agentInfo?.rows||[];
+
+     sigmaInfo=sigma&&
+       sigma.schema==='hp-sigma-poc-public-v1'&&
+       Array.isArray(sigma.rows)&&
+       Array.isArray(sigma.coverage_days)&&
+       sigma.rules
+       ?sigma:null;
+
+     data.sigma=sigmaInfo?.rows||[];
      attackData=data;
      renderAttack();
    })
@@ -1264,3 +1351,5 @@ try {
 // HP_HIGHLIGHTED_ONLY_V1
 
 // HP_UNLIMITED_RANKINGS_V1
+
+// HP_SIGMA_INDICATORS_POC_V1
