@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "total_matching_requests": 10299,
+  "total_matching_requests": 10512,
   "signal_totals": {
-    "common_probe_path": 10122,
-    "path_traversal": 147,
-    "sensitive_file_probe": 30
+    "common_probe_path": 10333,
+    "path_traversal": 148,
+    "sensitive_file_probe": 31
   },
   "cases": [
     {
@@ -13,10 +13,10 @@
       "category": "Common application probe",
       "indicator": "Environment file discovery",
       "method": "GET",
-      "destination_port": 443,
-      "transport": "https",
+      "destination_port": 80,
+      "transport": "http",
       "response_status": 404,
-      "matching_requests": 2116
+      "matching_requests": 2176
     },
     {
       "id": 2,
@@ -27,7 +27,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 331
+      "matching_requests": 344
     },
     {
       "id": 3,
@@ -60,7 +60,7 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 47
+      "matching_requests": 48
     },
     {
       "id": 6,
@@ -71,7 +71,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 22
+      "matching_requests": 24
     },
     {
       "id": 7,
@@ -82,7 +82,7 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 19
+      "matching_requests": 23
     },
     {
       "id": 8,
@@ -126,7 +126,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 2
+      "matching_requests": 3
     },
     {
       "id": 12,

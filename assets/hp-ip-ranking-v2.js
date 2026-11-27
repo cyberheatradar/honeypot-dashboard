@@ -27,7 +27,7 @@
   // Existing preview's Status column is repurposed.
   header.cells[2].textContent = 'IP Reputation';
   header.cells[2].title =
-    'IPsum / FireHOL snapshot; ThreatFox not checked';
+    'IPsum / FireHOL L2-L4 / ThreatFox snapshots';
 
   for (const [title,description] of [
     ['Attack Detection','HTTP URI indicators; not confirmed exploitation'],
@@ -228,8 +228,8 @@
 
       reputation.title = sources.length
         ? sources.join(', ') +
-          '; external reputation match; not proof of malicious activity; ThreatFox not checked'
-        : 'No match in fetched feeds; ThreatFox not checked';
+          '; external reputation match; not proof of malicious activity; See feed snapshot coverage'
+        : 'No match in fetched feeds; See feed snapshot coverage';
 
       for (const [idx,key,empty] of [
         [3,'a','HTTP signal not detected or not analyzed'],
@@ -331,7 +331,7 @@
       window.HP_TABLE_UI.refresh('ip');
 
       note.textContent =
-        'Preview · IPsum / FireHOL · ThreatFox pending';
+        'IPsum / FireHOL L2-L4 / ThreatFox';
 
       note.title = 'Snapshot: ' + data.generated_utc;
       decorate();

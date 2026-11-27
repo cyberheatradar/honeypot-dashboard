@@ -1069,7 +1069,7 @@ try {
      td.colSpan=4;
      td.textContent=sigmaMode
        ?(!sigmaInfo
-         ?'Sigma PoC data unavailable'
+         ?'Sigma data unavailable'
          :udp
           ?'HTTP Sigma analysis is not applicable to UDP'
           :'No matching Sigma indicators in this PoC')
@@ -1089,7 +1089,7 @@ try {
 
      attackStatus.textContent=
        !sigmaInfo
-       ?'Sigma PoC unavailable (not zero matches)'
+       ?'Sigma unavailable (not zero matches)'
        :'Manual PoC · SigmaHQ · '+
          sigmaInfo.evaluated_rules+' evaluated rules'+
          ' · '+days[0]+' – '+days[days.length-1]+
