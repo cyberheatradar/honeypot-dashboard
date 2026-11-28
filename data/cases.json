@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "total_matching_requests": 10512,
+  "total_matching_requests": 10629,
   "signal_totals": {
-    "common_probe_path": 10333,
-    "path_traversal": 148,
-    "sensitive_file_probe": 31
+    "common_probe_path": 10429,
+    "sensitive_file_probe": 52,
+    "path_traversal": 148
   },
   "cases": [
     {
@@ -16,7 +16,7 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 2176
+      "matching_requests": 2177
     },
     {
       "id": 2,
@@ -27,7 +27,7 @@
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 344
+      "matching_requests": 361
     },
     {
       "id": 3,
@@ -60,21 +60,10 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 48
+      "matching_requests": 50
     },
     {
       "id": 6,
-      "signal_type": "common_probe_path",
-      "category": "Common application probe",
-      "indicator": "Application actuator discovery",
-      "method": "GET",
-      "destination_port": 443,
-      "transport": "https",
-      "response_status": 404,
-      "matching_requests": 24
-    },
-    {
-      "id": 7,
       "signal_type": "common_probe_path",
       "category": "Common application probe",
       "indicator": "WordPress login discovery",
@@ -82,7 +71,18 @@
       "destination_port": 80,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 23
+      "matching_requests": 34
+    },
+    {
+      "id": 7,
+      "signal_type": "common_probe_path",
+      "category": "Common application probe",
+      "indicator": "Application actuator discovery",
+      "method": "GET",
+      "destination_port": 443,
+      "transport": "https",
+      "response_status": 404,
+      "matching_requests": 25
     },
     {
       "id": 8,
@@ -93,7 +93,7 @@
       "destination_port": 3000,
       "transport": "http",
       "response_status": 404,
-      "matching_requests": 7
+      "matching_requests": 10
     },
     {
       "id": 9,
@@ -108,9 +108,9 @@
     },
     {
       "id": 10,
-      "signal_type": "path_traversal",
-      "category": "Path traversal probe",
-      "indicator": "URL-encoded directory traversal",
+      "signal_type": "common_probe_path",
+      "category": "Common application probe",
+      "indicator": "WordPress XML-RPC discovery",
       "method": "GET",
       "destination_port": 443,
       "transport": "https",
@@ -119,14 +119,14 @@
     },
     {
       "id": 11,
-      "signal_type": "common_probe_path",
-      "category": "Common application probe",
-      "indicator": "WordPress XML-RPC discovery",
+      "signal_type": "path_traversal",
+      "category": "Path traversal probe",
+      "indicator": "URL-encoded directory traversal",
       "method": "GET",
       "destination_port": 443,
       "transport": "https",
       "response_status": 404,
-      "matching_requests": 3
+      "matching_requests": 4
     },
     {
       "id": 12,
